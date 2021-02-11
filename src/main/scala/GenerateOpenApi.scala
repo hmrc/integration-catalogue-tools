@@ -6,12 +6,50 @@ import io.swagger.v3.oas.models.responses.{ApiResponses, ApiResponse}
 
 import com.fasterxml.jackson.databind.ObjectMapper
 
+import scala.collection.JavaConverters._
 import java.util.HashMap
+import java.io.FileReader
+
 import io.swagger.v3.core.util.Yaml
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import java.io.Reader
 
 case class BasicApi(publisherReference: String,title: String,description: String,version: String,method: String,endpoint: String)
 
 object GenerateOpenApi {
+
+  def fromCsv(reader : Reader) : Seq[OpenAPI] = {
+    
+    // val in = new FileReader(filename);
+    
+    val rows = org.apache.commons.csv.CSVFormat.EXCEL
+    .withFirstRecordAsHeader()
+    .parse(reader).getRecords().asScala.toSeq
+    .map({record : CSVRecord => {
+      val expectedValues = 6
+      // TODO : Handle without exception?
+      if (record.size() < 6) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber()}")
+
+      def parseString(s: String) : String = {
+        Option(s).getOrElse("").trim()
+      }
+
+      BasicApi(
+        parseString(record.get(0)),
+        parseString(record.get(1)),
+        parseString(record.get(2)),
+        parseString(record.get(3)),
+        parseString(record.get(4)),
+        parseString(record.get(5)) )
+      }
+    })
+
+  rows
+    .map(basicApi => (generateOas(basicApi)) )
+  }
 
   def generateOasContent(basicApi: BasicApi): String = {
     val openApi : OpenAPI = generateOas(basicApi)
@@ -124,4 +162,6 @@ object GenerateOpenApi {
 
     operation
   }
+
+  
 }
