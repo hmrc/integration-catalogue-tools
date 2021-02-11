@@ -9,7 +9,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
   "Parse CSV into OpenAPI list" in {
     val csvFile = Source.fromResource("generateopenapispec/Parse-CSV-into-OpenAPI-list.csv")
     
-    val apis : Seq[(String, OpenAPI)] = GenerateOpenApi.fromCsvToOpenAPI(csvFile.bufferedReader())
+    val apis : Seq[(_, OpenAPI)] = GenerateOpenApi.fromCsvToOpenAPI(csvFile.bufferedReader())
 
     apis should have length 1
 

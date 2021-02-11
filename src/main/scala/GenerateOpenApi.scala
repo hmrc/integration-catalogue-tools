@@ -17,19 +17,24 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import java.io.Reader
 
-case class BasicApi(publisherReference: String,title: String,description: String,version: String,method: String,endpoint: String)
+case class BasicApi(publisherReference: PublisherReference,
+  title: String,
+  description: String,
+  version: String,
+  method: String,
+  endpoint: String)
 
-
+case class PublisherReference(value: String) extends AnyVal
 
 object GenerateOpenApi {
 
-  def fromCsvToOasContent(reader : Reader) : Seq[(String, String)] = {
+  def fromCsvToOasContent(reader : Reader) : Seq[(PublisherReference, String)] = {
     fromCsvToOpenAPI(reader).map{case (publisherReference, openApi) => {
       (publisherReference, openApiToContent(openApi))
     }}
   }
 
-  def fromCsvToOpenAPI(reader : Reader) : Seq[(String, OpenAPI)] = {
+  def fromCsvToOpenAPI(reader : Reader) : Seq[(PublisherReference, OpenAPI)] = {
 
     def createBasicApi(record: CSVRecord) : BasicApi = {
       val expectedValues = 6
@@ -41,14 +46,13 @@ object GenerateOpenApi {
       }
 
       BasicApi(
-        parseString(record.get(0)),
+        PublisherReference(parseString(record.get(0))),
         parseString(record.get(1)),
         parseString(record.get(2)),
         parseString(record.get(3)),
         parseString(record.get(4)),
         parseString(record.get(5)) )
       }
-    
 
     org.apache.commons.csv.CSVFormat.EXCEL
       .withFirstRecordAsHeader()

@@ -29,7 +29,7 @@ object Main extends App {
   GenerateOpenApi
     .fromCsvToOasContent(in)
     .map { case (publisherReference, oasContent) => {
-      val filename = s"output/${publisherReference}.yaml"
+      val filename = s"output/${publisherReference.value}.yaml"
       writeToFile(filename, oasContent)
     }}
 }
