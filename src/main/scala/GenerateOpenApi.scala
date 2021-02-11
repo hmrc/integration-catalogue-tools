@@ -19,16 +19,19 @@ import java.io.Reader
 
 case class BasicApi(publisherReference: String,title: String,description: String,version: String,method: String,endpoint: String)
 
+
+
 object GenerateOpenApi {
 
-  def fromCsv(reader : Reader) : Seq[(String, OpenAPI)] = {
-    
-    // val in = new FileReader(filename);
-    
-    val rows = org.apache.commons.csv.CSVFormat.EXCEL
-    .withFirstRecordAsHeader()
-    .parse(reader).getRecords().asScala.toSeq
-    .map({record : CSVRecord => {
+  def fromCsvToOasContent(reader : Reader) : Seq[(String, String)] = {
+    fromCsvToOpenAPI(reader).map{case (publisherReference, openApi) => {
+      (publisherReference, openApiToContent(openApi))
+    }}
+  }
+
+  def fromCsvToOpenAPI(reader : Reader) : Seq[(String, OpenAPI)] = {
+
+    def createBasicApi(record: CSVRecord) : BasicApi = {
       val expectedValues = 6
       // TODO : Handle without exception?
       if (record.size() < 6) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber()}")
@@ -45,23 +48,26 @@ object GenerateOpenApi {
         parseString(record.get(4)),
         parseString(record.get(5)) )
       }
-    })
+    
 
-  rows
-    .map(basicApi => (basicApi.publisherReference, generateOas(basicApi)) )
+    org.apache.commons.csv.CSVFormat.EXCEL
+      .withFirstRecordAsHeader()
+      .parse(reader).getRecords().asScala.toSeq
+      .map(createBasicApi)
+      .map(basicApi => (basicApi.publisherReference, createOpenApi(basicApi)) )
   }
 
   def generateOasContent(basicApi: BasicApi): String = {
-    val openApi : OpenAPI = generateOas(basicApi)
+    val openApi : OpenAPI = createOpenApi(basicApi)
 
-    openApiToText(openApi)
+    openApiToContent(openApi)
   }
 
-  def openApiToText(openApi: OpenAPI) : String = {
+  def openApiToContent(openApi: OpenAPI) : String = {
     Yaml.mapper().writeValueAsString(openApi);
   }
 
-  def generateOas(basicApi: BasicApi): OpenAPI = {
+  private def createOpenApi(basicApi: BasicApi): OpenAPI = {
     val openApiInfo = new Info()
     openApiInfo.setTitle(basicApi.title)
     openApiInfo.setDescription(basicApi.description)
