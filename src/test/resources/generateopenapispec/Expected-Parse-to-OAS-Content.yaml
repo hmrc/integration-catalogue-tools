@@ -1,0 +1,21 @@
+openapi: 3.0.1
+info:
+  title: My API Title
+  description: My API Description
+  version: "1.0"
+paths:
+  /my/resource/uri:
+    get:
+      summary: My API Title
+      requestBody:
+        content:
+          application/json:
+            examples:
+              TODO Example Description:
+                value:
+                  SomeValue: theValue
+      responses:
+        "200":
+          description: response description
+          content:
+            application/json: {}

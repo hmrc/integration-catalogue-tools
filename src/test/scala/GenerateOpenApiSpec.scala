@@ -7,7 +7,7 @@ import scala.collection.JavaConverters._
 
 class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
   "Parse CSV into OpenAPI list" in {
-    val csvFile = Source.fromURL(getClass.getResource("/Parse-CSV-into-OpenAPI-list.csv"))
+    val csvFile = Source.fromResource("generateopenapispec/Parse-CSV-into-OpenAPI-list.csv")
     
     val apis : Seq[(String, OpenAPI)] = GenerateOpenApi.fromCsv(csvFile.bufferedReader())
 
@@ -26,6 +26,13 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
   }
 
   "Parse CSV into OpenAPI Specification content" in {
+    val csvFile = Source.fromResource("generateopenapispec/Parse-to-OAS-Content.csv")
+    val expectedContent = Source.fromResource("generateopenapispec/Expected-Parse-to-OAS-Content.yaml").mkString
 
+    val apis : Seq[(String, OpenAPI)] = GenerateOpenApi.fromCsv(csvFile.bufferedReader())
+
+    val content = GenerateOpenApi.openApiToText(apis.head._2)
+
+    content shouldBe expectedContent
   }
 }
