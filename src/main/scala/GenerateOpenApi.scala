@@ -21,7 +21,7 @@ case class BasicApi(publisherReference: String,title: String,description: String
 
 object GenerateOpenApi {
 
-  def fromCsv(reader : Reader) : Seq[OpenAPI] = {
+  def fromCsv(reader : Reader) : Seq[(String, OpenAPI)] = {
     
     // val in = new FileReader(filename);
     
@@ -48,7 +48,7 @@ object GenerateOpenApi {
     })
 
   rows
-    .map(basicApi => (generateOas(basicApi)) )
+    .map(basicApi => (basicApi.publisherReference, generateOas(basicApi)) )
   }
 
   def generateOasContent(basicApi: BasicApi): String = {
