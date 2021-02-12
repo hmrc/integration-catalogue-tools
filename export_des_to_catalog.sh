@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-sbt run
+sbt 'run --csvToOas "input/API Library 2021-02-01 - Integration Catalogue Export.csv" output'
 
-m -f $WORKSPACE/integration-catalogue-frontend/app/assets/desspecs/stub/*
+# rm -f $WORKSPACE/integration-catalogue-frontend/app/assets/desspecs/stub/*
 
-cp output/* $WORKSPACE/integration-catalogue-frontend/app/assets/desspecs/stub 
+# cp output/* $WORKSPACE/integration-catalogue-frontend/app/assets/desspecs/stub 

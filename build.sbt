@@ -1,5 +1,5 @@
-lazy val root = (project in file(".")).
-  settings(
+lazy val root = (project in file("."))
+  .settings(
     inThisBuild(List(
       organization := "uk.gov.hmrc",
       scalaVersion := "2.13.4"

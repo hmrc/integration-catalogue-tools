@@ -24,7 +24,9 @@ case class BasicApi(publisherReference: PublisherReference,
   method: String,
   endpoint: String)
 
-case class PublisherReference(value: String) extends AnyVal
+case class PublisherReference(value: String) extends AnyVal {
+  override def toString() = value.toString()
+}
 
 object GenerateOpenApi {
 

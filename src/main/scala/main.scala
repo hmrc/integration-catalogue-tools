@@ -1,35 +1,30 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.swagger.v3.core.util.Yaml;
-// import java.io.File
-// import java.io.BufferedWriter
 import java.io.FileReader
-import io.swagger.v3.oas.models.OpenAPI
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-
-import scala.collection.JavaConverters._
 
 object Main extends App {
-  private def writeToFile(filename: String, content: String): Unit = {
-    import java.io.File
-    import java.io.BufferedWriter
-    import java.io.FileWriter
 
-    val file = new File(filename)
-    val bw = new BufferedWriter(new FileWriter(file))
-    bw.write(content)
-    bw.close()
+  def printUsage() = {
+     println("""
+  Usage: sbt "run -csvToOas <inputCsvFile> <outputPath>"
+""")
+  }
+  
+  val result = args.toList match {
+    case Nil => printUsage()
+    case "--csvToOas" :: inputCsvFile :: outputPath :: Nil => {
+      println(s"Exporting CSV to OAS Files:\nInput file: ${inputCsvFile}\noutput path: ${outputPath}")
+      val rowsProcessed = ProcessCsvFile.process(inputCsvFile, outputPath)
+      println(s"Exported $rowsProcessed OAS files to:\n${outputPath}")
+      Right()
+    }
+    case "--help" :: Nil | "-h" :: Nil => printUsage()
+    case option :: tail => Left(s"Unknown option or arguments : ${option}\nArgs:${args.toList}")
+    case _ => printUsage()
   }
 
-  val in = new FileReader("input/API Library 2021-02-01 - Integration Catalogue Export.csv");
-
-  GenerateOpenApi
-    .fromCsvToOasContent(in)
-    .map { case (publisherReference, oasContent) => {
-      val filename = s"output/${publisherReference.value}.yaml"
-      writeToFile(filename, oasContent)
-    }}
+  val exitCode = result match{
+     case Left(error) => println(s"Error: $error"); 1
+     case Right(_) => (); 0
+  }
+  
+  // sys.exit(exitCode)
 }
