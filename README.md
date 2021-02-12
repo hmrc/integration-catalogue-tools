@@ -1,8 +1,75 @@
+# Integration-catalogue-tools
 
-# integration-catalogue-tools
+This is a tool that allows the generation of OpenAPI Specification ([OAS](https://www.openapis.org/)) files (version 3) primarily for publishing in the 'Get data for your service' (aka Integration Catalogue).
 
-This is a placeholder README.md for a new repository
+The input is a comma separated file (csv) with one row per API. Each row must contain a single endpoint and method which will generate a single OAS file.
 
-### License
+## Format of the CSV
+The first header row is skipped, and each subsequent row must contain these six values:
 
-This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
+```
+<publisher-reference>, <title>, <description>, <version>, <method>, <endpoint>
+```
+
+**Note**: A CSV exported from google sheets will be compliant with the with regards to values that contain line breaks and the usage of quotes around values.
+
+### Fields:
+ - **publisher-reference**: This should be a unique identifier that you use to identify the API. Is used as the output OAS filename.
+ - **title**: Used to populate the title in the OAS.
+ - **description**: Used to populate the description in the OAS.
+ - **version**: Used to populate the version in the OAS.
+ - **method**: Used to populate the method in the OAS for the single endpoint defined.
+ - **endpoint**: Used to populate the endpoint in the OAS for the single endpoint defined.
+
+ ### Example
+ CSV with one API.
+ ```
+publisherReference,title,description,version,verb,endpoint
+1,"Example API 1","This is an example API.",V0.1.0,GET,/examples
+```
+
+This will produce a file called ```1.yaml``` with the following content:
+```
+openapi: 3.0.1
+info:
+  title: Example API 1
+  description: This is an example API.
+  version: V0.1.0
+paths:
+  /examples:
+    get:
+      summary: Example API 1
+      requestBody:
+        content:
+          application/json:
+            examples:
+              TODO Example Description:
+                value:
+                  SomeValue: theValue
+      responses:
+        "200":
+          description: response description
+          content:
+            application/json: {}
+```
+
+# Running and processing a CSV
+
+This assumes you've been given a pre-build `integration-catalogue-tools`. You are required to have Java installed on the path.
+
+```
+integration-catalogue-tools --csvToOas "<name-of.csv>" "<output-path>"
+```
+
+# Building the tool from source
+```
+sbt pack
+
+chmod +x target/pack/bin/integration-catalogue-tools                                                                      
+```
+
+# Running the tool from source
+
+```
+sbt 'run --csvToOas "<name-of.csv>" "<output-path>"'
+```
