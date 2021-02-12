@@ -11,7 +11,7 @@ The first header row is skipped, and each subsequent row must contain these six 
 <publisher-reference>, <title>, <description>, <version>, <method>, <endpoint>
 ```
 
-**Note**: A CSV exported from google sheets will be compliant with the with regards to values that contain line breaks and the usage of quotes around values.
+**Note**: A CSV exported from google sheets will be compliant with regards to values that contain line breaks or quotes around values.
 
 ### Fields:
  - **publisher-reference**: This should be a unique identifier that you use to identify the API. Is used as the output OAS filename.
@@ -63,10 +63,12 @@ integration-catalogue-tools --csvToOas "<name-of.csv>" "<output-path>"
 
 # Building the tool from source
 ```
-sbt pack
-
-chmod +x target/pack/bin/integration-catalogue-tools                                                                      
+sbt packArchive
 ```
+
+```target/integration-catalogue-tools-x.y.z-SNAPSHOT.zip``` will contain all the files to run the tool.
+
+Unpack it, and run `/bin/integration-catalogue-tools --help`
 
 # Running the tool from source
 
