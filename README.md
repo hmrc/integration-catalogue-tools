@@ -63,7 +63,7 @@ integration-catalogue-tools --csvToOas "<name-of.csv>" "<output-path>"
 
 # Building the tool from source
 
-Bump the version in the build.sbt (if this version is going to be published).
+Bump the version in the build.sbt (if this version is going to be published). Even versions to release. Odd for development.
 
 
 ```
@@ -72,7 +72,12 @@ sbt packArchive
 
 ```target/integration-catalogue-tools-x.y.z-SNAPSHOT.zip``` will contain all the files to run the tool.
 
-Unpack it, and run `/bin/integration-catalogue-tools --help`
+To create a downloadable release:
+1. Commit and push the version change in the `build.sbt` file
+1. Go to the github [releases](https://github.com/hmrc/integration-catalogue-tools/releases) page and draft a new release.
+1. Give the release a name, and assign it to the tag / commit.
+1. Upload into the release the ```integration-catalogue-tools-x.y.z-SNAPSHOT.zip``` that you have built.
+1. Bump the version to the next odd version and commit that.
 
 # Running the tool from source
 
