@@ -62,6 +62,10 @@ integration-catalogue-tools --csvToOas "<name-of.csv>" "<output-path>"
 ```
 
 # Building the tool from source
+
+Bump the version in the build.sbt (if this version is going to be published).
+
+
 ```
 sbt packArchive
 ```

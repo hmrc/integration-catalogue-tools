@@ -4,7 +4,7 @@ object Main extends App {
 
   def printUsage() = {
      println("""
-  Usage: sbt 'run --csvToOas "<inputCsvFile>" "<outputPath>"'
+  Usage: integration-catalogue-tools --csvToOas "<inputCsvFile>" "<outputPath>"'
 """)
   }
   
