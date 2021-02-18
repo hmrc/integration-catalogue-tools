@@ -1,0 +1,53 @@
+API1561,API1561_Create_Case_1.4.0.yaml
+API1562,API1562_Store_Document_1.6.0.yaml
+API1584,API#1584_ Get_Trust_Obliged_Entities_Data_1.0.0.yaml
+API1585,API1585_Individual_Match_1.0.0 (1).yaml
+API1590,API1590_Get_Scheme_Financial_Statements_1.3.0.yaml
+API1591,API1591_Get_PSA_Financial_Statements_1.3.0.yaml
+API1596,API#1596_Delete_Foreign_Property_Annual_1.1.0.yaml
+API1597,API#1597_Create_or_Update_Foreign_Property_Annual_1.0.0.yaml
+API1598,API#1598_Get_Foreign_Property_Annual_1.0.0.yaml
+API1602,API#1602_Create_or_Update_Foreign_Income_1.0.0.yaml
+API1603,API#1603_Get_Foreign_Income_1.0.0.yaml
+API1604,API#1604_Delete_Foreign_Income_1.0.0.yaml
+API1608,API#1608_Create_or_Update_Dividends_Income_1.0.0.yaml
+API1609,API#1609_Get_Dividends_Income_1.0.0.yaml
+API1610,API#1610_Delete_Dividends_Income_1.0.0.yaml
+API1611,API#1611_Create_or_Update_Pensions_Income_1.0.0.yaml
+API1612,API#1612_Get_Pensions_Income_1.0.0.yaml
+API1613,API#1613_Delete_Pensions_Income_1.0.0.yaml
+API1614,API#1614_ Create_Update_Insurance_Policies_1.1.0.yaml
+API1615,API#1615_ Get_Insurance_Policies_1.1.0.yaml
+API1616,API#1616_ Delete_Insurance_Policies_1.1.0.yaml
+API1620,API#1620_Create_or_Update_Other_Income_1.2.0.yaml
+API1621,API#1621_Get_Other_Income_1.1.0.yaml
+API1622,API#1622_Delete_Other_Income_1.1.0.yaml
+API1623,API#1623_Create_or_Update_Expenses_1.1.0.yaml
+API1624,API#1624_Get_Other_Expenses_1.1.0.yaml
+API1625,API#1625_Delete_Other_Expenses_1.1.0.yaml
+API1629,API#1629_ Create_Update_Investment_Reliefs_Submission_1.1.0.yaml
+API1631,API#1631_ Delete_Insurance_Policies_1.1.0.yaml
+API1633,API#1633_ Get_Other_Relief_Data_1.1.0.yaml
+API1635,API#1635_Create_or_Update_Foreign_Reliefs_1.2.0.yaml
+API1636,API#1636_Get_Foreign_Reliefs_1.1.0.yaml
+API1637,API#1637_Delete_Foreign_Reliefs_1.1.0.yaml
+API1638,API#1638_Create_or_Update_Disclosures_1.2.0.yaml
+API1639,API#1639_Get_Disclosures_1.2.0.yaml
+API1640,API#1640_Delete_Disclosures_1.2.0.yaml
+API1649,API#1649_Get_Foreign_Property_Periodic_1.1.0.yaml
+API1660,API1660_Get_PSP_Scheme_Details_1.1.0.yaml
+API1672,API1672_Create_Temporary_Reference_Number_1.0.0.yaml
+API1684,api#1684-individual-contact-details-1.2.0.yaml
+API1685,api#1685-individual-income-1.2.0.yaml
+API1686,api#1686-individual-employment-1.1.0.yaml
+API1687,api#1687-individual-tax-credits-1.0.0.yaml
+API1688,API1688_Match_Known_Facts_1.2.0.yaml
+API1689,API1689_Get_Known_Facts_1.1.0.yaml
+API1692,API-1692-OpenAPI-Specs-V-1.1.0.yaml
+API1693,API-1693-OpenAPI-Specs-V-1.1.0.yaml
+API1694,API-1694-OpenAPI-Specs-V-1.0.1.yaml
+API1681,individuals-api1681-openapi-1.0.0.yaml
+API1690,individuals-api1690-openapi-1.0.0.yaml
+API1691,individuals-api1691-openapi-1.0.0.yaml
+API1658,pension-online-api1658-openapi-1.3.0.yaml
+API1659,pension-online-api1659-openapi-1.3.0.yaml
