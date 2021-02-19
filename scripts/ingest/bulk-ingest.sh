@@ -23,7 +23,7 @@ while read reference filename
 do
 	echo "reference : $reference"
 	echo "path: $FILESFOLDER${filename}"
-	   curl --location --request POST "$host/integration-catalogue-admin-frontend/services/apis/publish" \
+	   curl --location --request POST "$host/services/apis/publish" \
 --header 'x-platform-type: '$plat \
 --header 'x-specification-type: OAS_V3' \
 --header 'x-publisher-reference: '$reference \
