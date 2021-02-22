@@ -1,3 +1,5 @@
+package uk.gov.hmrc.integrationcataloguetools
+
 import java.io.FileReader
 
 object Main extends App {

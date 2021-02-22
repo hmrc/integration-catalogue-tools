@@ -1,3 +1,5 @@
+package uk.gov.hmrc.integrationcataloguetools
+
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scala.io.Source
