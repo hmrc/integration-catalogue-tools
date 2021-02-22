@@ -6,13 +6,27 @@ object Main extends App {
 
   def printUsage() = {
      println("""
-  Usage: integration-catalogue-tools --csvToOas "<inputCsvFile>" "<outputPath>"'
+  Usage:
+    integration-catalogue-tools --version | -v
+    integration-catalogue-tools --help | -h
+    integration-catalogue-tools --csvToOas <inputCsvFile> <outputPath>
 """)
+  }
+
+  def printVersion() = {
+    val title = getClass().getPackage().getImplementationTitle()
+    val version =getClass().getPackage().getImplementationVersion()
+
+    println(s"integration-catalogue-tools version '${version}'")
   }
   
   val result : Either[String, Unit] = args.toList match {
     case Nil | "--help" :: Nil | "-h" :: Nil => {
       printUsage()
+      Right()
+    }
+    case "--verion" :: Nil | "-v" :: Nil => {
+      printVersion()
       Right()
     }
     case "--csvToOas" :: inputCsvFile :: outputPath :: Nil => {

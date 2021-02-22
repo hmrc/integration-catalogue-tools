@@ -58,7 +58,10 @@ paths:
 This assumes you've been given a pre-build `integration-catalogue-tools`. You are required to have Java installed on the path.
 
 ```
-integration-catalogue-tools --csvToOas "<name-of.csv>" "<output-path>"
+  Usage:
+    integration-catalogue-tools --version | -v
+    integration-catalogue-tools --help | -h
+    integration-catalogue-tools --csvToOas <inputCsvFile> <outputPath>
 ```
 
 # Building the tool from source
