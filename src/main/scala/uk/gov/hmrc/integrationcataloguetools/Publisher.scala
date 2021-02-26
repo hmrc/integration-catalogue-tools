@@ -13,6 +13,7 @@ import scala.concurrent.Future
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
+import org.apache.http.client.methods.HttpPut
 
 
 object Publisher {
@@ -20,12 +21,15 @@ object Publisher {
 
   def publish(filename: String) = {
 
-    // val oasContentBytes = Files.readAllBytes(Paths.get(filename))
+    val oasContentBytes = Files.readAllBytes(Paths.get(filename))
 
-    // println(new String(oasContentBytes, StandardCharsets.UTF_8))
-    doPost();
+    println(new String(oasContentBytes, StandardCharsets.UTF_8))
+    
+    val url = "http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish"
+    
+    doPut(url, oasContentBytes);
 
-    def doPost() = {
+    def doPut(url: String, oasContent: Array[Byte]) = {
       import org.apache.http.client.methods.{HttpGet, HttpPost}
       import org.apache.http.entity.ContentType
       import org.apache.http.entity.mime.MultipartEntityBuilder
@@ -34,10 +38,23 @@ object Publisher {
 
       val client = HttpClients.createDefault()
       try {
-        var get = new HttpGet("https://jsonplaceholder.typicode.com/todos/1")
+        var put = new HttpPut(url)
 
-        val response = client.execute(get)
-        
+        // TODO
+        val platformType = "DES"
+        val publisherReference = "1142"
+        val filename = "not-really-used"
+
+        put.addHeader("x-platform-type", platformType)
+        put.addHeader("x-specification-type", "OAS_V3")
+        put.addHeader("x-publisher-reference", publisherReference)
+      
+        val entity = MultipartEntityBuilder.create()
+        entity.addBinaryBody("selectedFile", oasContent, ContentType.DEFAULT_TEXT, filename)
+        put.setEntity(entity.build());
+
+        val response = client.execute(put)
+
         val statusCode = response.getStatusLine().getStatusCode()
 
         println(s"StatusCode: ${statusCode}")
