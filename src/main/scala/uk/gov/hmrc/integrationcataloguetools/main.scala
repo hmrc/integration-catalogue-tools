@@ -10,6 +10,7 @@ object Main extends App {
     integration-catalogue-tools --version | -v
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <inputCsvFile> <outputPath>
+    integration-catalogue-tools --publish --file <oasFile>
 """)
   }
 
@@ -33,6 +34,10 @@ object Main extends App {
       println(s"Exporting CSV to OAS Files:\nInput file: ${inputCsvFile}\noutput path: ${outputPath}")
       val rowsProcessed = ProcessCsvFile.process(inputCsvFile, outputPath)
       println(s"Exported $rowsProcessed OAS files to:\n${outputPath}")
+      Right()
+    }
+    case "--publish" :: oasFilePath :: Nil => {
+      Publisher.publish(oasFilePath)
       Right()
     }
     case options => Left(s"Unknown options or arguments : ${options}\nArgs:${args.toList}")
