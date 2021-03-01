@@ -9,8 +9,9 @@ object Main extends App {
   Usage:
     integration-catalogue-tools --version | -v
     integration-catalogue-tools --help | -h
-    integration-catalogue-tools --csvToOas <inputCsvFile> <outputPath>
-    integration-catalogue-tools --publish --file <oasFile>
+    integration-catalogue-tools --csvToOas <input CSV> <output directory>
+    integration-catalogue-tools --publish --file <oas file>
+    integration-catalogue-tools --publish --directory <directory>
 """)
   }
 
@@ -36,9 +37,11 @@ object Main extends App {
       println(s"Exported $rowsProcessed OAS files to:\n${outputPath}")
       Right()
     }
-    case "--publish" :: oasFilePath :: Nil => {
-      Publisher.publish(oasFilePath)
-      Right()
+    case "--publish" :: "--file" :: oasFilepath :: Nil => {
+      Publisher.publishFile(oasFilepath)
+    }
+    case "--publish" :: "--directory" :: oasDirectory :: Nil => {
+      Publisher.publishDirectory(oasDirectory)
     }
     case options => Left(s"Unknown options or arguments : ${options}\nArgs:${args.toList}")
   }

@@ -19,17 +19,42 @@ import org.apache.http.client.methods.HttpPut
 object Publisher {
   import scala.concurrent.ExecutionContext.Implicits._
 
-  def publish(filename: String) = {
+  def publishDirectory(directoryPath: String) : Either[String, Unit]= {
+    
+    var directory = new File(directoryPath)
+    if (directory.isDirectory()){
+      // println("TODO publishPath: " + directory)
+      // println("D: " + directory.listFiles().mkString("\n"))
 
-    val oasContentBytes = Files.readAllBytes(Paths.get(filename))
+      directory
+        .listFiles()
+        .foreach(oasFile => {
+          publishFile(oasFile.getPath())
+        })
+      
+      Right( () )
+    } else {
+      Left(s"$directory is not a directory")
+    }
+  }
 
-    println(new String(oasContentBytes, StandardCharsets.UTF_8))
+  def publishFile(pathname: String) : Either[String, Unit] = {
+
+    println(s"Publishing ${pathname}")
+
+    val file = new File(pathname);
+    val filename = file.getName()
+
+    val oasContentBytes = Files.readAllBytes(Paths.get(pathname))    
     
     val url = "http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish"
     
-    doPut(url, oasContentBytes);
+    doPut(url, oasContentBytes, publisherReference = filename, filename);
 
-    def doPut(url: String, oasContent: Array[Byte]) = {
+    Right( () )
+  }
+
+  private def doPut(url: String, oasContent: Array[Byte], publisherReference: String, filename: String) = {
       import org.apache.http.client.methods.{HttpGet, HttpPost}
       import org.apache.http.entity.ContentType
       import org.apache.http.entity.mime.MultipartEntityBuilder
@@ -42,8 +67,6 @@ object Publisher {
 
         // TODO
         val platformType = "DES"
-        val publisherReference = "1142"
-        val filename = "not-really-used"
 
         put.addHeader("x-platform-type", platformType)
         put.addHeader("x-specification-type", "OAS_V3")
@@ -57,32 +80,16 @@ object Publisher {
 
         val statusCode = response.getStatusLine().getStatusCode()
 
-        println(s"StatusCode: ${statusCode}")
-
         val contentStream = response.getEntity().getContent()
         val content = scala.io.Source.fromInputStream(contentStream).mkString
-        
-        println(s"Content: ${content}")
+
+        statusCode match {
+          case 200 => println(s"Published. Updated API. Response(${statusCode}): ${content}")
+          case 201 => println(s"Published. Created API. Responce(${statusCode}): ${content}")
+        }
       } finally {
         client.close()
       }
     }
-
-      // --header 'x-platform-type: '$plat \
-      // --header 'x-specification-type: OAS_V3' \
-      // --header 'x-publisher-reference: '$reference \
-
-      // val postData = Map("fields" -> "data")
-
-      // wsClient
-      //   .url("http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish")
-      //   .post(postData)
-      //   .map { response =>
-      //     val statusText: String = response.statusText
-      //     val body = response.body[String]
-      //     println(s"Got a response $statusText: $body")
-        // }
-    
-  }
 }
 
