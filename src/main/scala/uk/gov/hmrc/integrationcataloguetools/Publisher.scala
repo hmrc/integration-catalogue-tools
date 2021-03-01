@@ -25,17 +25,18 @@ object Publisher {
   def publishDirectory(platform: Platform, directoryPath: String) : Either[String, Unit]= {
     
     var directory = new File(directoryPath)
-    if (directory.isDirectory()){
-    
-      directory
-        .listFiles()
-        .foreach(oasFile => {
-          publishFile(platform, oasFile.getPath())
-        })
-      
-      Right( () )
-    } else {
+    if (!directory.isDirectory()){
       Left(s"$directory is not a directory")
+    } else {
+      val results = 
+        directory
+          .listFiles()
+          .map(file => publishFile(platform, file.getPath() ) )
+
+      val lefts = results.collect({ case Left(l) => l})
+
+      if (lefts.isEmpty) Right(())
+      else Left(lefts.mkString("\n"))
     }
   }
 
@@ -52,11 +53,9 @@ object Publisher {
     val url = "http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish"
     
     doPut(platform,  publisherReference = PublisherReference(filename), filename,url, oasContentBytes);
-
-    Right( () )
   }
 
-  private def doPut(platform: Platform, publisherReference: PublisherReference, filename: String, url: String, oasContent: Array[Byte]) = {
+  private def doPut(platform: Platform, publisherReference: PublisherReference, filename: String, url: String, oasContent: Array[Byte]) : Either[String, Unit] = {
       import org.apache.http.client.methods.{HttpGet, HttpPost}
       import org.apache.http.entity.ContentType
       import org.apache.http.entity.mime.MultipartEntityBuilder
@@ -83,8 +82,18 @@ object Publisher {
         val content = scala.io.Source.fromInputStream(contentStream).mkString
 
         statusCode match {
-          case 200 => println(s"Published. Updated API. Response(${statusCode}): ${content}")
-          case 201 => println(s"Published. Created API. Responce(${statusCode}): ${content}")
+          case 200 => {
+            println(s"Published. Updated API. Response(${statusCode}): ${content}") 
+            Right(())
+          }
+          case 201 => {
+            println(s"Published. Created API. Response(${statusCode}): ${content}") 
+            Right(())
+          }
+          case otherStatusCode => {
+            val errorMessage = s"Failed to publish '$filename'. Response(${statusCode}): ${content}"
+            Left(errorMessage)
+          }
         }
       } finally {
         client.close()
