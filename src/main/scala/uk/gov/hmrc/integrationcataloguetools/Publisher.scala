@@ -15,21 +15,18 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import org.apache.http.client.methods.HttpPut
 
-
 object Publisher {
   import scala.concurrent.ExecutionContext.Implicits._
 
-  def publishDirectory(directoryPath: String) : Either[String, Unit]= {
+  def publishDirectory(platform: String, directoryPath: String) : Either[String, Unit]= {
     
     var directory = new File(directoryPath)
     if (directory.isDirectory()){
-      // println("TODO publishPath: " + directory)
-      // println("D: " + directory.listFiles().mkString("\n"))
-
+    
       directory
         .listFiles()
         .foreach(oasFile => {
-          publishFile(oasFile.getPath())
+          publishFile(platform, oasFile.getPath())
         })
       
       Right( () )
@@ -38,7 +35,7 @@ object Publisher {
     }
   }
 
-  def publishFile(pathname: String) : Either[String, Unit] = {
+  def publishFile(platform: String, pathname: String) : Either[String, Unit] = {
 
     println(s"Publishing ${pathname}")
 
@@ -47,14 +44,15 @@ object Publisher {
 
     val oasContentBytes = Files.readAllBytes(Paths.get(pathname))    
     
+    // TODO : Make Paramater
     val url = "http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish"
     
-    doPut(url, oasContentBytes, publisherReference = filename, filename);
+    doPut(platform,  publisherReference = filename, filename,url, oasContentBytes);
 
     Right( () )
   }
 
-  private def doPut(url: String, oasContent: Array[Byte], publisherReference: String, filename: String) = {
+  private def doPut(platform: String, publisherReference: String, filename: String, url: String, oasContent: Array[Byte]) = {
       import org.apache.http.client.methods.{HttpGet, HttpPost}
       import org.apache.http.entity.ContentType
       import org.apache.http.entity.mime.MultipartEntityBuilder
@@ -66,7 +64,7 @@ object Publisher {
         var put = new HttpPut(url)
 
         // TODO
-        val platformType = "DES"
+        val platformType = platform
 
         put.addHeader("x-platform-type", platformType)
         put.addHeader("x-specification-type", "OAS_V3")
