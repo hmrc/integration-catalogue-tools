@@ -26,12 +26,8 @@ case class BasicApi(publisherReference: PublisherReference,
   method: String,
   endpoint: String)
 
-case class PublisherReference(value: String) extends AnyVal {
-  override def toString() = value.toString()
-}
 
-object GenerateOpenApi {
-
+  object GenerateOpenApi {
   def fromCsvToOasContent(reader : Reader) : Seq[(PublisherReference, String)] = {
     fromCsvToOpenAPI(reader).map{case (publisherReference, openApi) => {
       (publisherReference, openApiToContent(openApi))

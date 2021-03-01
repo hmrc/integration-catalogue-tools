@@ -15,10 +15,14 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import org.apache.http.client.methods.HttpPut
 
+
+case class PublisherReference(value: String) extends AnyVal
+case class Platform(value: String) extends AnyVal
+
 object Publisher {
   import scala.concurrent.ExecutionContext.Implicits._
 
-  def publishDirectory(platform: String, directoryPath: String) : Either[String, Unit]= {
+  def publishDirectory(platform: Platform, directoryPath: String) : Either[String, Unit]= {
     
     var directory = new File(directoryPath)
     if (directory.isDirectory()){
@@ -35,7 +39,7 @@ object Publisher {
     }
   }
 
-  def publishFile(platform: String, pathname: String) : Either[String, Unit] = {
+  def publishFile(platform: Platform, pathname: String) : Either[String, Unit] = {
 
     println(s"Publishing ${pathname}")
 
@@ -47,12 +51,12 @@ object Publisher {
     // TODO : Make Paramater
     val url = "http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish"
     
-    doPut(platform,  publisherReference = filename, filename,url, oasContentBytes);
+    doPut(platform,  publisherReference = PublisherReference(filename), filename,url, oasContentBytes);
 
     Right( () )
   }
 
-  private def doPut(platform: String, publisherReference: String, filename: String, url: String, oasContent: Array[Byte]) = {
+  private def doPut(platform: Platform, publisherReference: PublisherReference, filename: String, url: String, oasContent: Array[Byte]) = {
       import org.apache.http.client.methods.{HttpGet, HttpPost}
       import org.apache.http.entity.ContentType
       import org.apache.http.entity.mime.MultipartEntityBuilder
@@ -63,12 +67,9 @@ object Publisher {
       try {
         var put = new HttpPut(url)
 
-        // TODO
-        val platformType = platform
-
-        put.addHeader("x-platform-type", platformType)
+        put.addHeader("x-platform-type", platform.value)
         put.addHeader("x-specification-type", "OAS_V3")
-        put.addHeader("x-publisher-reference", publisherReference)
+        put.addHeader("x-publisher-reference", publisherReference.value)
       
         val entity = MultipartEntityBuilder.create()
         entity.addBinaryBody("selectedFile", oasContent, ContentType.DEFAULT_TEXT, filename)

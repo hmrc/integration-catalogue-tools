@@ -37,11 +37,12 @@ object Main extends App {
       println(s"Exported $rowsProcessed OAS files to:\n${outputPath}")
       Right()
     }
+
     case "--publish" :: "--platform" :: platform :: "--file" :: oasFilepath :: Nil => {
-      Publisher.publishFile(platform, oasFilepath)
+      Publisher.publishFile(Platform(platform), oasFilepath)
     }
     case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: Nil => {
-      Publisher.publishDirectory(platform, oasDirectory)
+      Publisher.publishDirectory(Platform(platform), oasDirectory)
     }
     case options => Left(s"Invalid, unknown or mismatched options or arguments : ${options}\nArgs:${args.toList}")
   }
