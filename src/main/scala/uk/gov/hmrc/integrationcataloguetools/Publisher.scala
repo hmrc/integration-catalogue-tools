@@ -14,6 +14,9 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import org.apache.http.client.methods.HttpPut
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 
 
 case class PublisherReference(value: String) extends AnyVal
@@ -53,16 +56,14 @@ object Publisher {
   }
 
   private def doPut(platform: Platform, publisherReference: PublisherReference, filename: String, url: String, oasContent: Array[Byte]) : Either[String, Unit] = {
-      import org.apache.http.client.methods.{HttpGet, HttpPost}
+      
       import org.apache.http.entity.ContentType
       import org.apache.http.entity.mime.MultipartEntityBuilder
       import org.apache.http.impl.client.HttpClients
-      import org.apache.http.util.EntityUtils
 
       val client = HttpClients.createDefault()
       try {
         var put = new HttpPut(url)
-
         put.addHeader("x-platform-type", platform.value)
         put.addHeader("x-specification-type", "OAS_V3")
         put.addHeader("x-publisher-reference", publisherReference.value)
@@ -70,28 +71,35 @@ object Publisher {
         val entity = MultipartEntityBuilder.create()
         entity.addBinaryBody("selectedFile", oasContent, ContentType.DEFAULT_TEXT, filename)
         put.setEntity(entity.build());
+        
+          Try(client.execute(put))
+            .map(response => {
+              val statusCode = response.getStatusLine().getStatusCode()
+              val contentStream = response.getEntity().getContent()
+              val content = scala.io.Source.fromInputStream(contentStream).mkString
 
-        val response = client.execute(put)
-
-        val statusCode = response.getStatusLine().getStatusCode()
-
-        val contentStream = response.getEntity().getContent()
-        val content = scala.io.Source.fromInputStream(contentStream).mkString
-
-        statusCode match {
-          case 200 => {
-            println(s"Published. Updated API. Response(${statusCode}): ${content}") 
-            Right(())
-          }
-          case 201 => {
-            println(s"Published. Created API. Response(${statusCode}): ${content}") 
-            Right(())
-          }
-          case otherStatusCode => {
-            val errorMessage = s"Failed to publish '$filename'. Response(${statusCode}): ${content}"
-            Left(errorMessage)
-          }
-        }
+              statusCode match {
+                case 200 => {
+                  println(s"Published. Updated API. Response(${statusCode}): ${content}") 
+                  Right(())
+                }
+                case 201 => {
+                  println(s"Published. Created API. Response(${statusCode}): ${content}") 
+                  Right(())
+                }
+                case otherStatusCode => {
+                  val errorMessage = s"Failed to publish '$filename'. Response(${statusCode}): ${content}"
+                  Left(errorMessage)
+                }
+              }
+            }) match { 
+              case Success(either) => either
+              case Failure(exception) => {
+                println("Error calling publish service:")
+                exception.printStackTrace()
+                Left(exception.getMessage())
+              }
+            }
       } finally {
         client.close()
       }
