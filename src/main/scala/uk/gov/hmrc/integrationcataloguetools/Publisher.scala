@@ -22,7 +22,7 @@ case class Platform(value: String) extends AnyVal
 object Publisher {
   import scala.concurrent.ExecutionContext.Implicits._
 
-  def publishDirectory(platform: Platform, directoryPath: String) : Either[String, Unit]= {
+  def publishDirectory(platform: Platform, directoryPath: String, publishUrl: String) : Either[String, Unit]= {
     
     var directory = new File(directoryPath)
     if (!directory.isDirectory()){
@@ -31,7 +31,7 @@ object Publisher {
       val results = 
         directory
           .listFiles()
-          .map(file => publishFile(platform, file.getPath() ) )
+          .map(file => publishFile(platform, file.getPath() , publishUrl) )
 
       val lefts = results.collect({ case Left(l) => l})
 
@@ -40,7 +40,7 @@ object Publisher {
     }
   }
 
-  def publishFile(platform: Platform, pathname: String) : Either[String, Unit] = {
+  def publishFile(platform: Platform, pathname: String, publishUrl: String) : Either[String, Unit] = {
 
     println(s"Publishing ${pathname}")
 
@@ -48,11 +48,8 @@ object Publisher {
     val filename = file.getName()
 
     val oasContentBytes = Files.readAllBytes(Paths.get(pathname))    
-    
-    // TODO : Make Paramater
-    val url = "http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish"
-    
-    doPut(platform,  publisherReference = PublisherReference(filename), filename,url, oasContentBytes);
+
+    doPut(platform,  publisherReference = PublisherReference(filename), filename, publishUrl, oasContentBytes);
   }
 
   private def doPut(platform: Platform, publisherReference: PublisherReference, filename: String, url: String, oasContent: Array[Byte]) : Either[String, Unit] = {

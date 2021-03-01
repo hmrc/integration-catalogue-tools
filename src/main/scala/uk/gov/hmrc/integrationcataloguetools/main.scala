@@ -10,8 +10,8 @@ object Main extends App {
     integration-catalogue-tools --version | -v
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <input CSV> <output directory>
-    integration-catalogue-tools --publish --platform <platform> --file <oas file>
-    integration-catalogue-tools --publish --platform <platform> --directory <directory>
+    integration-catalogue-tools --publish --platform <platform> --file <oas file> --url <publish url>
+    integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url>
 """)
   }
 
@@ -38,11 +38,11 @@ object Main extends App {
       Right()
     }
 
-    case "--publish" :: "--platform" :: platform :: "--file" :: oasFilepath :: Nil => {
-      Publisher.publishFile(Platform(platform), oasFilepath)
+    case "--publish" :: "--platform" :: platform :: "--file" :: oasFilepath :: "--url" :: publishUrl :: Nil => {
+      Publisher.publishFile(Platform(platform), oasFilepath, publishUrl)
     }
-    case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: Nil => {
-      Publisher.publishDirectory(Platform(platform), oasDirectory)
+    case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: Nil => {
+      Publisher.publishDirectory(Platform(platform), oasDirectory, publishUrl)
     }
     case options => Left(s"Invalid, unknown or mismatched options or arguments : ${options}\nArgs:${args.toList}")
   }
