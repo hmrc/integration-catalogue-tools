@@ -10,7 +10,7 @@ object Main extends App {
     integration-catalogue-tools --version | -v
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <input CSV> <output directory>
-    integration-catalogue-tools --publish --platform <platform> --file <oas file> --url <publish url>
+    integration-catalogue-tools --publish --platform <platform> --filename <oas file> --url <publish url>
     integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url>
 """)
   }
@@ -38,7 +38,7 @@ object Main extends App {
       Right()
     }
 
-    case "--publish" :: "--platform" :: platform :: "--file" :: oasFilepath :: "--url" :: publishUrl :: Nil => {
+    case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: Nil => {
       Publisher.publishFile(Platform(platform), oasFilepath, publishUrl)
     }
     case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: Nil => {

@@ -61,7 +61,9 @@ This assumes you've been given a pre-build `integration-catalogue-tools`. You ar
   Usage:
     integration-catalogue-tools --version | -v
     integration-catalogue-tools --help | -h
-    integration-catalogue-tools --csvToOas <inputCsvFile> <outputPath>
+    integration-catalogue-tools --csvToOas <input CSV> <output directory>
+    integration-catalogue-tools --publish --platform <platform> --filename <oas file> --url <publish url>
+    integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url>
 ```
 
 # Building the tool from source
@@ -84,6 +86,19 @@ To create a downloadable release:
 
 # Running the tool from source
 
+## Convert CSV to OAS files
 ```
 sbt 'run --csvToOas "<name-of.csv>" "<output-path>"'
+```
+
+## To publish
+
+A folder
+```
+run --publish --platform DES --filename output2/example-1.yaml --url http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish
+```
+
+A directory of OAS files
+```
+run --publish --platform DES --directory output2 --url http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish
 ```
