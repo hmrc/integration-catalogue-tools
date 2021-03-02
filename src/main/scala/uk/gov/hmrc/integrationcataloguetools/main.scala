@@ -2,6 +2,7 @@ package uk.gov.hmrc.integrationcataloguetools
 
 import java.io.FileReader
 
+import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 object Main extends App {
 
   def printUsage() = {
@@ -41,10 +42,12 @@ object Main extends App {
     }
 
     case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: Nil => {
-      Publisher.publishFile(Platform(platform), oasFilepath, publishUrl)
+      val publisher = new PublisherService(new PublisherConnector(publishUrl));
+      publisher.publishFile(Platform(platform), oasFilepath)
     }
     case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: Nil => {
-      Publisher.publishDirectory(Platform(platform), oasDirectory, publishUrl)
+      val publisher = new PublisherService(new PublisherConnector(publishUrl));
+      publisher.publishDirectory(Platform(platform), oasDirectory)
     }
     case options => Left(s"Invalid, unknown or mismatched options or arguments : ${options}\nArgs:${args.toList}")
   }
