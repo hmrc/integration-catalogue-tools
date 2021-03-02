@@ -16,4 +16,4 @@ libraryDependencies += "org.apache.httpcomponents" % "httpmime" % "4.3.1"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % Test
 
 enablePlugins(PackPlugin)
-packMain := Map("integration-catalogue-tools" -> "Main")
+packMain := Map("integration-catalogue-tools" -> "uk.gov.hmrc.integrationcataloguetools.Main")

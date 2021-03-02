@@ -27,6 +27,11 @@ object Publisher {
 
   def publishDirectory(platform: Platform, directoryPath: String, publishUrl: String) : Either[String, Unit]= {
     
+    def isOasFile(file:File) : Boolean = {
+      if (file.isDirectory()) return false
+      else file.getName().endsWith(".yaml") || file.getName().endsWith(".json")
+    }
+
     var directory = new File(directoryPath)
     if (!directory.isDirectory()){
       Left(s"$directory is not a directory")
@@ -34,9 +39,17 @@ object Publisher {
       val results = 
         directory
           .listFiles()
+          .filter(isOasFile)
           .map(file => publishFile(platform, file.getPath() , publishUrl) )
 
       val lefts = results.collect({ case Left(l) => l})
+      
+      val rights = results.collect({ case Right(l) => l})
+
+      println(s"Successfully published ${rights.length} ${platform.value} APIs")
+      if (lefts.nonEmpty){
+        println(s"Failed to publish ${lefts.length} APIs")
+      }
 
       if (lefts.isEmpty) Right(())
       else Left(lefts.mkString("\n"))
@@ -47,12 +60,12 @@ object Publisher {
 
     println(s"Publishing ${pathname}")
 
-    val file = new File(pathname);
+    val file = new File(pathname)
     val filename = file.getName()
 
-    val oasContentBytes = Files.readAllBytes(Paths.get(pathname))    
+    val oasContentBytes = Files.readAllBytes(Paths.get(pathname))
 
-    doPut(platform,  publisherReference = PublisherReference(filename), filename, publishUrl, oasContentBytes);
+    doPut(platform,  publisherReference = PublisherReference(filename), filename, publishUrl, oasContentBytes)
   }
 
   private def doPut(platform: Platform, publisherReference: PublisherReference, filename: String, url: String, oasContent: Array[Byte]) : Either[String, Unit] = {

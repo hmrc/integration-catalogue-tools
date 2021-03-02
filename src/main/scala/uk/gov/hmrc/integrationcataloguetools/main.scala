@@ -9,9 +9,11 @@ object Main extends App {
   Usage:
     integration-catalogue-tools --version | -v
     integration-catalogue-tools --help | -h
-    integration-catalogue-tools --csvToOas <input CSV> <output directory>
-    integration-catalogue-tools --publish --platform <platform> --filename <oas file> --url <publish url>
+    integration-catalogue-tools --csvToOas <inputCsv> <output directory>
+    integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url>
     integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url>
+      Arguments:
+        - directory : All files with .yaml or .json extension will be procesed
 """)
   }
 
