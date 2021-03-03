@@ -77,8 +77,8 @@ class PublisherService(publisherConnector: PublisherConnector) {
       "x-publisher-reference" -> publisherReference.value)
 
       val responseEither = publisherConnector.publish(headers, filename, oasContent);
-    
-      responseEither.map(response => {      
+
+      responseEither.flatMap(response => {      
         response.statusCode match {
           case 200 => {
             println(s"Published. Updated API. Response(${response.statusCode}): ${response.content}") 
