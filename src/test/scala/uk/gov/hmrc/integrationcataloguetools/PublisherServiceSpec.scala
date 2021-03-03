@@ -5,11 +5,36 @@ import org.scalatest.wordspec.AnyWordSpec
 import scala.io.Source
 import io.swagger.v3.oas.models.OpenAPI
 
-import scala.collection.JavaConverters._
+import uk.gov.hmrc.integrationcataloguetools.connectors._
 
-class PuslisherServiceSpec extends AnyWordSpec with Matchers {
+import scala.collection.JavaConverters._
+import org.mockito.Mock
+import org.mockito.MockitoSugar
+import org.mockito.ArgumentMatchersSugar
+import java.nio.charset.StandardCharsets
+
+class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar {
+
   "Publish file" in {
-    // TODO
+    val mockPublisherConnector = mock[PublisherConnector]
+    val service = new PublisherService(mockPublisherConnector)
+
+    when(mockPublisherConnector.publish( (*) , (*) ,(*) )).thenReturn(Right(Response(200, "")))
+
+    val filename = "example-oas-1.yaml"
+    val filepath = "src/test/resources/publishservicespec/" + filename
+    val result = service.publishFile(Platform("DES"), filepath)
+
+    result shouldBe Right()
+
+    val expectedHeaders = Map(
+        "x-platform-type" -> "DES",
+        "x-specification-type" -> "OAS_V3",
+        "x-publisher-reference" -> "example-oas-1.yaml"
+      )
+
+    val expectedOasContent = "OAS File Content\n".getBytes(StandardCharsets.US_ASCII);
+    verify(mockPublisherConnector).publish(expectedHeaders, filename, expectedOasContent)
   }
 
   "Publish directory of files" in {
