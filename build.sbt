@@ -14,6 +14,7 @@ libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.3.1"
 libraryDependencies += "org.apache.httpcomponents" % "httpmime" % "4.3.1"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % Test
+libraryDependencies += "org.mockito" %% "mockito-scala-scalatest" % "1.16.29" % Test
 
 enablePlugins(PackPlugin)
 packMain := Map("integration-catalogue-tools" -> "uk.gov.hmrc.integrationcataloguetools.Main")
