@@ -80,12 +80,8 @@ class PublisherService(publisherConnector: PublisherConnector) {
 
       responseEither.flatMap(response => {      
         response.statusCode match {
-          case 200 => {
-            println(s"Published. Updated API. Response(${response.statusCode}): ${response.content}") 
-            Right(())
-          }
-          case 201 => {
-            println(s"Published. Created API. Response(${response.statusCode}): ${response.content}") 
+          case 200 | 201  => {
+            println(s"Published. ${getApiPublishPhrase(response.statusCode)} API. Response(${response.statusCode}): ${response.content}") 
             Right(())
           }
           case otherStatusCode => {
@@ -94,6 +90,12 @@ class PublisherService(publisherConnector: PublisherConnector) {
         }
       }
     })
+  }
+
+  def getApiPublishPhrase(statusCode: Int) : String = statusCode match {
+      case 200 => "Updated"
+      case 201 => "Created"
+      case _ => "???"
   }
 }
 

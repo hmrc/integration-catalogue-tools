@@ -16,15 +16,16 @@ import java.nio.charset.StandardCharsets
 class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar {
 
   "Publish file" should {
+    val filename1 = "example-oas-1.yaml"
+    val filepath1 = "src/test/resources/publishservicespec/" + filename1
+
     "be sucessfull if publish returns a 200" in {
       val mockPublisherConnector = mock[PublisherConnector]
       val service = new PublisherService(mockPublisherConnector)
 
       when(mockPublisherConnector.publish( (*) , (*) ,(*) )).thenReturn(Right(Response(200, "")))
 
-      val filename = "example-oas-1.yaml"
-      val filepath = "src/test/resources/publishservicespec/" + filename
-      val result = service.publishFile(Platform("DES"), filepath)
+      val result = service.publishFile(Platform("DES"), filepath1)
 
       result shouldBe Right()
 
@@ -35,7 +36,18 @@ class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar w
         )
 
       val expectedOasContent = "OAS File Content\n".getBytes(StandardCharsets.US_ASCII);
-      verify(mockPublisherConnector).publish(expectedHeaders, filename, expectedOasContent)
+      verify(mockPublisherConnector).publish(expectedHeaders, filename1, expectedOasContent)
+    }
+
+    "be sucessfull if publish returns a 201" in {
+      val mockPublisherConnector = mock[PublisherConnector]
+      val service = new PublisherService(mockPublisherConnector)
+
+      when(mockPublisherConnector.publish( (*) , (*) ,(*) )).thenReturn(Right(Response(201, "")))
+
+      val result = service.publishFile(Platform("DES"), filepath1)
+
+      result shouldBe Right()
     }
   
     "be unsucessfull if publish returns a non 2xx" in {
@@ -46,9 +58,7 @@ class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar w
       when(mockPublisherConnector.publish( (*) , (*) ,(*) ))
         .thenReturn(Right(Response(400, publishErrorBody)))
 
-      val filename = "example-oas-1.yaml"
-      val filepath = "src/test/resources/publishservicespec/" + filename
-      val result = service.publishFile(Platform("DES"), filepath)
+      val result = service.publishFile(Platform("DES"), filepath1)
 
       val expectedErrorMessage = s"Failed to publish 'example-oas-1.yaml'. Response(400): $publishErrorBody"
 
