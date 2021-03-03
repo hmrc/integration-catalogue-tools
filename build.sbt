@@ -7,6 +7,7 @@ lazy val root = (project in file("."))
     )),
     name := "integration-catalogue-tools"
   )
+  .settings(scoverageSettings)
 
 libraryDependencies += "io.swagger.parser.v3" % "swagger-parser-v3" % "2.0.23"
 libraryDependencies += "org.apache.commons" % "commons-csv" % "1.8"
@@ -18,3 +19,16 @@ libraryDependencies += "org.mockito" %% "mockito-scala-scalatest" % "1.16.29" % 
 
 enablePlugins(PackPlugin)
 packMain := Map("integration-catalogue-tools" -> "uk.gov.hmrc.integrationcataloguetools.Main")
+
+
+lazy val scoverageSettings = {
+    import scoverage.ScoverageKeys
+    Seq(
+      // Semicolon-separated list of regexs matching classes to exclude
+      ScoverageKeys.coverageExcludedPackages := ";.*\\.domain\\.models\\..*;uk\\.gov\\.hmrc\\.BuildInfo;.*\\.Routes;.*\\.RoutesPrefix;;Module;GraphiteStartUp;.*\\.Reverse[^.]*",
+      ScoverageKeys.coverageMinimum := 40,
+      ScoverageKeys.coverageFailOnMinimum := true,
+      ScoverageKeys.coverageHighlighting := true,
+      parallelExecution in Test := false
+  )
+}
