@@ -11,6 +11,7 @@ object Main extends App {
     integration-catalogue-tools --version | -v
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <inputCsv> <output directory>
+    integration-catalogue-tools --publishFileTransfer --platform <platform> --filename <filetransferCsv> --url <publish url>
     integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url>
     integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url>
       Arguments:
@@ -39,6 +40,10 @@ object Main extends App {
       val rowsProcessed = ProcessCsvFile.process(inputCsvFile, outputPath)
       println(s"Exported $rowsProcessed OAS files to:\n${outputPath}")
       Right()
+    }
+    case "--publishFileTransfer":: "--platform" :: platform :: "--filename" :: fileTransferCsv :: "--url" :: publishUrl :: Nil => {
+      val publisher = new PublisherService(new PublisherConnector(publishUrl));
+      publisher.publishFileTranserCsv(Platform(platform), fileTransferCsv)
     }
 
     case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: Nil => {
