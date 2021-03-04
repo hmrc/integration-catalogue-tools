@@ -1,3 +1,5 @@
+package uk.gov.hmrc.integrationcataloguetools
+
 import io.swagger.v3.oas.models.info.{Contact, Info}
 import io.swagger.v3.oas.models.media.{Content, MediaType}
 import io.swagger.v3.oas.models.parameters.RequestBody
@@ -24,12 +26,8 @@ case class BasicApi(publisherReference: PublisherReference,
   method: String,
   endpoint: String)
 
-case class PublisherReference(value: String) extends AnyVal {
-  override def toString() = value.toString()
-}
 
-object GenerateOpenApi {
-
+  object GenerateOpenApi {
   def fromCsvToOasContent(reader : Reader) : Seq[(PublisherReference, String)] = {
     fromCsvToOpenAPI(reader).map{case (publisherReference, openApi) => {
       (publisherReference, openApiToContent(openApi))

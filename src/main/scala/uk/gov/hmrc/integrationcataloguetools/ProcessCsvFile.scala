@@ -1,3 +1,5 @@
+package uk.gov.hmrc.integrationcataloguetools
+
 import io.swagger.v3.oas.models.info.{Contact, Info}
 import io.swagger.v3.oas.models.media.{Content, MediaType}
 import io.swagger.v3.oas.models.parameters.RequestBody
