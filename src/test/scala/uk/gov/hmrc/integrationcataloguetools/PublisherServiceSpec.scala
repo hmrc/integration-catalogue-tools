@@ -24,7 +24,7 @@ class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar w
     val service = new PublisherService(mockPublisherConnector)
   }
 
-  "Publish file" should {
+  "Publish single file" should {
     val filename1 = "example-oas-1.yaml"
     val filepath1 = testResourcesPath + filename1
 
@@ -66,33 +66,55 @@ class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar w
     }
   }
 
-  "Publish directory of files" in new Setup {
+  "Publish directory of files" should {
     val filename2 = "example-oas-2.yaml"
     val filename3 = "example-oas-3.json"
 
-    when(mockPublisherConnector.publish( (*) , (*) ,(*) ))
-      .thenReturn(Right(Response(200, "")))
+    val directoryPath = testResourcesPath + "directory-of-files-1"
 
-    val result = service.publishDirectory(desPlatform, testResourcesPath + "directory-of-files-1")
+    "be sucessfull if publish returns a 2xx" in new Setup {
+      when(mockPublisherConnector.publish( (*) , (*) ,(*) ))
+        .thenReturn(Right(Response(200, "")))
 
-    result shouldBe Right()
+      val result = service.publishDirectory(desPlatform, directoryPath)
 
-    val expectedHeaders1 = Map(
-        "x-platform-type" -> desPlatform.value,
-        "x-specification-type" -> specificaitonType,
-        "x-publisher-reference" -> filename2
-    )
+      result shouldBe Right()
 
-    val expectedHeaders2 = Map(
-        "x-platform-type" -> desPlatform.value,
-        "x-specification-type" -> specificaitonType,
-        "x-publisher-reference" -> filename3
-    )
+      val expectedHeaders1 = Map(
+          "x-platform-type" -> desPlatform.value,
+          "x-specification-type" -> specificaitonType,
+          "x-publisher-reference" -> filename2
+      )
 
-    val expectedOasContent1 = "OAS File Content 2\n".getBytes(StandardCharsets.US_ASCII);
-    val expectedOasContent2 = "OAS File Content 3\n".getBytes(StandardCharsets.US_ASCII);
-    
-    verify(mockPublisherConnector).publish(expectedHeaders1, filename2, expectedOasContent1)
-    verify(mockPublisherConnector).publish(expectedHeaders2, filename3, expectedOasContent2)
+      val expectedHeaders2 = Map(
+          "x-platform-type" -> desPlatform.value,
+          "x-specification-type" -> specificaitonType,
+          "x-publisher-reference" -> filename3
+      )
+
+      val expectedOasContent1 = "OAS File Content 2\n".getBytes(StandardCharsets.US_ASCII);
+      val expectedOasContent2 = "OAS File Content 3\n".getBytes(StandardCharsets.US_ASCII);
+
+      verify(mockPublisherConnector).publish(expectedHeaders1, filename2, expectedOasContent1)
+      verify(mockPublisherConnector).publish(expectedHeaders2, filename3, expectedOasContent2)
+    }
+
+    "be unsucessfull if publish returns a non 2xx" in new Setup {
+      when(mockPublisherConnector.publish( (*) , (*) ,(*) ))
+        .thenReturn(Right(Response(200, "")))
+        .andThen(Right(Response(400, "Mock respose for invalid OAS")))
+
+      val result = service.publishDirectory(desPlatform, directoryPath)
+
+      result shouldBe Left("Failed to publish 'example-oas-3.json'. Response(400): Mock respose for invalid OAS")
+    }
+
+    "be unsucessfull if passed a file instead of a directory" in new Setup {
+      
+      val invalidDirectoryPath = directoryPath + filename2
+      val result = service.publishDirectory(desPlatform, invalidDirectoryPath)
+
+      result shouldBe Left(s"`$invalidDirectoryPath` is not a directory")
+    }
   }
 }

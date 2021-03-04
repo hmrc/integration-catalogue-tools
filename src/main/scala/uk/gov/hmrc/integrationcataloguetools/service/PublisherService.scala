@@ -35,11 +35,12 @@ class PublisherService(publisherConnector: PublisherConnector) {
 
     var directory = new File(directoryPath)
     if (!directory.isDirectory()){
-      Left(s"$directory is not a directory")
+      Left(s"`$directory` is not a directory")
     } else {
       val results = 
         directory
           .listFiles()
+          .sortBy(_.getName())
           .filter(isOasFile)
           .map(file => publishFile(platform, file.getPath()) )
 
