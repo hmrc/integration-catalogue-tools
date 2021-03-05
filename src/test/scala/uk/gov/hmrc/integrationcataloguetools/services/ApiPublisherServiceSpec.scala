@@ -12,8 +12,9 @@ import org.mockito.Mock
 import org.mockito.MockitoSugar
 import org.mockito.ArgumentMatchersSugar
 import java.nio.charset.StandardCharsets
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
-class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar {
+class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar {
 
   val testResourcesPath = "src/test/resources/publishservicespec/"
   val desPlatform = Platform("DES") 
@@ -21,7 +22,7 @@ class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar w
   
   trait Setup {
     val mockPublisherConnector = mock[PublisherConnector]
-    val service = new PublisherService(mockPublisherConnector)
+    val service = new ApiPublisherService(mockPublisherConnector)
   }
 
   "Publish single file" should {
@@ -29,7 +30,7 @@ class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar w
     val filepath1 = testResourcesPath + filename1
 
     "be sucessfull if publish returns a 200" in new Setup {
-      when(mockPublisherConnector.publish( (*) , (*) ,(*) )).thenReturn(Right(Response(200, "")))
+      when(mockPublisherConnector.publishApi( (*) , (*) ,(*) )).thenReturn(Right(Response(200, "")))
 
       val result = service.publishFile(desPlatform, filepath1)
 
@@ -42,11 +43,11 @@ class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar w
         )
 
       val expectedOasContent = "OAS File Content\n".getBytes(StandardCharsets.US_ASCII);
-      verify(mockPublisherConnector).publish(expectedHeaders, filename1, expectedOasContent)
+      verify(mockPublisherConnector).publishApi(expectedHeaders, filename1, expectedOasContent)
     }
 
     "be sucessfull if publish returns a 201" in new Setup {
-      when(mockPublisherConnector.publish( (*) , (*) ,(*) )).thenReturn(Right(Response(201, "")))
+      when(mockPublisherConnector.publishApi( (*) , (*) ,(*) )).thenReturn(Right(Response(201, "")))
 
       val result = service.publishFile(desPlatform, filepath1)
 
@@ -55,7 +56,7 @@ class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar w
   
     "be unsucessfull if publish returns a non 2xx" in new Setup {
       val publishErrorBody = "Failed to publish - 400"
-      when(mockPublisherConnector.publish( (*) , (*) ,(*) ))
+      when(mockPublisherConnector.publishApi( (*) , (*) ,(*) ))
         .thenReturn(Right(Response(400, publishErrorBody)))
 
       val result = service.publishFile(desPlatform, filepath1)
@@ -73,7 +74,7 @@ class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar w
     val directoryPath = testResourcesPath + "directory-of-files-1"
 
     "be sucessfull if publish returns a 2xx" in new Setup {
-      when(mockPublisherConnector.publish( (*) , (*) ,(*) ))
+      when(mockPublisherConnector.publishApi( (*) , (*) ,(*) ))
         .thenReturn(Right(Response(200, "")))
 
       val result = service.publishDirectory(desPlatform, directoryPath)
@@ -95,12 +96,12 @@ class PuslisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar w
       val expectedOasContent1 = "OAS File Content 2\n".getBytes(StandardCharsets.US_ASCII);
       val expectedOasContent2 = "OAS File Content 3\n".getBytes(StandardCharsets.US_ASCII);
 
-      verify(mockPublisherConnector).publish(expectedHeaders1, filename2, expectedOasContent1)
-      verify(mockPublisherConnector).publish(expectedHeaders2, filename3, expectedOasContent2)
+      verify(mockPublisherConnector).publishApi(expectedHeaders1, filename2, expectedOasContent1)
+      verify(mockPublisherConnector).publishApi(expectedHeaders2, filename3, expectedOasContent2)
     }
 
     "be unsucessfull if publish returns a non 2xx" in new Setup {
-      when(mockPublisherConnector.publish( (*) , (*) ,(*) ))
+      when(mockPublisherConnector.publishApi( (*) , (*) ,(*) ))
         .thenReturn(Right(Response(200, "")))
         .andThen(Right(Response(400, "Mock respose for invalid OAS")))
 

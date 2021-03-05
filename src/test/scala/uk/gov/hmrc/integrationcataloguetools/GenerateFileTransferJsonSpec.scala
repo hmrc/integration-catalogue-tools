@@ -10,6 +10,7 @@ import net.liftweb.json.DefaultFormats
 import net.liftweb.json._
 import net.liftweb.json.Serialization.write
 import net.liftweb.json.DefaultFormats
+import uk.gov.hmrc.integrationcataloguetools.models.FileTransferPublishRequest
 
 class GenerateFileTransferJsonSpec extends AnyWordSpec with Matchers {
   "Parse CSV into File Transfer Json list" in {
@@ -21,10 +22,10 @@ class GenerateFileTransferJsonSpec extends AnyWordSpec with Matchers {
 
     val (publisherReference, fileTransfer) = fileTransfers.head
 
-    fileTransfer.contactInfo.name shouldBe "EIS Front Door"
-    fileTransfer.contactInfo.emailAddress shouldBe "services.enterpriseintegration@hmrc.gov.uk"
+    fileTransfer.contact.name shouldBe "EIS Front Door"
+    fileTransfer.contact.emailAddress shouldBe "services.enterpriseintegration@hmrc.gov.uk"
     fileTransfer.description shouldBe "A file transfer from BMC to Service Now"
-    fileTransfer.platform shouldBe "CORE_IF_FILE_TRANSFER_FLOW"
+    fileTransfer.platformType shouldBe "CORE_IF_FILE_TRANSFER_FLOW"
     fileTransfer.title shouldBe "BMC-ServiceNow-NetworksDataDaily-notify"
     fileTransfer.publisherReference.value shouldBe "BMC-ServiceNow-NetworksDataDaily-notify"
     fileTransfer.fileTransferPattern shouldBe "Corporate to corporate"

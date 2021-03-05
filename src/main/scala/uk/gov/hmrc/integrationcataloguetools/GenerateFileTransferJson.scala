@@ -39,16 +39,15 @@ object GenerateFileTransferJson {
       // "2020-11-04T20:27:05.000Z"
 
       // val dateValue: DateTime = DateTime.parse("04/11/2020 20:27:05", DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss"));
-
-      val date = ZonedDateTime.now()
-      val formattedString2: String = date.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-      println(s"****** $formattedString2")
+      //TODO: do we validate the date format / validity of the date string here?
+      //val date = ZonedDateTime.now()
+      //val formattedString2: String = date.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
       // PublisherReference, title, description, platform, contactName, ContactEmail, sourceSystem, targetSystem, fileTransferPattern
       FileTransferPublishRequest(
         publisherReference = PublisherReference(parseString(record.get("PublisherReference"))),
         title = parseString(record.get("Title")),
         description = parseString(record.get("Description")),
-        lastUpdated = formattedString2,
+        lastUpdated =  parseString(record.get("LastUpdated")),
         platformType = parseString(record.get("Platform")),
         contact = ContactInformation(parseString(record.get("ContactName")), parseString(record.get("ContactEmail"))),
         sourceSystem = List(parseString(record.get("Source"))),

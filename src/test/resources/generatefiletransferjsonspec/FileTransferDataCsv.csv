@@ -1,2 +1,2 @@
-PublisherReference,Title,Description,Platform,ContactName,ContactEmail,Source,Target,Pattern
-BMC-ServiceNow-NetworksDataDaily-notify,BMC-ServiceNow-NetworksDataDaily-notify,A file transfer from BMC to Service Now,CORE_IF_FILE_TRANSFER_FLOW,EIS Front Door,services.enterpriseintegration@hmrc.gov.uk,BMC,ServiceNow,Corporate to corporate
+PublisherReference,Title,Description,Platform,ContactName,ContactEmail,Source,Target,Pattern,LastUpdated
+BMC-ServiceNow-NetworksDataDaily-notify,BMC-ServiceNow-NetworksDataDaily-notify,A file transfer from BMC to Service Now,CORE_IF_FILE_TRANSFER_FLOW,EIS Front Door,services.enterpriseintegration@hmrc.gov.uk,BMC,ServiceNow,Corporate to corporate,2020-11-04T20:27:05.000Z
