@@ -14,25 +14,15 @@ import java.io.FileReader
 
 import io.swagger.v3.core.util.Yaml
 
+import uk.gov.hmrc.integrationcataloguetools.models._
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import java.io.Reader
-import java.time.LocalDateTime
-
-case class ContactInformation(name: String, emailAddress: String)
-
-case class FileTransferPublishRequest(
-    publisherReference: PublisherReference,
-    fileTransferSpecificationVersion: String = "0.1",
-    title: String,
-    description: String,
-    platform: String,
-    lastUpdated: LocalDateTime = LocalDateTime.now(),
-    contactInfo: ContactInformation,
-    sourceSystem: List[String], // One or many
-    targetSystem: List[String],
-    fileTransferPattern: String)
+import java.time.format.DateTimeFormatter
+import java.time.ZonedDateTime
+import java.time.ZoneOffset
 
 object GenerateFileTransferJson {
   
@@ -45,13 +35,22 @@ object GenerateFileTransferJson {
       def parseString(s: String): String = {
         Option(s).getOrElse("").trim()
       }
+
+      // "2020-11-04T20:27:05.000Z"
+
+      // val dateValue: DateTime = DateTime.parse("04/11/2020 20:27:05", DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss"));
+
+      val date = ZonedDateTime.now()
+      val formattedString2: String = date.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+      println(s"****** $formattedString2")
       // PublisherReference, title, description, platform, contactName, ContactEmail, sourceSystem, targetSystem, fileTransferPattern
       FileTransferPublishRequest(
         publisherReference = PublisherReference(parseString(record.get("PublisherReference"))),
         title = parseString(record.get("Title")),
         description = parseString(record.get("Description")),
-        platform = parseString(record.get("Platform")),
-        contactInfo = ContactInformation(parseString(record.get("ContactName")), parseString(record.get("ContactEmail"))),
+        lastUpdated = formattedString2,
+        platformType = parseString(record.get("Platform")),
+        contact = ContactInformation(parseString(record.get("ContactName")), parseString(record.get("ContactEmail"))),
         sourceSystem = List(parseString(record.get("Source"))),
         targetSystem = List(parseString(record.get("Target"))),
         fileTransferPattern = parseString(record.get("Pattern"))

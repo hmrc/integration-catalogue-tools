@@ -19,13 +19,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import java.io.Reader
 
-case class BasicApi(publisherReference: PublisherReference,
-  title: String,
-  description: String,
-  version: String,
-  method: String,
-  endpoint: String)
-
+import uk.gov.hmrc.integrationcataloguetools.models._
 
   object GenerateOpenApi {
   def fromCsvToOasContent(reader : Reader) : Seq[(PublisherReference, String)] = {

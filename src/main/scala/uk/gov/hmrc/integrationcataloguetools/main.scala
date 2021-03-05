@@ -3,6 +3,8 @@ package uk.gov.hmrc.integrationcataloguetools
 import java.io.FileReader
 
 import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
+
+import uk.gov.hmrc.integrationcataloguetools.models._
 object Main extends App {
 
   def printUsage() = {
@@ -48,23 +50,19 @@ object Main extends App {
       println(s"Exported $rowsProcessed FT Json files to:\n${outputPath}")
       Right()
     }
-    // case "--publishFileTransfer":: "--platform" :: platform :: "--filename" :: fileTransferCsv :: "--url" :: publishUrl :: Nil => {
-    //   val publisher = new PublisherService(new PublisherConnector(publishUrl));
-    //   publisher.publishFileTranserCsv(Platform(platform), fileTransferCsv)
-    // }
 
     case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: Nil => {
-      val publisher = new PublisherService(new PublisherConnector(publishUrl));
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl));
       publisher.publishFile(Platform(platform), oasFilepath)
     }
     case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: Nil => {
-      val publisher = new PublisherService(new PublisherConnector(publishUrl));
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl));
       publisher.publishDirectory(Platform(platform), oasDirectory)
     }
 
-    case "--publishFileTransfers" :: "--platform" :: platform :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: Nil => {
-      val publisher = new PublisherService(new PublisherConnector(publishUrl));
-      publisher.publishDirectory(Platform(platform), ftDirectory)
+    case "--publishFileTransfers" :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: Nil => {
+      val publisher = new FileTransferPublisherService(new PublisherConnector(publishUrl));
+      publisher.publishDirectory(ftDirectory)
     }
     case options => Left(s"Invalid, unknown or mismatched options or arguments : ${options}\nArgs:${args.toList}")
   }
