@@ -20,6 +20,10 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.Reader
 import java.time.LocalDateTime
 
+import net.liftweb.json._
+import net.liftweb.json.Serialization.write
+import net.liftweb.json.DefaultFormats
+
 case class ContactInformation(name: String, emailAddress: String)
 
 case class FileTransferPublishRequest(
@@ -34,14 +38,9 @@ case class FileTransferPublishRequest(
     targetSystem: List[String],
     fileTransferPattern: String)
 
-object Headers extends Enumeration {
-  type Headers = Value
-  val PublisherReference, Title, Description, Platform, ContactName, ContactEmail, Source, Target, Pattern = Value
-}
-
-object GenerateFileTransferPublishRequest {
-
-  def fromCsvToFileTranferJson(reader: Reader): Seq[(PublisherReference, FileTransferPublishRequest)] = {
+object GenerateFileTransferJson {
+  
+  def fromCsvToFileTranferJson(reader: Reader): Seq[(PublisherReference, String)] = {
 
     def createFileTransferPublishRequest(record: CSVRecord): FileTransferPublishRequest = {
        val expectedValues = 9
@@ -52,22 +51,25 @@ object GenerateFileTransferPublishRequest {
       }
       // PublisherReference, title, description, platform, contactName, ContactEmail, sourceSystem, targetSystem, fileTransferPattern
       FileTransferPublishRequest(
-        publisherReference = PublisherReference(parseString(record.get(Headers.PublisherReference.Value))),
-        title = parseString(record.get(Headers.Title)),
-        description = parseString(record.get(Headers.Description)),
-        platform = parseString(record.get(Headers.Platform)),
-        contactInfo = ContactInformation(parseString(record.get(Headers.ContactName)), parseString(record.get(Headers.ContactEmail))),
-        sourceSystem = List(parseString(record.get(Headers.Source))),
-        targetSystem = List(parseString(record.get(Headers.Target))),
-        fileTransferPattern = parseString(record.get(Headers.Pattern))
+        publisherReference = PublisherReference(parseString(record.get("PublisherReference"))),
+        title = parseString(record.get("Title")),
+        description = parseString(record.get("Description")),
+        platform = parseString(record.get("Platform")),
+        contactInfo = ContactInformation(parseString(record.get("ContactName")), parseString(record.get("ContactEmail"))),
+        sourceSystem = List(parseString(record.get("Source"))),
+        targetSystem = List(parseString(record.get("Target"))),
+        fileTransferPattern = parseString(record.get("Pattern"))
       )
     }
 
+    implicit val formats = DefaultFormats
+    
     org.apache.commons.csv.CSVFormat.EXCEL
-      .withHeaders(Headers.ValueSet)
+      // .withHeader("PublisherReference", "Title", "Description", "Platform", "ContactName", "ContactEmail", "Source", "Target", "Pattern")
+      .withFirstRecordAsHeader()
       .parse(reader).getRecords().asScala.toSeq
       .map(createFileTransferPublishRequest)
-      .map(x=> (x.publisherReference, x))
+      .map(x=> (x.publisherReference, write(x)))
 
   }
 }
