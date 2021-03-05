@@ -20,10 +20,6 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.Reader
 import java.time.LocalDateTime
 
-import net.liftweb.json._
-import net.liftweb.json.Serialization.write
-import net.liftweb.json.DefaultFormats
-
 case class ContactInformation(name: String, emailAddress: String)
 
 case class FileTransferPublishRequest(
@@ -40,7 +36,7 @@ case class FileTransferPublishRequest(
 
 object GenerateFileTransferJson {
   
-  def fromCsvToFileTranferJson(reader: Reader): Seq[(PublisherReference, String)] = {
+  def fromCsvToFileTranferJson(reader: Reader): Seq[(PublisherReference, FileTransferPublishRequest)] = {
 
     def createFileTransferPublishRequest(record: CSVRecord): FileTransferPublishRequest = {
        val expectedValues = 9
@@ -62,14 +58,14 @@ object GenerateFileTransferJson {
       )
     }
 
-    implicit val formats = DefaultFormats
+
     
     org.apache.commons.csv.CSVFormat.EXCEL
       // .withHeader("PublisherReference", "Title", "Description", "Platform", "ContactName", "ContactEmail", "Source", "Target", "Pattern")
       .withFirstRecordAsHeader()
       .parse(reader).getRecords().asScala.toSeq
       .map(createFileTransferPublishRequest)
-      .map(x=> (x.publisherReference, write(x)))
+      .map(x=> (x.publisherReference, x))
 
   }
 }

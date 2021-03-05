@@ -18,6 +18,11 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import java.io.Reader
+import net.liftweb.json.DefaultFormats
+
+import net.liftweb.json._
+import net.liftweb.json.Serialization.write
+import net.liftweb.json.DefaultFormats
 
 object ProcessCsvFile {
   private def writeToFile(filename: String, content: String): Unit = {
@@ -47,12 +52,15 @@ object ProcessCsvFile {
 
     def processFTCsv(inputFilename: String, outputFolder: String) : Int = {
     val in = new FileReader(inputFilename);
+
+  implicit val formats = DefaultFormats
     try{
+
       GenerateFileTransferJson
         .fromCsvToFileTranferJson(in)
         .map { case (publisherReference, fileTransferJson) => {
           val filename = s"$outputFolder/${publisherReference.value}.json"
-          writeToFile(filename, fileTransferJson)
+          writeToFile(filename, write(fileTransferJson))
         }}.length
       } finally {
         in.close()
