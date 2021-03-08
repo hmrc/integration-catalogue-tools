@@ -28,3 +28,4 @@ project/metals.sbt
 /input
 /output
 /.bsp
+.DS_Store

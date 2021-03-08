@@ -5,6 +5,7 @@ import java.io.FileReader
 import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 
 import uk.gov.hmrc.integrationcataloguetools.models._
+import org.apache.http.impl.client.HttpClients
 object Main extends App {
 
   def printUsage() = {
@@ -28,7 +29,7 @@ object Main extends App {
 
     println(s"integration-catalogue-tools version '${version}'")
   }
-  
+  val client = HttpClients.createDefault()
   val result : Either[String, Unit] = args.toList match {
     case Nil | "--help" :: Nil | "-h" :: Nil => {
       printUsage()
@@ -52,16 +53,16 @@ object Main extends App {
     }
 
     case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: Nil => {
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl));
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client));
       publisher.publishFile(Platform(platform), oasFilepath)
     }
     case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: Nil => {
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl));
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client));
       publisher.publishDirectory(Platform(platform), oasDirectory)
     }
 
     case "--publishFileTransfers" :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: Nil => {
-      val publisher = new FileTransferPublisherService(new PublisherConnector(publishUrl));
+      val publisher = new FileTransferPublisherService(new PublisherConnector(publishUrl, client));
       publisher.publishDirectory(ftDirectory)
     }
     case options => Left(s"Invalid, unknown or mismatched options or arguments : ${options}\nArgs:${args.toList}")
