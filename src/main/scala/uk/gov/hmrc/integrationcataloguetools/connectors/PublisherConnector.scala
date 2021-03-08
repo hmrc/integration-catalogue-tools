@@ -19,7 +19,7 @@ class PublisherConnector(url: String, client: CloseableHttpClient) {
     import org.apache.http.entity.mime.MultipartEntityBuilder
     import org.apache.http.Header
 
-    try {
+   
       var put = new HttpPut(url)
       headers.foreach(header => put.addHeader(header._1, header._2))
 
@@ -28,23 +28,19 @@ class PublisherConnector(url: String, client: CloseableHttpClient) {
       put.setEntity(entity.build());
 
       callEndpoint(put)
-    } finally {
-      client.close()
-    }
+    
   }
 
   def publishFileTransfer(content: String) = {
 
-    try {
+  
       var put = new HttpPut(url)
 
       val entity: StringEntity = new StringEntity(content, ContentType.create("application/json", "UTF-8"));
       put.setEntity(entity);
 
       callEndpoint(put)
-    } finally {
-      client.close()
-    }
+
   }
 
   private def callEndpoint(put: HttpPut) = {
