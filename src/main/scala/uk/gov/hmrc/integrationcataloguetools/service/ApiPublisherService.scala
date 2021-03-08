@@ -18,12 +18,10 @@ import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 
+import uk.gov.hmrc.integrationcataloguetools.models._
 import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 
-case class PublisherReference(value: String) extends AnyVal
-case class Platform(value: String) extends AnyVal
-
-class PublisherService(publisherConnector: PublisherConnector) {
+class ApiPublisherService(publisherConnector: PublisherConnector) {
   import scala.concurrent.ExecutionContext.Implicits._
 
   def publishDirectory(platform: Platform, directoryPath: String) : Either[String, Unit]= {
@@ -77,7 +75,7 @@ class PublisherService(publisherConnector: PublisherConnector) {
       "x-specification-type" -> "OAS_V3",
       "x-publisher-reference" -> publisherReference.value)
 
-      val responseEither = publisherConnector.publish(headers, filename, oasContent);
+      val responseEither = publisherConnector.publishApi(headers, filename, oasContent);
 
       responseEither.flatMap(response => {      
         response.statusCode match {

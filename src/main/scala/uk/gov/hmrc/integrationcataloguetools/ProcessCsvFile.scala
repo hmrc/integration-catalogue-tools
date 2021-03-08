@@ -4,7 +4,7 @@ import io.swagger.v3.oas.models.info.{Contact, Info}
 import io.swagger.v3.oas.models.media.{Content, MediaType}
 import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
-import io.swagger.v3.oas.models.responses.{ApiResponses, ApiResponse}
+import io.swagger.v3.oas.models.responses.{ApiResponse, ApiResponses}
 
 import com.fasterxml.jackson.databind.ObjectMapper
 
@@ -18,8 +18,14 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import java.io.Reader
+import net.liftweb.json.DefaultFormats
+
+import net.liftweb.json._
+import net.liftweb.json.Serialization.write
+import net.liftweb.json.DefaultFormats
 
 object ProcessCsvFile {
+
   private def writeToFile(filename: String, content: String): Unit = {
     import java.io.File
     import java.io.BufferedWriter
@@ -31,17 +37,38 @@ object ProcessCsvFile {
     bw.close()
   }
 
-  def process(inputFilename: String, outputFolder: String) : Int = {
+  def processApiCsv(inputFilename: String, outputFolder: String): Int = {
     val in = new FileReader(inputFilename);
-    try{
+    try {
       GenerateOpenApi
         .fromCsvToOasContent(in)
-        .map { case (publisherReference, oasContent) => {
-          val filename = s"$outputFolder/${publisherReference.value}.yaml"
-          writeToFile(filename, oasContent)
-        }}.length
-      } finally {
-        in.close()
-      }      
+        .map {
+          case (publisherReference, oasContent) => {
+            val filename = s"$outputFolder/${publisherReference.value}.yaml"
+            writeToFile(filename, oasContent)
+          }
+        }.length
+    } finally {
+      in.close()
+    }
+  }
+
+  def processFTCsv(inputFilename: String, outputFolder: String): Int = {
+    val in = new FileReader(inputFilename);
+
+    implicit val formats = DefaultFormats
+    try {
+
+      GenerateFileTransferJson
+        .fromCsvToFileTranferJson(in)
+        .map {
+          case (publisherReference, fileTransferJson) => {
+            val filename = s"$outputFolder/${publisherReference.value}.json"
+            writeToFile(filename, write(fileTransferJson))
+          }
+        }.length
+    } finally {
+      in.close()
+    }
   }
 }
