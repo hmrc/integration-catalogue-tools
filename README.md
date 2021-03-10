@@ -91,7 +91,7 @@ To create a downloadable release:
 sbt 'run --csvToOas "<name-of.csv>" "<output-path>"'
 ```
 
-## To publish
+## To publish API(s)
 
 A folder
 ```
@@ -101,4 +101,9 @@ run --publish --platform DES --filename output2/example-1.yaml --url http://loca
 A directory of OAS files
 ```
 run --publish --platform DES --directory output2 --url http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish
+```
+
+## To publish File Transfers
+```
+run --publishFileTransfers --directory myDirectory--url <ft-publish-url>
 ```

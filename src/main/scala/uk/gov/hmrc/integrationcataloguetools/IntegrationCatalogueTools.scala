@@ -13,7 +13,7 @@ class IntegrationCatalogueTools {
             integration-catalogue-tools --help | -h
             integration-catalogue-tools --csvToOas <inputCsv> <output directory>
             integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-            integration-catalogue-tools --publishFileTransfer --platform <platform> --filename <filetransferCsv> --url <publish url>
+            integration-catalogue-tools --publishFileTransfers --directory <directory> --url <publish url>
             integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url>
             integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url>
             Arguments:
@@ -71,8 +71,5 @@ class IntegrationCatalogueTools {
 } finally {
       client.close()
     }
-
- 
   }
-
 }
