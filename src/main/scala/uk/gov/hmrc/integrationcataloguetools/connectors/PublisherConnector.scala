@@ -12,38 +12,39 @@ import org.apache.http.client.methods.CloseableHttpResponse
 
 case class Response(statusCode: Int, content: String)
 
-class PublisherConnector(url: String, client: CloseableHttpClient) {
+class PublisherConnector(url: String, client: CloseableHttpClient, authorizationKey: String) {
 
   def publishApi(headers: Map[String, String], filename: String, oasContent: Array[Byte]): Either[String, Response] = {
     import org.apache.http.entity.ContentType
     import org.apache.http.entity.mime.MultipartEntityBuilder
     import org.apache.http.Header
 
-   
-      var put = new HttpPut(url)
-      headers.foreach(header => put.addHeader(header._1, header._2))
+    var put = new HttpPut(url)
+    headers.foreach(header => put.addHeader(header._1, header._2))
 
-      val entity = MultipartEntityBuilder.create()
-      entity.addBinaryBody("selectedFile", oasContent, ContentType.DEFAULT_TEXT, filename)
-      put.setEntity(entity.build());
+    val entity = MultipartEntityBuilder.create()
+    entity.addBinaryBody("selectedFile", oasContent, ContentType.DEFAULT_TEXT, filename)
+    put.setEntity(entity.build());
 
-      callEndpoint(put)
-    
+    callEndpoint(put)
+
   }
 
   def publishFileTransfer(content: String) = {
 
-  
-      var put = new HttpPut(url)
+    var put = new HttpPut(url)
 
-      val entity: StringEntity = new StringEntity(content, ContentType.create("application/json", "UTF-8"));
-      put.setEntity(entity);
+    val entity: StringEntity = new StringEntity(content, ContentType.create("application/json", "UTF-8"));
+    put.setEntity(entity);
 
-      callEndpoint(put)
+    callEndpoint(put)
 
   }
 
   private def callEndpoint(put: HttpPut) = {
+    
+    put.addHeader("Authorization", authorizationKey)
+
     Try(client.execute(put))
       .map((response: CloseableHttpResponse) => {
         val content = scala.io.Source.fromInputStream(response.getEntity().getContent()).mkString

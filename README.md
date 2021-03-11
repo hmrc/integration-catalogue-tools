@@ -91,19 +91,26 @@ To create a downloadable release:
 sbt 'run --csvToOas "<name-of.csv>" "<output-path>"'
 ```
 
+## Convert CSV to File Transfer Json files
+```
+sbt 'run --csvToFileTransferJson "<name-of.csv>" "<output-path>"'
+```
+
 ## To publish API(s)
 
 A folder
 ```
-run --publish --platform DES --filename output2/example-1.yaml --url http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish
+run --publish --platform DES --filename output2/example-1.yaml --url http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish --authorizationKey <authorization-key>
 ```
 
 A directory of OAS files
 ```
-run --publish --platform DES --directory output2 --url http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish
+run --publish --platform DES --directory output2 --url http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish --authorizationKey <authorization-key>
 ```
 
 ## To publish File Transfers
+From a directory of File Transfer Json files
 ```
-run --publishFileTransfers --directory myDirectory--url <ft-publish-url>
+
+run --publishFileTransfers --directory myDirectory --url http://localhost:11114/integration-catalogue-admin-frontend/services/filetransfers/publish --authorizationKey <authorization-key>
 ```

@@ -33,7 +33,8 @@ class PublisherConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar
 
   trait Setup {
 
-    val connector = new PublisherConnector(url, mockCloseableHttpClient)
+    val encodedAuthHeader = "dGhpc2lzYXNzZWN1cmVhc2l0Z2V0cw=="
+    val connector = new PublisherConnector(url, mockCloseableHttpClient, encodedAuthHeader)
     val fileTransferJsonContent = "File Transfer Json content"
     val entity: StringEntity = new StringEntity(fileTransferJsonContent, ContentType.create("application/json", "UTF-8"));
     val mockCloseableHttpResponse = mock[CloseableHttpResponse]
