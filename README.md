@@ -5,7 +5,7 @@ This is a tool that allows the generation of OpenAPI Specification ([OAS](https:
 The input is a comma separated file (csv) with one row per API. Each row must contain a single endpoint and method which will generate a single OAS file.
 
 ## Format of the CSV
-The first header row is skipped, and each subsequent row must contain these six values:
+The first header row is skipped, and each subsequent row must contain these values:
 
 ```
 <publisher-reference>, <platform>, <title>, <description>, <version>, <method>, <endpoint>
