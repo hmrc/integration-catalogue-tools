@@ -1,4 +1,4 @@
-package uk.gov.hmrc.integrationcataloguetools
+package uk.gov.hmrc.integrationcataloguetools.service
 
 import java.io.File
 import java.io.FileReader
@@ -31,7 +31,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
       else file.getName().endsWith(".yaml") || file.getName().endsWith(".json")
     }
 
-    var directory = new File(directoryPath)
+    val directory = new File(directoryPath)
     if (!directory.isDirectory()){
       Left(s"`$directory` is not a directory")
     } else {
@@ -40,7 +40,8 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
           .listFiles()
           .sortBy(_.getName())
           .filter(isOasFile)
-          .map(file => publishFile(platform, file.getPath()) )
+          .map(file => {Thread.sleep(500L)
+            publishFile(platform, file.getPath())})
 
       val lefts = results.collect({ case Left(l) => l})
       
