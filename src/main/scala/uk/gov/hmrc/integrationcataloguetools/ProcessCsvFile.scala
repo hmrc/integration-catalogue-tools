@@ -23,6 +23,7 @@ import net.liftweb.json.DefaultFormats
 import net.liftweb.json._
 import net.liftweb.json.Serialization.write
 import net.liftweb.json.DefaultFormats
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
 object ProcessCsvFile {
 

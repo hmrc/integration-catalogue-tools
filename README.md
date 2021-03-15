@@ -5,16 +5,17 @@ This is a tool that allows the generation of OpenAPI Specification ([OAS](https:
 The input is a comma separated file (csv) with one row per API. Each row must contain a single endpoint and method which will generate a single OAS file.
 
 ## Format of the CSV
-The first header row is skipped, and each subsequent row must contain these six values:
+The first header row is skipped, and each subsequent row must contain these values:
 
 ```
-<publisher-reference>, <title>, <description>, <version>, <method>, <endpoint>
+<publisher-reference>, <platform>, <title>, <description>, <version>, <method>, <endpoint>
 ```
 
 **Note**: A CSV exported from google sheets will be compliant with regards to values that contain line breaks or quotes around values.
 
 ### Fields:
  - **publisher-reference**: This should be a unique identifier that you use to identify the API. Is used as the output OAS filename.
+ - **platform**: This is the identifier of your platform.
  - **title**: Used to populate the title in the OAS.
  - **description**: Used to populate the description in the OAS.
  - **version**: Used to populate the version in the OAS.
@@ -24,9 +25,13 @@ The first header row is skipped, and each subsequent row must contain these six 
  ### Example
  CSV with one API.
  ```
-publisherReference,title,description,version,verb,endpoint
-1,"Example API 1","This is an example API.",V0.1.0,GET,/examples
+publisherReference,platform, title,description,version,verb,endpoint
+1,DES,"Example API 1","This is an example API.",V0.1.0,GET,/examples
 ```
+
+Note: Be carefully if quoting values to not include a space between the comma and quote. e.g
+ - ```1st value,"2nd value"``` -  good
+ - ```2st value, "2nd value"``` - bad
 
 This will produce a file called ```1.yaml``` with the following content:
 ```
@@ -35,22 +40,17 @@ info:
   title: Example API 1
   description: This is an example API.
   version: V0.1.0
+  x-integration-catalogue:
+    platform: DES
+    publisher-reference: "1"
 paths:
   /examples:
     get:
-      summary: Example API 1
-      requestBody:
-        content:
-          application/json:
-            examples:
-              TODO Example Description:
-                value:
-                  SomeValue: theValue
       responses:
         "200":
-          description: response description
-          content:
-            application/json: {}
+          description: OK
+        "400":
+          description: Bad request
 ```
 
 # Running and processing a CSV

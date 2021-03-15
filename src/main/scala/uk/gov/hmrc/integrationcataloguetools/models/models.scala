@@ -6,7 +6,9 @@ case class PublisherReference(value: String) extends AnyVal
 
 case class Platform(value: String) extends AnyVal
 
-case class BasicApi(publisherReference: PublisherReference,
+case class BasicApi(
+  publisherReference: PublisherReference,
+  platform: Platform,
   title: String,
   description: String,
   version: String,

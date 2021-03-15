@@ -21,7 +21,7 @@ import java.io.Reader
 
 import uk.gov.hmrc.integrationcataloguetools.models._
 
-  object GenerateOpenApi {
+object GenerateOpenApi {
   def fromCsvToOasContent(reader : Reader) : Seq[(PublisherReference, String)] = {
     fromCsvToOpenAPI(reader).map{case (publisherReference, openApi) => {
       (publisherReference, openApiToContent(openApi))
@@ -41,12 +41,13 @@ import uk.gov.hmrc.integrationcataloguetools.models._
 
       BasicApi(
         PublisherReference(parseString(record.get(0))),
-        parseString(record.get(1)),
+        Platform(parseString(record.get(1))),
         parseString(record.get(2)),
         parseString(record.get(3)),
         parseString(record.get(4)),
-        parseString(record.get(5)) )
-      }
+        parseString(record.get(5)),
+        parseString(record.get(6))
+      )}
 
     org.apache.commons.csv.CSVFormat.EXCEL
       .withFirstRecordAsHeader()
@@ -70,17 +71,15 @@ import uk.gov.hmrc.integrationcataloguetools.models._
     openApiInfo.setTitle(basicApi.title)
     openApiInfo.setDescription(basicApi.description)
     openApiInfo.setVersion(basicApi.version)
-    // val contact = new Contact()
-    // contact.setEmail(oasContactEMail)
-    // contact.setName(oasContactName)
-    // openAPIInfo.setContact(contact)
 
-    // Extensions
-    // val extensions = new HashMap[String, Object]()
-    // extensions.put("x-integration-catalogue-reference", "1686")
-    // extensions.put("x-integration-catalogue-last-updated", "08-12-2020")
-    // extensions.put("x-integration-catalogue-backends", "EDH,RTI")
-    // openAPIInfo.setExtensions(extensions)
+    val integrationCatalogueExtensions = new HashMap[String, Object]
+    integrationCatalogueExtensions.put("platform", basicApi.platform.value)
+    integrationCatalogueExtensions.put("publisher-reference", basicApi.publisherReference.value)
+
+    val oasExtensions = new HashMap[String, Object]()
+    oasExtensions.put("x-integration-catalogue", integrationCatalogueExtensions)
+    
+    openApiInfo.setExtensions(oasExtensions)
     
     val pathItem = getPathItem(basicApi)
 
@@ -130,42 +129,22 @@ import uk.gov.hmrc.integrationcataloguetools.models._
   }
 
   def createOperation(basicApi: BasicApi) : Operation = {
-    val apiResponse = new ApiResponse()
-    apiResponse.setDescription("response description") // TODO
-    val apiResponseContent1 = new Content()
-    val apiResponseMediaType = new MediaType()
-    val apiResponseExample = new io.swagger.v3.oas.models.examples.Example()
-    apiResponseExample.setValue("{\"SomeRequestValue\" : \"theValue\"}")
-    apiResponseExample.setSummary("response summary")
-    // apiResponseMediaType.addExamples("some example response description", apiResponseExample)
-    apiResponseContent1.put("application/json", apiResponseMediaType)
-    apiResponse.setContent(apiResponseContent1)
-
-    val responseBodies = new ApiResponses()
-    responseBodies.addApiResponse("200", apiResponse)
-
-    val mapper = new ObjectMapper()
-    val jsonNodeVal = mapper.readTree("{\"SomeValue\": \"theValue\"}")
-    val content1Example = new io.swagger.v3.oas.models.examples.Example()
-    content1Example.setValue(jsonNodeVal)
-
     val operation = new Operation()
-    val rbContent1 = new Content
-    val content1MediaType = new MediaType()
-    content1MediaType.addExamples("TODO Example Description", content1Example) // TODO
-
-    rbContent1.put("application/json", content1MediaType) // TODO
-
-    // getOperation.setDescription(oasGetEndpointDesc)
-    val requestBody1 = new RequestBody()
-    requestBody1.setContent(rbContent1)
-
-    operation.setSummary(basicApi.title) // TODO Summary used as the title on the current FE. Probably don't need to do this
-    operation.setRequestBody(requestBody1)
-    operation.setResponses(responseBodies)
-
+    operation.setResponses(createResponses())
     operation
   }
 
-  
+  private def createResponses() : ApiResponses = {
+    val ok = new ApiResponse()
+    ok.setDescription("OK")
+
+    val badRequest = new ApiResponse()
+    badRequest.setDescription("Bad request")
+
+    val responseBodies = new ApiResponses()
+    responseBodies.addApiResponse("200", ok)
+    responseBodies.addApiResponse("400", badRequest)
+    
+    responseBodies
+  }
 }

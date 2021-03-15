@@ -13,6 +13,7 @@ import org.mockito.MockitoSugar
 import org.mockito.ArgumentMatchersSugar
 import java.nio.charset.StandardCharsets
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
+import uk.gov.hmrc.integrationcataloguetools.service.ApiPublisherService
 
 class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar {
 

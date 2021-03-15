@@ -3,19 +3,14 @@ info:
   title: My API Title
   description: My API Description
   version: "1.0"
+  x-integration-catalogue:
+    platform: TEST_PLATFORM
+    publisher-reference: My Ref 123
 paths:
   /my/resource/uri:
     get:
-      summary: My API Title
-      requestBody:
-        content:
-          application/json:
-            examples:
-              TODO Example Description:
-                value:
-                  SomeValue: theValue
       responses:
         "200":
-          description: response description
-          content:
-            application/json: {}
+          description: OK
+        "400":
+          description: Bad request

@@ -6,8 +6,10 @@ import scala.io.Source
 import io.swagger.v3.oas.models.OpenAPI
 
 import scala.collection.JavaConverters._
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
 class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
+  val testPlatform = Platform("TEST_PLATFORM")
   "Parse CSV into OpenAPI list" in {
     val csvFile = Source.fromResource("generateopenapispec/Parse-CSV-into-OpenAPI-list.csv")
     
@@ -17,14 +19,15 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
 
     val (publisherReference, api) = apis.head
 
-    // TODO: Publisher Ref?
     api.getInfo().getTitle() shouldBe "My API Title"
     api.getInfo().getDescription() shouldBe "My API Description"
     api.getInfo().getVersion() shouldBe "1.0"
+
+    val integrationCatalogueExtensions = api.getInfo().getExtensions().get("x-integration-catalogue").asInstanceOf[java.util.HashMap[String, Object]]
+    integrationCatalogueExtensions.get("platform").asInstanceOf[String] shouldBe testPlatform.value
+    integrationCatalogueExtensions.get("publisher-reference").asInstanceOf[String] shouldBe "My Ref 123"
     
     Option(api.getPaths().get("/my/resource/uri").getGet()).isDefined shouldBe true
-
-    // TODO : Test other fields? Summary, responses...
   }
 
   "Parse CSV into OpenAPI Specification content" in {
