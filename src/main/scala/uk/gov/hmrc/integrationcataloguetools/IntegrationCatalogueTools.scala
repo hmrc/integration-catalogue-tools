@@ -3,6 +3,7 @@ package uk.gov.hmrc.integrationcataloguetools
 import org.apache.http.impl.client.HttpClients
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
 import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
+import uk.gov.hmrc.integrationcataloguetools.service.ApiPublisherService
 
 class IntegrationCatalogueTools {
 
@@ -36,7 +37,7 @@ class IntegrationCatalogueTools {
       printUsage()
       Right()
     }
-    case "--verion" :: Nil | "-v" :: Nil => {
+    case "--version" :: Nil | "-v" :: Nil => {
       printVersion()
       Right()
     }
