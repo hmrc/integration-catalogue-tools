@@ -12,7 +12,7 @@ class IntegrationCatalogueTools {
         Usage:
             integration-catalogue-tools --version | -v
             integration-catalogue-tools --help | -h
-            integration-catalogue-tools --csvToOas --platform <platform> <inputCsv> <output directory>
+            integration-catalogue-tools --csvToOas <inputCsv> <output directory>
             integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
             integration-catalogue-tools --publishFileTransfers --directory <directory> --url <publish url>
             integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url>
@@ -41,9 +41,9 @@ class IntegrationCatalogueTools {
       printVersion()
       Right()
     }
-    case "--csvToOas" :: "--platform" :: platform :: inputCsvFile :: outputPath :: Nil => {
+    case "--csvToOas" :: inputCsvFile :: outputPath :: Nil => {
       println(s"Exporting CSV to OAS Files:\nInput file: ${inputCsvFile}\noutput path: ${outputPath}")
-      val rowsProcessed = ProcessCsvFile.processApiCsv(inputCsvFile, outputPath, Platform(platform))
+      val rowsProcessed = ProcessCsvFile.processApiCsv(inputCsvFile, outputPath)
       println(s"Exported $rowsProcessed OAS files to:\n${outputPath}")
       Right()
     }

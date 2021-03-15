@@ -22,13 +22,13 @@ import java.io.Reader
 import uk.gov.hmrc.integrationcataloguetools.models._
 
 object GenerateOpenApi {
-  def fromCsvToOasContent(reader : Reader, platform: Platform) : Seq[(PublisherReference, String)] = {
-    fromCsvToOpenAPI(reader, platform).map{case (publisherReference, openApi) => {
-      (publisherReference, openApiToContent(openApi, platform))
+  def fromCsvToOasContent(reader : Reader) : Seq[(PublisherReference, String)] = {
+    fromCsvToOpenAPI(reader).map{case (publisherReference, openApi) => {
+      (publisherReference, openApiToContent(openApi))
     }}
   }
 
-  def fromCsvToOpenAPI(reader : Reader, platform: Platform) : Seq[(PublisherReference, OpenAPI)] = {
+  def fromCsvToOpenAPI(reader : Reader) : Seq[(PublisherReference, OpenAPI)] = {
 
     def createBasicApi(record: CSVRecord) : BasicApi = {
       val expectedValues = 6
@@ -41,38 +41,39 @@ object GenerateOpenApi {
 
       BasicApi(
         PublisherReference(parseString(record.get(0))),
-        parseString(record.get(1)),
+        Platform(parseString(record.get(1))),
         parseString(record.get(2)),
         parseString(record.get(3)),
         parseString(record.get(4)),
-        parseString(record.get(5)) )
-      }
+        parseString(record.get(5)),
+        parseString(record.get(6))
+      )}
 
     org.apache.commons.csv.CSVFormat.EXCEL
       .withFirstRecordAsHeader()
       .parse(reader).getRecords().asScala.toSeq
       .map(createBasicApi)
-      .map(basicApi => (basicApi.publisherReference, createOpenApi(basicApi, platform)) )
+      .map(basicApi => (basicApi.publisherReference, createOpenApi(basicApi)) )
   }
 
-  def generateOasContent(basicApi: BasicApi, platform: Platform): String = {
-    val openApi : OpenAPI = createOpenApi(basicApi, platform)
+  def generateOasContent(basicApi: BasicApi): String = {
+    val openApi : OpenAPI = createOpenApi(basicApi)
 
-    openApiToContent(openApi, platform)
+    openApiToContent(openApi)
   }
 
-  def openApiToContent(openApi: OpenAPI, platform: Platform) : String = {
+  def openApiToContent(openApi: OpenAPI) : String = {
     Yaml.mapper().writeValueAsString(openApi);
   }
 
-  private def createOpenApi(basicApi: BasicApi, platform: Platform): OpenAPI = {
+  private def createOpenApi(basicApi: BasicApi): OpenAPI = {
     val openApiInfo = new Info()
     openApiInfo.setTitle(basicApi.title)
     openApiInfo.setDescription(basicApi.description)
     openApiInfo.setVersion(basicApi.version)
 
     val integrationCatalogueExtensions = new HashMap[String, Object]
-    integrationCatalogueExtensions.put("platform", platform.value)
+    integrationCatalogueExtensions.put("platform", basicApi.platform.value)
     integrationCatalogueExtensions.put("publisher-reference", basicApi.publisherReference.value)
 
     val oasExtensions = new HashMap[String, Object]()

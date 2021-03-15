@@ -38,11 +38,11 @@ object ProcessCsvFile {
     bw.close()
   }
 
-  def processApiCsv(inputFilename: String, outputFolder: String, platform: Platform): Int = {
+  def processApiCsv(inputFilename: String, outputFolder: String): Int = {
     val in = new FileReader(inputFilename);
     try {
       GenerateOpenApi
-        .fromCsvToOasContent(in, platform)
+        .fromCsvToOasContent(in)
         .map {
           case (publisherReference, oasContent) => {
             val filename = s"$outputFolder/${publisherReference.value}.yaml"
