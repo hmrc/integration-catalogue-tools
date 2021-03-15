@@ -21,14 +21,14 @@ import java.io.Reader
 
 import uk.gov.hmrc.integrationcataloguetools.models._
 
-  object GenerateOpenApi {
-  def fromCsvToOasContent(reader : Reader) : Seq[(PublisherReference, String)] = {
-    fromCsvToOpenAPI(reader).map{case (publisherReference, openApi) => {
-      (publisherReference, openApiToContent(openApi))
+object GenerateOpenApi {
+  def fromCsvToOasContent(reader : Reader, platform: Platform) : Seq[(PublisherReference, String)] = {
+    fromCsvToOpenAPI(reader, platform).map{case (publisherReference, openApi) => {
+      (publisherReference, openApiToContent(openApi, platform))
     }}
   }
 
-  def fromCsvToOpenAPI(reader : Reader) : Seq[(PublisherReference, OpenAPI)] = {
+  def fromCsvToOpenAPI(reader : Reader, platform: Platform) : Seq[(PublisherReference, OpenAPI)] = {
 
     def createBasicApi(record: CSVRecord) : BasicApi = {
       val expectedValues = 6
@@ -52,38 +52,33 @@ import uk.gov.hmrc.integrationcataloguetools.models._
       .withFirstRecordAsHeader()
       .parse(reader).getRecords().asScala.toSeq
       .map(createBasicApi)
-      .map(basicApi => (basicApi.publisherReference, createOpenApi(basicApi)) )
+      .map(basicApi => (basicApi.publisherReference, createOpenApi(basicApi, platform)) )
   }
 
-  def generateOasContent(basicApi: BasicApi): String = {
-    val openApi : OpenAPI = createOpenApi(basicApi)
+  def generateOasContent(basicApi: BasicApi, platform: Platform): String = {
+    val openApi : OpenAPI = createOpenApi(basicApi, platform)
 
-    openApiToContent(openApi)
+    openApiToContent(openApi, platform)
   }
 
-  def openApiToContent(openApi: OpenAPI) : String = {
+  def openApiToContent(openApi: OpenAPI, platform: Platform) : String = {
     Yaml.mapper().writeValueAsString(openApi);
   }
 
-  private def createOpenApi(basicApi: BasicApi): OpenAPI = {
+  private def createOpenApi(basicApi: BasicApi, platform: Platform): OpenAPI = {
     val openApiInfo = new Info()
     openApiInfo.setTitle(basicApi.title)
     openApiInfo.setDescription(basicApi.description)
     openApiInfo.setVersion(basicApi.version)
 
-    // TODO: I wonder if we should have a default contact per platform?
-    // val contact = new Contact()
-    // contact.setEmail(oasContactEMail)
-    // contact.setName(oasContactName)
-    // openAPIInfo.setContact(contact)
+    val integrationCatalogueExtensions = new HashMap[String, Object]
+    integrationCatalogueExtensions.put("platform", platform.value)
+    integrationCatalogueExtensions.put("publisher-reference", basicApi.publisherReference.value)
 
-    // TODO : Generate valid extensions.
-    // Extensions
-    // val extensions = new HashMap[String, Object]()
-    // extensions.put("x-integration-catalogue-reference", "1686")
-    // extensions.put("x-integration-catalogue-last-updated", "08-12-2020")
-    // extensions.put("x-integration-catalogue-backends", "EDH,RTI")
-    // openAPIInfo.setExtensions(extensions)
+    val oasExtensions = new HashMap[String, Object]()
+    oasExtensions.put("x-integration-catalogue", integrationCatalogueExtensions)
+    
+    openApiInfo.setExtensions(oasExtensions)
     
     val pathItem = getPathItem(basicApi)
 

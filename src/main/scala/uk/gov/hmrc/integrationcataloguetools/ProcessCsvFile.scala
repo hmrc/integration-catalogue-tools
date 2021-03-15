@@ -23,6 +23,7 @@ import net.liftweb.json.DefaultFormats
 import net.liftweb.json._
 import net.liftweb.json.Serialization.write
 import net.liftweb.json.DefaultFormats
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
 object ProcessCsvFile {
 
@@ -37,11 +38,11 @@ object ProcessCsvFile {
     bw.close()
   }
 
-  def processApiCsv(inputFilename: String, outputFolder: String): Int = {
+  def processApiCsv(inputFilename: String, outputFolder: String, platform: Platform): Int = {
     val in = new FileReader(inputFilename);
     try {
       GenerateOpenApi
-        .fromCsvToOasContent(in)
+        .fromCsvToOasContent(in, platform)
         .map {
           case (publisherReference, oasContent) => {
             val filename = s"$outputFolder/${publisherReference.value}.yaml"
