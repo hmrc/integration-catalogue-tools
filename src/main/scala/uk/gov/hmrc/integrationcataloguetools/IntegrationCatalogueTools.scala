@@ -18,7 +18,7 @@ class IntegrationCatalogueTools {
             integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url>
             integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url>
             Arguments:
-                - directory : All files with .yaml or .json extension will be procesed
+                - directory : All files with .yaml or .json extension will be processed
         """)
   }
 
