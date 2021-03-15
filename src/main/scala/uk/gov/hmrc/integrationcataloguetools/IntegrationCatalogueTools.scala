@@ -37,7 +37,7 @@ class IntegrationCatalogueTools {
       printUsage()
       Right()
     }
-    case "--verion" :: Nil | "-v" :: Nil => {
+    case "--version" :: Nil | "-v" :: Nil => {
       printVersion()
       Right()
     }
