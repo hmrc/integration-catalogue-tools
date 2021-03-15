@@ -127,42 +127,13 @@ object GenerateOpenApi {
     pathItem
   }
 
-
-
   def createOperation(basicApi: BasicApi) : Operation = {
-    
     val operation = new Operation()
-      
-    // getOperation.setDescription(oasGetEndpointDesc)
-    
-    // operation.setSummary(basicApi.title) // TODO Summary used as the title on the current FE. Probably don't need to do this
-    // operation.setRequestBody(createRequest())
-    
     operation.setResponses(createResponses())
-
     operation
   }
 
-  private def createRequest() : RequestBody = {
-    val mapper = new ObjectMapper()
-    val jsonNodeVal = mapper.readTree("{\"SomeValue\": \"theValue\"}")
-    val content1Example = new io.swagger.v3.oas.models.examples.Example()
-    content1Example.setValue(jsonNodeVal)
-
-    val content1MediaType = new MediaType()
-    content1MediaType.addExamples("TODO Example Description", content1Example) // TODO
-
-    val rbContent1 = new Content()
-    rbContent1.put("application/json", content1MediaType) // TODO
-
-    val requestBody1 = new RequestBody()
-    // requestBody1.setContent(rbContent1)
-    requestBody1
-  }
-
   private def createResponses() : ApiResponses = {
-
-  
     val ok = new ApiResponse()
     ok.setDescription("OK")
 
