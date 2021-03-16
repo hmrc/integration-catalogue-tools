@@ -2,8 +2,7 @@ lazy val root = (project in file("."))
   .settings(
     inThisBuild(List(
       organization := "uk.gov.hmrc",
-      scalaVersion := "2.12.12",
-      version := "0.3.2"
+      scalaVersion := "2.12.12"
     )),
     name := "integration-catalogue-tools"
   )
