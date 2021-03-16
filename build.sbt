@@ -3,7 +3,7 @@ lazy val root = (project in file("."))
     inThisBuild(List(
       organization := "uk.gov.hmrc",
       scalaVersion := "2.12.12",
-      version := "0.3.0"
+      version := "0.3.2"
     )),
     name := "integration-catalogue-tools"
   )
