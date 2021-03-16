@@ -1,11 +1,19 @@
+import sbt._
+import sbt.Keys._
+import uk.gov.hmrc.SbtArtifactory
+import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
+import uk.gov.hmrc.versioning.SbtGitVersioning
+
 lazy val root = (project in file("."))
+  .enablePlugins(SbtGitVersioning, SbtArtifactory)
   .settings(
-    inThisBuild(List(
-      organization := "uk.gov.hmrc",
-      scalaVersion := "2.12.12",
-      version := "0.3.2"
-    )),
-    name := "integration-catalogue-tools"
+    scalaVersion := "2.12.12",
+    name := "integration-catalogue-tools",
+    majorVersion := 1,
+    makePublicallyAvailableOnBintray := true,
+    resolvers := Seq(
+      Resolver.bintrayRepo("hmrc", "releases")
+    )
   )
   .settings(scoverageSettings)
 
