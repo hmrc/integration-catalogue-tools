@@ -37,7 +37,7 @@ The first header row is skipped, and each subsequent row must contain these valu
  #### Example
  CSV with one API.
  ```
-publisherReference,platform, title,description,version,verb,endpoint
+publisherReference,platform,title,description,version,verb,endpoint
 1,DES,"Example API 1","This is an example API.",V0.1.0,GET,/examples
 ```
 
@@ -139,9 +139,10 @@ Usage:
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <inputCsv> <output directory>
     integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-    integration-catalogue-tools --publishFileTransfers --directory <directory> --url <publish url>
-    integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url>
-    integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url>
+    integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
+    integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
+    integration-catalogue-tools --publishFileTransfers --directory  <directory> --url <publish url> --authorizationKey <key>
+    
     Arguments:
         - directory : All files with .yaml or .json extension will be processed
 ```
