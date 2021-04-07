@@ -18,8 +18,10 @@ import java.nio.charset.StandardCharsets
 import org.apache.http.StatusLine
 import org.apache.http.message.BasicStatusLine
 import uk.gov.hmrc.integrationcataloguetools.connectors.Response
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
 import org.apache.http.ProtocolVersion
 import org.scalatest.BeforeAndAfterEach
+
 
 class PublisherConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar with BeforeAndAfterEach {
 
@@ -34,7 +36,8 @@ class PublisherConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar
   trait Setup {
 
     val encodedAuthHeader = "dGhpc2lzYXNzZWN1cmVhc2l0Z2V0cw=="
-    val connector = new PublisherConnector(url, mockCloseableHttpClient, encodedAuthHeader)
+    val platform = Platform("CORE_IF")
+    val connector = new PublisherConnector(url, mockCloseableHttpClient, platform, encodedAuthHeader)
     val fileTransferJsonContent = "File Transfer Json content"
     val entity: StringEntity = new StringEntity(fileTransferJsonContent, ContentType.create("application/json", "UTF-8"));
     val mockCloseableHttpResponse = mock[CloseableHttpResponse]
@@ -43,7 +46,6 @@ class PublisherConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar
     val dummyInputStreamFT = new ByteArrayInputStream(responseContent.getBytes(StandardCharsets.UTF_8));
 
     val headers = Map(
-      "x-platform-type" -> "CORE_IF",
       "x-specification-type" -> "OAS_V3",
       "x-publisher-reference" -> "1234"
     )

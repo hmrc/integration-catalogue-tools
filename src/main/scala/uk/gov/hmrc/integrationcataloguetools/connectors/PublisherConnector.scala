@@ -9,10 +9,11 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.entity.ContentType
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.client.methods.CloseableHttpResponse
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
 case class Response(statusCode: Int, content: String)
 
-class PublisherConnector(url: String, client: CloseableHttpClient, authorizationKey: String) {
+class PublisherConnector(url: String, client: CloseableHttpClient, platform: Platform, authorizationKey: String) {
 
   def publishApi(headers: Map[String, String], filename: String, oasContent: Array[Byte]): Either[String, Response] = {
     import org.apache.http.entity.ContentType
@@ -38,12 +39,12 @@ class PublisherConnector(url: String, client: CloseableHttpClient, authorization
     put.setEntity(entity);
 
     callEndpoint(put)
-
   }
 
   private def callEndpoint(put: HttpPut) = {
     
     put.addHeader("Authorization", authorizationKey)
+    put.addHeader("x-platform-type", platform.value)
 
     Try(client.execute(put))
       .map((response: CloseableHttpResponse) => {

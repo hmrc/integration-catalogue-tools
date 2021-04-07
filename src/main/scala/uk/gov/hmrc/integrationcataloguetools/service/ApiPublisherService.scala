@@ -24,7 +24,7 @@ import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 class ApiPublisherService(publisherConnector: PublisherConnector) {
   import scala.concurrent.ExecutionContext.Implicits._
 
-  def publishDirectory(platform: Platform, directoryPath: String) : Either[String, Unit]= {
+  def publishDirectory(directoryPath: String) : Either[String, Unit]= {
     
     def isOasFile(file:File) : Boolean = {
       if (file.isDirectory()) return false
@@ -41,13 +41,13 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
           .sortBy(_.getName())
           .filter(isOasFile)
           .map(file => {Thread.sleep(500L)
-            publishFile(platform, file.getPath())})
+            publishFile(file.getPath())})
 
       val lefts = results.collect({ case Left(l) => l})
       
       val rights = results.collect({ case Right(l) => l})
 
-      println(s"Successfully published ${rights.length} ${platform.value} APIs")
+      println(s"Successfully published ${rights.length} APIs")
       if (lefts.nonEmpty){
         println(s"Failed to publish ${lefts.length} APIs")
       }
@@ -57,7 +57,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
     }
   }
 
-  def publishFile(platform: Platform, pathname: String) : Either[String, Unit] = {
+  def publishFile(pathname: String) : Either[String, Unit] = {
 
     println(s"Publishing ${pathname}")
 
@@ -66,13 +66,12 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
 
     val oasContentBytes = Files.readAllBytes(Paths.get(pathname))
 
-    publish(platform,  publisherReference = PublisherReference(filename), filename, oasContentBytes)
+    publish(publisherReference = PublisherReference(filename), filename, oasContentBytes)
   }
 
-  private def publish(platform: Platform, publisherReference: PublisherReference, filename: String, oasContent: Array[Byte]) : Either[String, Unit] = {
+  private def publish(publisherReference: PublisherReference, filename: String, oasContent: Array[Byte]) : Either[String, Unit] = {
       
     val headers = Map(
-      "x-platform-type" -> platform.value,
       "x-specification-type" -> "OAS_V3",
       "x-publisher-reference" -> publisherReference.value)
 

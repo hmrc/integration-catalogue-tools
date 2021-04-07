@@ -70,10 +70,9 @@ class FileTransferPublisherService(publisherConnector: PublisherConnector) {
   }
 
   private def publish(publisherReference: PublisherReference, filename: String, jsonString: String) : Either[String, Unit] = {
-      
       val responseEither = publisherConnector.publishFileTransfer(jsonString);
 
-      responseEither.flatMap(response => {      
+      responseEither.flatMap(response => {
         response.statusCode match {
           case 200 | 201  => {
             println(s"Published. ${getApiPublishPhrase(response.statusCode)} API. Response(${response.statusCode}): ${response.content}") 

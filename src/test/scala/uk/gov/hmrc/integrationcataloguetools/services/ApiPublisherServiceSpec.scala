@@ -33,12 +33,11 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
     "be sucessfull if publish returns a 200" in new Setup {
       when(mockPublisherConnector.publishApi( (*) , (*) ,(*) )).thenReturn(Right(Response(200, "")))
 
-      val result = service.publishFile(desPlatform, filepath1)
+      val result = service.publishFile(filepath1)
 
       result shouldBe Right()
 
       val expectedHeaders = Map(
-          "x-platform-type" -> desPlatform.value,
           "x-specification-type" -> specificaitonType,
           "x-publisher-reference" -> filename1
         )
@@ -50,7 +49,7 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
     "be sucessfull if publish returns a 201" in new Setup {
       when(mockPublisherConnector.publishApi( (*) , (*) ,(*) )).thenReturn(Right(Response(201, "")))
 
-      val result = service.publishFile(desPlatform, filepath1)
+      val result = service.publishFile(filepath1)
 
       result shouldBe Right()
     }
@@ -60,7 +59,7 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
       when(mockPublisherConnector.publishApi( (*) , (*) ,(*) ))
         .thenReturn(Right(Response(400, publishErrorBody)))
 
-      val result = service.publishFile(desPlatform, filepath1)
+      val result = service.publishFile(filepath1)
 
       val expectedErrorMessage = s"Failed to publish '$filename1'. Response(400): $publishErrorBody"
 
@@ -78,18 +77,16 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
       when(mockPublisherConnector.publishApi( (*) , (*) ,(*) ))
         .thenReturn(Right(Response(200, "")))
 
-      val result = service.publishDirectory(desPlatform, directoryPath)
+      val result = service.publishDirectory(directoryPath)
 
       result shouldBe Right()
 
       val expectedHeaders1 = Map(
-          "x-platform-type" -> desPlatform.value,
           "x-specification-type" -> specificaitonType,
           "x-publisher-reference" -> filename2
       )
 
       val expectedHeaders2 = Map(
-          "x-platform-type" -> desPlatform.value,
           "x-specification-type" -> specificaitonType,
           "x-publisher-reference" -> filename3
       )
@@ -106,7 +103,7 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
         .thenReturn(Right(Response(200, "")))
         .andThen(Right(Response(400, "Mock respose for invalid OAS")))
 
-      val result = service.publishDirectory(desPlatform, directoryPath)
+      val result = service.publishDirectory(directoryPath)
 
       result shouldBe Left("Failed to publish 'example-oas-3.json'. Response(400): Mock respose for invalid OAS")
     }
@@ -114,7 +111,7 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
     "be unsucessfull if passed a file instead of a directory" in new Setup {
       
       val invalidDirectoryPath = directoryPath + filename2
-      val result = service.publishDirectory(desPlatform, invalidDirectoryPath)
+      val result = service.publishDirectory(invalidDirectoryPath)
 
       result shouldBe Left(s"`$invalidDirectoryPath` is not a directory")
     }

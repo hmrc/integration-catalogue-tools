@@ -141,7 +141,7 @@ Usage:
     integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
     integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
     integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
-    integration-catalogue-tools --publishFileTransfers --directory  <directory> --url <publish url> --authorizationKey <key>
+    integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
     
     Arguments:
         - directory : All files with .yaml or .json extension will be processed
@@ -191,5 +191,5 @@ run --publish --platform DES --directory output2 --url http://localhost:11114/in
 ## To publish File Transfers
 From a directory of File Transfer Json files
 ```
-run --publishFileTransfers --directory myDirectory --url http://localhost:11114/integration-catalogue-admin-frontend/services/filetransfers/publish --authorizationKey <authorization-key>
+run --publishFileTransfers --platform CORE_IF --directory myDirectory --url http://localhost:11114/integration-catalogue-admin-frontend/services/filetransfers/publish --authorizationKey <authorization-key>
 ```
