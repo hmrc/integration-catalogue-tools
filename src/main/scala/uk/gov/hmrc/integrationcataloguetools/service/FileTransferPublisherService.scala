@@ -25,7 +25,7 @@ import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 class FileTransferPublisherService(publisherConnector: PublisherConnector) {
   import scala.concurrent.ExecutionContext.Implicits._
 
-  def publishDirectory(directoryPath: String) : Either[String, Unit]= {
+  def publishDirectory(platform: Platform, directoryPath: String) : Either[String, Unit]= {
     
     def isJsonFile(file:File) : Boolean = {
       if (file.isDirectory()) return false
@@ -41,7 +41,7 @@ class FileTransferPublisherService(publisherConnector: PublisherConnector) {
           .listFiles()
           .sortBy(_.getName())
           .filter(isJsonFile)
-          .map(file => publishFile(file.getPath()) )
+          .map(file => publishFile(platform, file.getPath()) )
 
       val lefts = results.collect({ case Left(l) => l})
       
@@ -57,7 +57,7 @@ class FileTransferPublisherService(publisherConnector: PublisherConnector) {
     }
   }
 
-  def publishFile(pathname: String) : Either[String, Unit] = {
+  def publishFile(platform :Platform, pathname: String) : Either[String, Unit] = {
 
     println(s"Publishing ${pathname}")
 
@@ -66,14 +66,15 @@ class FileTransferPublisherService(publisherConnector: PublisherConnector) {
 
     val fileContents = Files.readAllLines(Paths.get(pathname)).asScala.mkString
 
-    publish(publisherReference = PublisherReference(filename), filename, fileContents)
+    publish(platform, publisherReference = PublisherReference(filename), filename, fileContents)
   }
 
-  private def publish(publisherReference: PublisherReference, filename: String, jsonString: String) : Either[String, Unit] = {
-      
-      val responseEither = publisherConnector.publishFileTransfer(jsonString);
+  private def publish(platform: Platform, publisherReference: PublisherReference, filename: String, jsonString: String) : Either[String, Unit] = {
+      val headers = Map("x-platform-type" -> platform.value)
 
-      responseEither.flatMap(response => {      
+      val responseEither = publisherConnector.publishFileTransfer(headers, jsonString);
+
+      responseEither.flatMap(response => {
         response.statusCode match {
           case 200 | 201  => {
             println(s"Published. ${getApiPublishPhrase(response.statusCode)} API. Response(${response.statusCode}): ${response.content}") 

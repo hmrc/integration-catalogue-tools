@@ -9,6 +9,7 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.entity.ContentType
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.client.methods.CloseableHttpResponse
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
 case class Response(statusCode: Int, content: String)
 
@@ -30,9 +31,11 @@ class PublisherConnector(url: String, client: CloseableHttpClient, authorization
 
   }
 
-  def publishFileTransfer(content: String) = {
+  def publishFileTransfer(headers: Map[String, String], content: String) = {
 
     var put = new HttpPut(url)
+
+    headers.foreach(header => put.addHeader(header._1, header._2))
 
     val entity: StringEntity = new StringEntity(content, ContentType.create("application/json", "UTF-8"));
     put.setEntity(entity);
@@ -44,6 +47,7 @@ class PublisherConnector(url: String, client: CloseableHttpClient, authorization
   private def callEndpoint(put: HttpPut) = {
     
     put.addHeader("Authorization", authorizationKey)
+    // TODO: Platform here as well?
 
     Try(client.execute(put))
       .map((response: CloseableHttpResponse) => {

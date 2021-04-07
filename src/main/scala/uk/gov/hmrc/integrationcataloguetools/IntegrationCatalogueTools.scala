@@ -16,7 +16,7 @@ class IntegrationCatalogueTools {
             integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
             integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
             integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
-            integration-catalogue-tools --publishFileTransfers --directory  <directory> --url <publish url> --authorizationKey <key>
+            integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
             
             Arguments:
                 - directory : All files with .yaml or .json extension will be processed
@@ -64,9 +64,9 @@ class IntegrationCatalogueTools {
       publisher.publishDirectory(Platform(platform), oasDirectory)
     }
 
-    case "--publishFileTransfers" :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
+    case "--publishFileTransfers" :: "--platform" :: platform :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
       val publisher = new FileTransferPublisherService(new PublisherConnector(publishUrl, client, authorizationKey));
-      publisher.publishDirectory(ftDirectory)
+      publisher.publishDirectory(Platform(platform), ftDirectory)
     }
     case options => Left(s"Invalid, unknown or mismatched options or arguments : ${options}\nArgs:${args.toList}")
   }
