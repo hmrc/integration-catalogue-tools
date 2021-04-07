@@ -56,17 +56,17 @@ class IntegrationCatalogueTools {
     }
 
     case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, authorizationKey));
-      publisher.publishFile(Platform(platform), oasFilepath)
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
+      publisher.publishFile(oasFilepath)
     }
     case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, authorizationKey));
-      publisher.publishDirectory(Platform(platform), oasDirectory)
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
+      publisher.publishDirectory(oasDirectory)
     }
 
     case "--publishFileTransfers" :: "--platform" :: platform :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
-      val publisher = new FileTransferPublisherService(new PublisherConnector(publishUrl, client, authorizationKey));
-      publisher.publishDirectory(Platform(platform), ftDirectory)
+      val publisher = new FileTransferPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
+      publisher.publishDirectory(ftDirectory)
     }
     case options => Left(s"Invalid, unknown or mismatched options or arguments : ${options}\nArgs:${args.toList}")
   }

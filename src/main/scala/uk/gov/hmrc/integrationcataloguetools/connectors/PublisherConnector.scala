@@ -13,7 +13,7 @@ import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
 case class Response(statusCode: Int, content: String)
 
-class PublisherConnector(url: String, client: CloseableHttpClient, authorizationKey: String) {
+class PublisherConnector(url: String, client: CloseableHttpClient, platform: Platform, authorizationKey: String) {
 
   def publishApi(headers: Map[String, String], filename: String, oasContent: Array[Byte]): Either[String, Response] = {
     import org.apache.http.entity.ContentType
@@ -31,23 +31,20 @@ class PublisherConnector(url: String, client: CloseableHttpClient, authorization
 
   }
 
-  def publishFileTransfer(headers: Map[String, String], content: String) = {
+  def publishFileTransfer(content: String) = {
 
     var put = new HttpPut(url)
-
-    headers.foreach(header => put.addHeader(header._1, header._2))
 
     val entity: StringEntity = new StringEntity(content, ContentType.create("application/json", "UTF-8"));
     put.setEntity(entity);
 
     callEndpoint(put)
-
   }
 
   private def callEndpoint(put: HttpPut) = {
     
     put.addHeader("Authorization", authorizationKey)
-    // TODO: Platform here as well?
+    put.addHeader("x-platform-type", platform.value)
 
     Try(client.execute(put))
       .map((response: CloseableHttpResponse) => {

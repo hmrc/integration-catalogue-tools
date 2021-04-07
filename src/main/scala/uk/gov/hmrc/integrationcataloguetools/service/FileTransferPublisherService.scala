@@ -25,7 +25,7 @@ import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 class FileTransferPublisherService(publisherConnector: PublisherConnector) {
   import scala.concurrent.ExecutionContext.Implicits._
 
-  def publishDirectory(platform: Platform, directoryPath: String) : Either[String, Unit]= {
+  def publishDirectory(directoryPath: String) : Either[String, Unit]= {
     
     def isJsonFile(file:File) : Boolean = {
       if (file.isDirectory()) return false
@@ -41,7 +41,7 @@ class FileTransferPublisherService(publisherConnector: PublisherConnector) {
           .listFiles()
           .sortBy(_.getName())
           .filter(isJsonFile)
-          .map(file => publishFile(platform, file.getPath()) )
+          .map(file => publishFile(file.getPath()) )
 
       val lefts = results.collect({ case Left(l) => l})
       
@@ -57,7 +57,7 @@ class FileTransferPublisherService(publisherConnector: PublisherConnector) {
     }
   }
 
-  def publishFile(platform :Platform, pathname: String) : Either[String, Unit] = {
+  def publishFile(pathname: String) : Either[String, Unit] = {
 
     println(s"Publishing ${pathname}")
 
@@ -66,13 +66,11 @@ class FileTransferPublisherService(publisherConnector: PublisherConnector) {
 
     val fileContents = Files.readAllLines(Paths.get(pathname)).asScala.mkString
 
-    publish(platform, publisherReference = PublisherReference(filename), filename, fileContents)
+    publish(publisherReference = PublisherReference(filename), filename, fileContents)
   }
 
-  private def publish(platform: Platform, publisherReference: PublisherReference, filename: String, jsonString: String) : Either[String, Unit] = {
-      val headers = Map("x-platform-type" -> platform.value)
-
-      val responseEither = publisherConnector.publishFileTransfer(headers, jsonString);
+  private def publish(publisherReference: PublisherReference, filename: String, jsonString: String) : Either[String, Unit] = {
+      val responseEither = publisherConnector.publishFileTransfer(jsonString);
 
       responseEither.flatMap(response => {
         response.statusCode match {
