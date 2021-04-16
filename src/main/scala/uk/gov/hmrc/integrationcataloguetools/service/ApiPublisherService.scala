@@ -24,31 +24,33 @@ import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 class ApiPublisherService(publisherConnector: PublisherConnector) {
   import scala.concurrent.ExecutionContext.Implicits._
 
-  def publishDirectory(directoryPath: String) : Either[String, Unit]= {
-    
-    def isOasFile(file:File) : Boolean = {
+  def publishDirectory(directoryPath: String, useFilenameAsPublisherReference: Boolean): Either[String, Unit] = {
+
+    def isOasFile(file: File): Boolean = {
       if (file.isDirectory()) return false
       else file.getName().endsWith(".yaml") || file.getName().endsWith(".json")
     }
 
     val directory = new File(directoryPath)
-    if (!directory.isDirectory()){
+    if (!directory.isDirectory()) {
       Left(s"`$directory` is not a directory")
     } else {
-      val results = 
+      val results =
         directory
           .listFiles()
           .sortBy(_.getName())
           .filter(isOasFile)
-          .map(file => {Thread.sleep(500L)
-            publishFile(file.getPath())})
+          .map(file => {
+            Thread.sleep(500L)
+            publishFile(file.getPath(), useFilenameAsPublisherReference)
+          })
 
-      val lefts = results.collect({ case Left(l) => l})
-      
-      val rights = results.collect({ case Right(l) => l})
+      val lefts = results.collect({ case Left(l) => l })
+
+      val rights = results.collect({ case Right(l) => l })
 
       println(s"Successfully published ${rights.length} APIs")
-      if (lefts.nonEmpty){
+      if (lefts.nonEmpty) {
         println(s"Failed to publish ${lefts.length} APIs")
       }
 
@@ -57,7 +59,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
     }
   }
 
-  def publishFile(pathname: String) : Either[String, Unit] = {
+  def publishFile(pathname: String, useFilenameAsPublisherReference: Boolean): Either[String, Unit] = {
 
     println(s"Publishing ${pathname}")
 
@@ -65,36 +67,34 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
     val filename = file.getName()
 
     val oasContentBytes = Files.readAllBytes(Paths.get(pathname))
-
-    publish(publisherReference = PublisherReference(filename), filename, oasContentBytes)
+    publish(useFilenameAsPublisherReference = useFilenameAsPublisherReference, filename, oasContentBytes)
   }
 
-  private def publish(publisherReference: PublisherReference, filename: String, oasContent: Array[Byte]) : Either[String, Unit] = {
-      
-    val headers = Map(
-      "x-specification-type" -> "OAS_V3",
-      "x-publisher-reference" -> publisherReference.value)
+  private def publish(useFilenameAsPublisherReference: Boolean, filename: String, oasContent: Array[Byte]): Either[String, Unit] = {
 
-      val responseEither = publisherConnector.publishApi(headers, filename, oasContent);
+    val headers = Map("x-specification-type" -> "OAS_V3")
 
-      responseEither.flatMap(response => {      
-        response.statusCode match {
-          case 200 | 201  => {
-            println(s"Published. ${getApiPublishPhrase(response.statusCode)} API. Response(${response.statusCode}): ${response.content}") 
-            Right(())
-          }
-          case otherStatusCode => {
-            val errorMessage = s"Failed to publish '$filename'. Response(${response.statusCode}): ${response.content}"
-            Left(errorMessage)
+    val updatedHeaders = if (useFilenameAsPublisherReference) headers ++ Map("x-publisher-reference" -> filename) else headers
+
+    val responseEither = publisherConnector.publishApi(updatedHeaders, filename, oasContent);
+
+    responseEither.flatMap(response => {
+      response.statusCode match {
+        case 200 | 201       => {
+          println(s"Published. ${getApiPublishPhrase(response.statusCode)} API. Response(${response.statusCode}): ${response.content}")
+          Right(())
+        }
+        case otherStatusCode => {
+          val errorMessage = s"Failed to publish '$filename'. Response(${response.statusCode}): ${response.content}"
+          Left(errorMessage)
         }
       }
     })
   }
 
-  def getApiPublishPhrase(statusCode: Int) : String = statusCode match {
-      case 200 => "Updated"
-      case 201 => "Created"
-      case _ => "???"
+  def getApiPublishPhrase(statusCode: Int): String = statusCode match {
+    case 200 => "Updated"
+    case 201 => "Created"
+    case _   => "???"
   }
 }
-
