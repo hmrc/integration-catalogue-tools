@@ -55,13 +55,13 @@ class IntegrationCatalogueTools {
       Right()
     }
 
-    case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
+    case "--publish" :: "--useFilenameAsPublisherReference" :: useFilenameAsPublisherReference :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
       val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
-      publisher.publishFile(oasFilepath)
+      publisher.publishFile(oasFilepath, useFilenameAsPublisherReference.toBoolean)
     }
-    case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
+    case "--publish" :: "--useFilenameAsPublisherReference" :: useFilenameAsPublisherReference :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
       val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
-      publisher.publishDirectory(oasDirectory)
+      publisher.publishDirectory(oasDirectory, useFilenameAsPublisherReference.toBoolean)
     }
 
     case "--publishFileTransfers" :: "--platform" :: platform :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
