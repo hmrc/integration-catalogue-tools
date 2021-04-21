@@ -9,11 +9,7 @@ lazy val root = (project in file("."))
   .settings(
     scalaVersion := "2.12.12",
     name := "integration-catalogue-tools",
-    majorVersion := 1,
-    makePublicallyAvailableOnBintray := true,
-    resolvers := Seq(
-      Resolver.bintrayRepo("hmrc", "releases")
-    )
+    majorVersion := 1
   )
   .settings(scoverageSettings)
 
