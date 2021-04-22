@@ -14,12 +14,13 @@ class IntegrationCatalogueTools {
             integration-catalogue-tools --help | -h
             integration-catalogue-tools --csvToOas <inputCsv> <output directory>
             integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-            integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
-            integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
+            integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
+            integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
             integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
             
             Arguments:
                 - directory : All files with .yaml or .json extension will be processed
+                - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OAS file
         """)
   }
 
@@ -55,13 +56,24 @@ class IntegrationCatalogueTools {
       Right()
     }
 
-    case "--publish" :: "--useFilenameAsPublisherReference" :: useFilenameAsPublisherReference :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
+    case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
       val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
-      publisher.publishFile(oasFilepath, useFilenameAsPublisherReference.toBoolean)
+      publisher.publishFile(oasFilepath, false)
     }
-    case "--publish" :: "--useFilenameAsPublisherReference" :: useFilenameAsPublisherReference :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
+
+    case "--publish" :: "--useFilenameAsPublisherReference" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
       val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
-      publisher.publishDirectory(oasDirectory, useFilenameAsPublisherReference.toBoolean)
+      publisher.publishFile(oasFilepath, true)
+    }
+
+    case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
+      publisher.publishDirectory(oasDirectory, false)
+    }
+
+    case "--publish" :: "--useFilenameAsPublisherReference" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
+      publisher.publishDirectory(oasDirectory, true)
     }
 
     case "--publishFileTransfers" :: "--platform" :: platform :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
