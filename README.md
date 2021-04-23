@@ -139,30 +139,27 @@ Usage:
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <inputCsv> <output directory>
     integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-    integration-catalogue-tools --publish --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
-    integration-catalogue-tools --publish --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
+    integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
+    integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
     integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
     
     Arguments:
         - directory : All files with .yaml or .json extension will be processed
+        - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OAS file
 ```
 
-# Building the tool from source
+# Building the tool from source and releasing
 
-Bump the version in the build.sbt (if this version is going to be published). Even versions to release. Odd for development.
+1. Checkout the git tag that you want to release
+1. Build the release locally
+    ```
+    sbt packArchive
+    ```
 
-```
-sbt packArchive
-```
-
-```target/integration-catalogue-tools-x.y.z-SNAPSHOT.zip``` will contain all the files to run the tool.
-
-To create a downloadable release:
-1. Commit and push the version change in the `build.sbt` file
-1. Go to the github [releases](https://github.com/hmrc/integration-catalogue-tools/releases) page and draft a new release.
-1. Give the release a name, and assign it to the tag / commit.
-1. Upload into the release the ```integration-catalogue-tools-x.y.z-SNAPSHOT.zip``` that you have built.
-1. Bump the version to the next odd version and commit that.
+    ```target/integration-catalogue-tools-x.y.z-SNAPSHOT.zip``` will contain all the files to run the tool
+1. Go to the github [releases](https://github.com/hmrc/integration-catalogue-tools/releases) page and find the release for that version
+1. Update the name & notes (if needed).
+1. Upload into the release the ```integration-catalogue-tools-x.y.z-SNAPSHOT.zip``` that you have built
 
 # Running the tool from source
 
