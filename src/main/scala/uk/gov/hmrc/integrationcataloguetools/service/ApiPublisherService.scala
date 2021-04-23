@@ -41,7 +41,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
           .sortBy(_.getName())
           .filter(isOasFile)
           .map(file => {
-            Thread.sleep(500L)
+            Thread.sleep(10L)
             publishFile(file.getPath(), useFilenameAsPublisherReference)
           })
 
