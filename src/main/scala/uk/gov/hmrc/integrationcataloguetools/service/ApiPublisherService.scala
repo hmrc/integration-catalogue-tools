@@ -72,11 +72,14 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
 
   private def publish(useFilenameAsPublisherReference: Boolean, filename: String, oasContent: Array[Byte]): Either[String, Unit] = {
 
-    val headers = Map("x-specification-type" -> "OAS_V3")
+    def getOptionalHeaders() : Map[String, String] = {
+      if (useFilenameAsPublisherReference) Map("x-publisher-reference" -> filenameWithoutExtension(filename)) 
+      else Map.empty
+    }
 
-    val updatedHeaders = if (useFilenameAsPublisherReference) headers ++ Map("x-publisher-reference" -> filename) else headers
+    val headers = Map("x-specification-type" -> "OAS_V3") ++ getOptionalHeaders()
 
-    val responseEither = publisherConnector.publishApi(updatedHeaders, filename, oasContent);
+    val responseEither = publisherConnector.publishApi(headers, filename, oasContent);
 
     responseEither.flatMap(response => {
       response.statusCode match {
@@ -96,5 +99,9 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
     case 200 => "Updated"
     case 201 => "Created"
     case _   => "???"
+  }
+
+  private def filenameWithoutExtension(filename: String) : String = {
+    filename.replaceFirst("[.][^.]+$", "");
   }
 }

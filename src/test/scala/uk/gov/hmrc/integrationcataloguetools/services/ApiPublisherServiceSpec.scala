@@ -27,7 +27,8 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
   }
 
   "Publish single file" should {
-    val filename1 = "example-oas-1.yaml"
+    val publisherReference1 = "example-oas-1"
+    val filename1 = publisherReference1 + ".yaml"
     val filepath1 = testResourcesPath + filename1
 
     "be sucessfull if publish returns a 200 when useFilenameAsPublisherReference is true" in new Setup {
@@ -39,7 +40,7 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
 
       val expectedHeaders = Map(
           "x-specification-type" -> specificationType,
-          "x-publisher-reference" -> filename1
+          "x-publisher-reference" -> publisherReference1
         )
 
       val expectedOasContent = "OAS File Content\n".getBytes(StandardCharsets.US_ASCII);
@@ -82,8 +83,11 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
   }
 
   "Publish directory of files" should {
-    val filename2 = "example-oas-2.yaml"
-    val filename3 = "example-oas-3.json"
+    val publisherReference2 = "example-oas-2"
+    val publisherReference3 = "example-oas-3"
+
+    val filename2 = publisherReference2 + ".yaml"
+    val filename3 = publisherReference3 + ".json"
 
     val directoryPath = testResourcesPath + "directory-of-files-1"
 
@@ -97,12 +101,12 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
 
       val expectedHeaders1 = Map(
           "x-specification-type" -> specificationType,
-          "x-publisher-reference" -> filename2
+          "x-publisher-reference" -> publisherReference2
       )
 
       val expectedHeaders2 = Map(
           "x-specification-type" -> specificationType,
-          "x-publisher-reference" -> filename3
+          "x-publisher-reference" -> publisherReference3
       )
 
       val expectedOasContent1 = "OAS File Content 2\n".getBytes(StandardCharsets.US_ASCII);
