@@ -21,8 +21,9 @@ libraryDependencies += "net.liftweb" %% "lift-json" % "3.4.3"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % Test
 libraryDependencies += "org.mockito" %% "mockito-scala-scalatest" % "1.16.29" % Test
+libraryDependencies += "com.vladsch.flexmark" %  "flexmark-all" % "0.36.8" % Test
 
-enablePlugins(PackPlugin)
+enablePlugins(PackPlugin, SbtAutoBuildPlugin)
 packMain := Map("integration-catalogue-tools" -> "uk.gov.hmrc.integrationcataloguetools.Main")
 
 
