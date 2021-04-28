@@ -28,7 +28,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
   val testPlatform = Platform("TEST_PLATFORM")
   "Parse CSV into OpenAPI list" in {
     val csvFile = Source.fromResource("generateopenapispec/Parse-CSV-into-OpenAPI-list.csv")
-    
+
     val apis : Seq[(_, OpenAPI)] = GenerateOpenApi.fromCsvToOpenAPI(csvFile.bufferedReader())
 
     apis should have length 1
@@ -43,12 +43,33 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
     integrationCatalogueExtensions.get("platform").asInstanceOf[String] shouldBe testPlatform.value
     integrationCatalogueExtensions.get("publisher-reference").asInstanceOf[String] shouldBe "My Ref 123"
     
-    Option(api.getPaths().get("/my/resource/uri").getGet()).isDefined shouldBe true
+    val pathItem = Option(api.getPaths().get("/my/resource/uri/{uri}"))
+    val parameters = Option(pathItem.get.getParameters()).getOrElse(new java.util.ArrayList()).asScala.toList 
+    parameters.size shouldBe 1 
+    parameters.headOption.get.getName() shouldBe "uri"
+    parameters.headOption.get.getRequired shouldBe true
+    parameters.headOption.get.getIn() shouldBe "path"
+    parameters.headOption.get.getSchema().getType shouldBe "string"
+    Option(pathItem.get.getGet()).isDefined shouldBe true
+  
   }
 
   "Parse CSV into OpenAPI Specification content" in {
     val csvFile = Source.fromResource("generateopenapispec/Parse-to-OAS-Content.csv")
     val expectedContent = Source.fromResource("generateopenapispec/Expected-Parse-to-OAS-Content.yaml").mkString
+
+    val contents = GenerateOpenApi.fromCsvToOasContent(csvFile.bufferedReader())
+
+    contents should have length 1
+
+    val content = contents.head._2
+
+    content shouldBe expectedContent
+  }
+
+    "Parse CSV with Path Parameters into OpenAPI Specification content" in {
+    val csvFile = Source.fromResource("generateopenapispec/Parse-CSV-into-OpenAPI-list.csv")
+    val expectedContent = Source.fromResource("generateopenapispec/Expected-Parse-CSV-into-OpenAPI-list.yaml").mkString
 
     val contents = GenerateOpenApi.fromCsvToOasContent(csvFile.bufferedReader())
 

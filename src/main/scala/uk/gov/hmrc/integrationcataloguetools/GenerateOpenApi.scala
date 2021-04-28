@@ -20,6 +20,7 @@ import io.swagger.v3.oas.models.info.{Contact, Info}
 import io.swagger.v3.oas.models.media.{Content, MediaType}
 import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
+import io.swagger.v3.oas.models.media.Schema
 import io.swagger.v3.oas.models.responses.{ApiResponses, ApiResponse}
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -36,6 +37,7 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.Reader
 
 import uk.gov.hmrc.integrationcataloguetools.models._
+import io.swagger.v3.oas.models.parameters.Parameter
 
 object GenerateOpenApi {
   def fromCsvToOasContent(reader : Reader) : Seq[(PublisherReference, String)] = {
@@ -55,6 +57,19 @@ object GenerateOpenApi {
         Option(s).getOrElse("").trim()
       }
 
+      def truncateAfter(x: String, p: String) = {
+       val s =  parseString(x)
+        if(s.indexOf(p) > 0) s.substring(0, s.indexOf(p)) else s
+      }
+      
+      def parsePathParameters(endpoint: String) : List[String] = {
+        truncateAfter(endpoint, "?")
+        .split("/")
+        .filter(path => path.contains("{") && path.contains("}"))
+        .map(pathParam => pathParam.replace("{", "").replace("}", ""))
+        .toList
+      }
+
       BasicApi(
         PublisherReference(parseString(record.get(0))),
         Platform(parseString(record.get(1))),
@@ -62,7 +77,8 @@ object GenerateOpenApi {
         parseString(record.get(3)),
         parseString(record.get(4)),
         parseString(record.get(5)),
-        parseString(record.get(6))
+        parseString(record.get(6)),
+        parsePathParameters(record.get(6))
       )}
 
     org.apache.commons.csv.CSVFormat.EXCEL
@@ -83,6 +99,7 @@ object GenerateOpenApi {
   }
 
   private def createOpenApi(basicApi: BasicApi): OpenAPI = {
+    println(basicApi)
     val openApiInfo = new Info()
     openApiInfo.setTitle(basicApi.title)
     openApiInfo.setDescription(basicApi.description)
@@ -122,10 +139,11 @@ object GenerateOpenApi {
 
   def getPathItem(basicApi: BasicApi) : PathItem = {
     val operation = createOperation(basicApi)
+    val parameters = createParameters(basicApi)
 
     val pathItem = new PathItem()
     basicApi.method.toUpperCase.trim match {
-      case "GET" => pathItem.setGet(operation)
+      case "GET" => pathItem.setGet(operation)  
       case "POST" => pathItem.setPost(operation)
       case "PUT" => pathItem.setPut(operation)
       case "PATCH" => pathItem.setPatch(operation)
@@ -140,7 +158,7 @@ object GenerateOpenApi {
         pathItem.setGet(operation)
       }
     }
-
+    if(parameters.nonEmpty) pathItem.setParameters(parameters.asJava)
     pathItem
   }
 
@@ -148,6 +166,20 @@ object GenerateOpenApi {
     val operation = new Operation()
     operation.setResponses(createResponses())
     operation
+  }
+  
+  def createParameters(basicApi: BasicApi) : List[Parameter] = {
+      basicApi.parameters.map(param => {
+       val paramObj =  new Parameter()
+       println(s"**** $param ******")
+       paramObj.setName(param)
+       paramObj.setIn("path")
+       paramObj.setRequired(true)
+       val schema = new Schema()
+       schema.setType("string")
+       paramObj.setSchema(schema)
+       paramObj
+      })
   }
 
   private def createResponses() : ApiResponses = {

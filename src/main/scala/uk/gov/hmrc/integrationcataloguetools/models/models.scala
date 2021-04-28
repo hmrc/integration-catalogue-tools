@@ -29,7 +29,8 @@ case class BasicApi(
   description: String,
   version: String,
   method: String,
-  endpoint: String)
+  endpoint: String,
+  parameters: List[String])
 
 case class ContactInformation(name: String, emailAddress: String)
 
