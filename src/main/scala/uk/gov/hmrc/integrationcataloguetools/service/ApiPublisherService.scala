@@ -21,27 +21,29 @@ import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 import java.io.File
 import java.nio.file.{Files, Paths}
 
-class ApiPublisherService(publisherConnector: PublisherConnector) {
+class ApiPublisherService(publisherConnector: PublisherConnector) extends PublishHelper {
+
+
 
   def publishDirectory(directoryPath: String, useFilenameAsPublisherReference: Boolean): Either[String, Unit] = {
 
     def isOasFile(file: File): Boolean = {
-      if (file.isDirectory()) false
-      else file.getName().endsWith(".yaml") || file.getName().endsWith(".json")
+      if (file.isDirectory) false
+      else file.getName.endsWith(".yaml") || file.getName.endsWith(".json")
     }
 
     val directory = new File(directoryPath)
-    if (!directory.isDirectory()) {
+    if (!directory.isDirectory) {
       Left(s"`$directory` is not a directory")
     } else {
       val results =
         directory
           .listFiles()
-          .sortBy(_.getName())
           .filter(isOasFile)
+          .sortBy(_.getName())
           .map(file => {
             Thread.sleep(10L)
-            publishFile(file.getPath(), useFilenameAsPublisherReference)
+            publishFile(file.getPath, useFilenameAsPublisherReference)
           })
 
       val lefts = results.collect({ case Left(l) => l })
@@ -63,7 +65,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
     println(s"Publishing ${pathname}")
 
     val file = new File(pathname)
-    val filename = file.getName()
+    val filename = file.getName
 
     val oasContentBytes = Files.readAllBytes(Paths.get(pathname))
     publish(useFilenameAsPublisherReference = useFilenameAsPublisherReference, filename, oasContentBytes)
@@ -79,26 +81,10 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
     val headers = Map("x-specification-type" -> "OAS_V3") ++ getOptionalHeaders()
 
     val responseEither = publisherConnector.publishApi(headers, filename, oasContent);
-
-    responseEither.flatMap(response => {
-      response.statusCode match {
-        case 200 | 201       => {
-          println(s"Published. ${getApiPublishPhrase(response.statusCode)} API. Response(${response.statusCode}): ${response.content}")
-          Right(())
-        }
-        case otherStatusCode => {
-          val errorMessage = s"Failed to publish '$filename'. Response(${response.statusCode}): ${response.content}"
-          Left(errorMessage)
-        }
-      }
-    })
+    handlePublishResponse(responseEither, filename)
   }
 
-  def getApiPublishPhrase(statusCode: Int): String = statusCode match {
-    case 200 => "Updated"
-    case 201 => "Created"
-    case _   => "???"
-  }
+
 
   private def filenameWithoutExtension(filename: String) : String = {
     filename.replaceFirst("[.][^.]+$", "");

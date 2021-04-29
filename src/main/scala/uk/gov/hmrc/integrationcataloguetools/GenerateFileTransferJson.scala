@@ -24,11 +24,11 @@ import scala.collection.JavaConverters._
 
 object GenerateFileTransferJson {
   
-  def fromCsvToFileTranferJson(reader: Reader): Seq[(PublisherReference, FileTransferPublishRequest)] = {
+  def fromCsvToFileTransferJson(reader: Reader): Seq[(PublisherReference, FileTransferPublishRequest)] = {
 
     def createFileTransferPublishRequest(record: CSVRecord): FileTransferPublishRequest = {
        val expectedValues = 9
-      if (record.size() < expectedValues) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber()}")
+      if (record.size() < expectedValues) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber}")
 
       def parseString(s: String): String = {
         Option(s).getOrElse("").trim()
@@ -57,7 +57,7 @@ object GenerateFileTransferJson {
     
     org.apache.commons.csv.CSVFormat.EXCEL
       .withFirstRecordAsHeader()
-      .parse(reader).getRecords().asScala.toSeq
+      .parse(reader).getRecords.asScala
       .map(createFileTransferPublishRequest)
       .map(x=> (x.publisherReference, x))
 

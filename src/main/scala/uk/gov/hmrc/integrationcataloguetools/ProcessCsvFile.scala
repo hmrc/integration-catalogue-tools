@@ -33,15 +33,14 @@ object ProcessCsvFile {
   }
 
   def processApiCsv(inputFilename: String, outputFolder: String): Int = {
-    val in = new FileReader(inputFilename);
+    val in = new FileReader(inputFilename)
     try {
       GenerateOpenApi
         .fromCsvToOasContent(in)
         .map {
-          case (publisherReference, oasContent) => {
+          case (publisherReference, oasContent) =>
             val filename = s"$outputFolder/${publisherReference.value}.yaml"
             writeToFile(filename, oasContent)
-          }
         }.length
     } finally {
       in.close()
@@ -49,18 +48,17 @@ object ProcessCsvFile {
   }
 
   def processFTCsv(inputFilename: String, outputFolder: String): Int = {
-    val in = new FileReader(inputFilename);
+    val in = new FileReader(inputFilename)
 
-    implicit val formats = DefaultFormats
+    implicit val formats: DefaultFormats.type = DefaultFormats
     try {
 
       GenerateFileTransferJson
-        .fromCsvToFileTranferJson(in)
+        .fromCsvToFileTransferJson(in)
         .map {
-          case (publisherReference, fileTransferJson) => {
+          case (publisherReference, fileTransferJson) =>
             val filename = s"$outputFolder/${publisherReference.value}.json"
             writeToFile(filename, write(fileTransferJson))
-          }
         }.length
     } finally {
       in.close()

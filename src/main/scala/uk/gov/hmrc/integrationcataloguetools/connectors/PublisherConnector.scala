@@ -31,43 +31,42 @@ class PublisherConnector(url: String, client: CloseableHttpClient, platform: Pla
     import org.apache.http.entity.ContentType
     import org.apache.http.entity.mime.MultipartEntityBuilder
 
-    var put = new HttpPut(url)
+    val put = new HttpPut(url)
     headers.foreach(header => put.addHeader(header._1, header._2))
 
     val entity = MultipartEntityBuilder.create()
     entity.addBinaryBody("selectedFile", oasContent, ContentType.DEFAULT_TEXT, filename)
-    put.setEntity(entity.build());
+    put.setEntity(entity.build())
 
     callEndpoint(put)
 
   }
 
-  def publishFileTransfer(content: String) = {
+  def publishFileTransfer(content: String): Either[String, Response] = {
 
-    var put = new HttpPut(url)
+    val put = new HttpPut(url)
 
-    val entity: StringEntity = new StringEntity(content, ContentType.create("application/json", "UTF-8"));
-    put.setEntity(entity);
+    val entity: StringEntity = new StringEntity(content, ContentType.create("application/json", "UTF-8"))
+    put.setEntity(entity)
 
     callEndpoint(put)
   }
 
-  private def callEndpoint(put: HttpPut) = {
+  private def callEndpoint(put: HttpPut): Either[String, Response] = {
     
     put.addHeader("Authorization", authorizationKey)
     put.addHeader("x-platform-type", platform.value)
 
     Try(client.execute(put))
       .map((response: CloseableHttpResponse) => {
-        val content = scala.io.Source.fromInputStream(response.getEntity().getContent()).mkString
-        Response(response.getStatusLine().getStatusCode(), content)
+        val content = scala.io.Source.fromInputStream(response.getEntity.getContent).mkString
+        Response(response.getStatusLine.getStatusCode, content)
       }) match {
       case Success(response)  => Right(response)
-      case Failure(exception) => {
+      case Failure(exception) =>
         println("Error calling publish service:")
         exception.printStackTrace()
-        Left(exception.getMessage())
-      }
+        Left(exception.getMessage)
     }
   }
 
