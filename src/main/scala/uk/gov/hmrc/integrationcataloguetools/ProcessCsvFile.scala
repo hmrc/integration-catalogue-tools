@@ -16,37 +16,15 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import io.swagger.v3.oas.models.info.{Contact, Info}
-import io.swagger.v3.oas.models.media.{Content, MediaType}
-import io.swagger.v3.oas.models.parameters.RequestBody
-import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
-import io.swagger.v3.oas.models.responses.{ApiResponse, ApiResponses}
-
-import com.fasterxml.jackson.databind.ObjectMapper
-
-import scala.collection.JavaConverters._
-import java.util.HashMap
-import java.io.FileReader
-
-import io.swagger.v3.core.util.Yaml
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import java.io.Reader
 import net.liftweb.json.DefaultFormats
-
-import net.liftweb.json._
 import net.liftweb.json.Serialization.write
-import net.liftweb.json.DefaultFormats
-import uk.gov.hmrc.integrationcataloguetools.models.Platform
+
+import java.io.FileReader
 
 object ProcessCsvFile {
 
   private def writeToFile(filename: String, content: String): Unit = {
-    import java.io.File
-    import java.io.BufferedWriter
-    import java.io.FileWriter
+    import java.io.{BufferedWriter, File, FileWriter}
 
     val file = new File(filename)
     val bw = new BufferedWriter(new FileWriter(file))
@@ -55,15 +33,14 @@ object ProcessCsvFile {
   }
 
   def processApiCsv(inputFilename: String, outputFolder: String): Int = {
-    val in = new FileReader(inputFilename);
+    val in = new FileReader(inputFilename)
     try {
       GenerateOpenApi
         .fromCsvToOasContent(in)
         .map {
-          case (publisherReference, oasContent) => {
+          case (publisherReference, oasContent) =>
             val filename = s"$outputFolder/${publisherReference.value}.yaml"
             writeToFile(filename, oasContent)
-          }
         }.length
     } finally {
       in.close()
@@ -71,18 +48,17 @@ object ProcessCsvFile {
   }
 
   def processFTCsv(inputFilename: String, outputFolder: String): Int = {
-    val in = new FileReader(inputFilename);
+    val in = new FileReader(inputFilename)
 
-    implicit val formats = DefaultFormats
+    implicit val formats: DefaultFormats.type = DefaultFormats
     try {
 
       GenerateFileTransferJson
-        .fromCsvToFileTranferJson(in)
+        .fromCsvToFileTransferJson(in)
         .map {
-          case (publisherReference, fileTransferJson) => {
+          case (publisherReference, fileTransferJson) =>
             val filename = s"$outputFolder/${publisherReference.value}.json"
             writeToFile(filename, write(fileTransferJson))
-          }
         }.length
     } finally {
       in.close()

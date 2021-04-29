@@ -19,11 +19,11 @@ package uk.gov.hmrc.integrationcataloguetools
 import org.apache.http.impl.client.HttpClients
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
 import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
-import uk.gov.hmrc.integrationcataloguetools.service.ApiPublisherService
+import uk.gov.hmrc.integrationcataloguetools.service.{ApiPublisherService, FileTransferPublisherService}
 
 class IntegrationCatalogueTools {
 
- def printUsage() = {
+ def printUsage(): Unit = {
      println("""
         Usage:
             integration-catalogue-tools --version | -v
@@ -40,63 +40,54 @@ class IntegrationCatalogueTools {
         """)
   }
 
-  def printVersion() = {
-    val title = getClass().getPackage().getImplementationTitle()
-    val version =getClass().getPackage().getImplementationVersion()
+  def printVersion(): Unit = {
+    //val title = getClass.getPackage.getImplementationTitle
+    val version =getClass.getPackage.getImplementationVersion
 
-    println(s"integration-catalogue-tools version '${version}'")
-  } 
+    println(s"integration-catalogue-tools version '$version'")
+  }
 
-  def runApplication(args  : List[String]) = {
+  def runApplication(args  : List[String]): Either[String, Unit] = {
        val client = HttpClients.createDefault()
  try {
   args match {
-    case Nil | "--help" :: Nil | "-h" :: Nil => {
+    case Nil | "--help" :: Nil | "-h" :: Nil =>
       printUsage()
-      Right()
-    }
-    case "--version" :: Nil | "-v" :: Nil => {
+      Right("")
+    case "--version" :: Nil | "-v" :: Nil =>
       printVersion()
-      Right()
-    }
-    case "--csvToOas" :: inputCsvFile :: outputPath :: Nil => {
-      println(s"Exporting CSV to OAS Files:\nInput file: ${inputCsvFile}\noutput path: ${outputPath}")
+      Right("")
+    case "--csvToOas" :: inputCsvFile :: outputPath :: Nil =>
+      println(s"Exporting CSV to OAS Files:\nInput file: $inputCsvFile\noutput path: $outputPath")
       val rowsProcessed = ProcessCsvFile.processApiCsv(inputCsvFile, outputPath)
-      println(s"Exported $rowsProcessed OAS files to:\n${outputPath}")
-      Right()
-    }
-    case "--csvToFileTransferJson" :: inputCsvFile :: outputPath :: Nil => {
-      println(s"Exporting CSV to FT Json Files:\nInput file: ${inputCsvFile}\noutput path: ${outputPath}")
+      println(s"Exported $rowsProcessed OAS files to:\n$outputPath")
+      Right("")
+    case "--csvToFileTransferJson" :: inputCsvFile :: outputPath :: Nil =>
+      println(s"Exporting CSV to FT Json Files:\nInput file: $inputCsvFile\noutput path: $outputPath")
       val rowsProcessed = ProcessCsvFile.processFTCsv(inputCsvFile, outputPath)
-      println(s"Exported $rowsProcessed FT Json files to:\n${outputPath}")
-      Right()
-    }
+      println(s"Exported $rowsProcessed FT Json files to:\n$outputPath")
+      Right("")
 
-    case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
-      publisher.publishFile(oasFilepath, false)
-    }
+    case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
+      publisher.publishFile(oasFilepath, useFilenameAsPublisherReference = false)
 
-    case "--publish" :: "--useFilenameAsPublisherReference" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
-      publisher.publishFile(oasFilepath, true)
-    }
+    case "--publish" :: "--useFilenameAsPublisherReference" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
+      publisher.publishFile(oasFilepath, useFilenameAsPublisherReference = true)
 
-    case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
-      publisher.publishDirectory(oasDirectory, false)
-    }
+    case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
+      publisher.publishDirectory(oasDirectory, useFilenameAsPublisherReference = false)
 
-    case "--publish" :: "--useFilenameAsPublisherReference" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
-      publisher.publishDirectory(oasDirectory, true)
-    }
+    case "--publish" :: "--useFilenameAsPublisherReference" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
+      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
+      publisher.publishDirectory(oasDirectory, useFilenameAsPublisherReference = true)
 
-    case "--publishFileTransfers" :: "--platform" :: platform :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil => {
-      val publisher = new FileTransferPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey));
+    case "--publishFileTransfers" :: "--platform" :: platform :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
+      val publisher = new FileTransferPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
       publisher.publishDirectory(ftDirectory)
-    }
-    case options => Left(s"Invalid, unknown or mismatched options or arguments : ${options}\nArgs:${args.toList}")
+    case options => Left(s"Invalid, unknown or mismatched options or arguments : $options\nArgs:$args")
   }
 } finally {
       client.close()

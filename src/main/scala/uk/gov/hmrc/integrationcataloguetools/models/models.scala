@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.integrationcataloguetools.models
 
-import java.time.LocalDateTime
-
 case class PublisherReference(value: String) extends AnyVal
 
 case class Platform(value: String) extends AnyVal
@@ -29,7 +27,8 @@ case class BasicApi(
   description: String,
   version: String,
   method: String,
-  endpoint: String)
+  endpoint: String,
+  parameters: List[String])
 
 case class ContactInformation(name: String, emailAddress: String)
 

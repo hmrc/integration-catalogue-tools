@@ -18,17 +18,19 @@ package uk.gov.hmrc.integrationcataloguetools
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+
 import scala.io.Source
 import io.swagger.v3.oas.models.OpenAPI
-
 import uk.gov.hmrc.integrationcataloguetools.connectors._
 
 import scala.collection.JavaConverters._
 import org.mockito.Mock
 import org.mockito.MockitoSugar
 import org.mockito.ArgumentMatchersSugar
+
 import java.nio.charset.StandardCharsets
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
+import uk.gov.hmrc.integrationcataloguetools.service.FileTransferPublisherService
 
 class FileTransferPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar {
 

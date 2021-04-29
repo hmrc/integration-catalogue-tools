@@ -16,27 +16,20 @@
 
 package uk.gov.hmrc.integrationcataloguetools.connector
 
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
-import org.mockito.Mock
-import org.mockito.MockitoSugar
-import org.mockito.ArgumentMatchersSugar
+import org.apache.http.{HttpEntity, ProtocolVersion}
+import org.apache.http.client.methods.{CloseableHttpResponse, HttpPut}
+import org.apache.http.entity.{ContentType, StringEntity}
 import org.apache.http.impl.client.CloseableHttpClient
-import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
-import org.apache.http.client.methods.CloseableHttpResponse
-import org.apache.http.client.methods.HttpPut
-import org.apache.http.entity.StringEntity
-import org.apache.http.entity.ContentType
-import org.apache.http.HttpResponse
-import org.apache.http.HttpEntity
+import org.apache.http.message.BasicStatusLine
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import uk.gov.hmrc.integrationcataloguetools.connectors.{PublisherConnector, Response}
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
+
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
-import org.apache.http.StatusLine
-import org.apache.http.message.BasicStatusLine
-import uk.gov.hmrc.integrationcataloguetools.connectors.Response
-import uk.gov.hmrc.integrationcataloguetools.models.Platform
-import org.apache.http.ProtocolVersion
-import org.scalatest.BeforeAndAfterEach
 
 
 class PublisherConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar with BeforeAndAfterEach {

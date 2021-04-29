@@ -14,50 +14,34 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.integrationcataloguetools
+package uk.gov.hmrc.integrationcataloguetools.service
 
-import java.io.File
-import java.io.FileReader
-import java.io.BufferedReader
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.nio.charset.StandardCharsets
-
-import scala.concurrent.Future
-
-import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext
-
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
-import collection.JavaConverters._
+import uk.gov.hmrc.integrationcataloguetools.connectors.{PublisherConnector, Response}
 import uk.gov.hmrc.integrationcataloguetools.models._
 
-import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
+import java.io.File
+import java.nio.file.{Files, Paths}
+import scala.collection.JavaConverters._
 
-class FileTransferPublisherService(publisherConnector: PublisherConnector) {
-  import scala.concurrent.ExecutionContext.Implicits._
+class FileTransferPublisherService(publisherConnector: PublisherConnector) extends PublishHelper {
 
   def publishDirectory(directoryPath: String) : Either[String, Unit]= {
     
     def isJsonFile(file:File) : Boolean = {
-      if (file.isDirectory()) return false
-      else file.getName().endsWith(".json")
+      if (file.isDirectory) false
+      else file.getName.endsWith(".json")
     }
 
-    var directory = new File(directoryPath)
-    if (!directory.isDirectory()){
+    val directory = new File(directoryPath)
+    if (!directory.isDirectory){
       Left(s"`$directory` is not a directory")
     } else {
-      val results = 
+      val results =
         directory
           .listFiles()
-          .sortBy(_.getName())
           .filter(isJsonFile)
-          .map(file => publishFile(file.getPath()) )
+          .sortBy(_.getName())
+          .map(file => publishFile(file.getPath) )
 
       val lefts = results.collect({ case Left(l) => l})
       
@@ -75,37 +59,22 @@ class FileTransferPublisherService(publisherConnector: PublisherConnector) {
 
   def publishFile(pathname: String) : Either[String, Unit] = {
 
-    println(s"Publishing ${pathname}")
+    println(s"Publishing $pathname")
 
     val file = new File(pathname)
-    val filename = file.getName()
+    val filename = file.getName
 
     val fileContents = Files.readAllLines(Paths.get(pathname)).asScala.mkString
 
     publish(publisherReference = PublisherReference(filename), filename, fileContents)
   }
 
+
+
   private def publish(publisherReference: PublisherReference, filename: String, jsonString: String) : Either[String, Unit] = {
-      val responseEither = publisherConnector.publishFileTransfer(jsonString);
-
-      responseEither.flatMap(response => {
-        response.statusCode match {
-          case 200 | 201  => {
-            println(s"Published. ${getApiPublishPhrase(response.statusCode)} API. Response(${response.statusCode}): ${response.content}") 
-            Right(())
-          }
-          case otherStatusCode => {
-            val errorMessage = s"Failed to publish '$filename'. Response(${response.statusCode}): ${response.content}"
-            Left(errorMessage)
-        }
-      }
-    })
+      val responseEither: Either[String, Response] = publisherConnector.publishFileTransfer(jsonString);
+      handlePublishResponse(responseEither, filename)
   }
 
-  def getApiPublishPhrase(statusCode: Int) : String = statusCode match {
-      case 200 => "Updated"
-      case 201 => "Created"
-      case _ => "???"
-  }
 }
 

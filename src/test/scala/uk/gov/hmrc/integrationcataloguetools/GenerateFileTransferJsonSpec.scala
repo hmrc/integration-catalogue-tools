@@ -16,23 +16,19 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
+import net.liftweb.json.DefaultFormats
+import net.liftweb.json.Serialization.write
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import scala.io.Source
-import io.swagger.v3.oas.models.OpenAPI
-
-import scala.collection.JavaConverters._
-import net.liftweb.json.DefaultFormats
-import net.liftweb.json._
-import net.liftweb.json.Serialization.write
-import net.liftweb.json.DefaultFormats
 import uk.gov.hmrc.integrationcataloguetools.models.FileTransferPublishRequest
+
+import scala.io.Source
 
 class GenerateFileTransferJsonSpec extends AnyWordSpec with Matchers {
   "Parse CSV into File Transfer Json list" in {
     val csvFile = Source.fromResource("generatefiletransferjsonspec/FileTransferDataCsv.csv")
     
-    val fileTransfers : Seq[(_, FileTransferPublishRequest)] = GenerateFileTransferJson.fromCsvToFileTranferJson(csvFile.bufferedReader())
+    val fileTransfers : Seq[(_, FileTransferPublishRequest)] = GenerateFileTransferJson.fromCsvToFileTransferJson(csvFile.bufferedReader())
 
     fileTransfers should have length 1
 
@@ -55,7 +51,7 @@ implicit val formats = DefaultFormats
     val csvFile = Source.fromResource("generatefiletransferjsonspec/FileTransferDataCsv.csv")
     val expectedContent = Source.fromResource("generatefiletransferjsonspec/BMC-ServiceNow-NetworksDataDaily-notify.json").mkString
 
-    val contents = GenerateFileTransferJson.fromCsvToFileTranferJson(csvFile.bufferedReader())
+    val contents = GenerateFileTransferJson.fromCsvToFileTransferJson(csvFile.bufferedReader())
 
     contents should have length 1
 
