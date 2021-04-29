@@ -39,9 +39,9 @@ object GenerateOpenApi {
   def fromCsvToOpenAPI(reader : Reader) : Seq[(PublisherReference, OpenAPI)] = {
 
     def createBasicApi(record: CSVRecord) : BasicApi = {
-      val expectedValues = 6
+      val expectedValues = 7
       // TODO : Handle without exception?
-      if (record.size() < 6) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber}")
+      if (record.size() < 7) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber}")
 
       def parseString(s: String) : String = {
         Option(s).getOrElse("").trim()

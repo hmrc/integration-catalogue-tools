@@ -1,0 +1,2 @@
+header row is ignored
+My Ref 123,TEST_PLATFORM,"My API Title","My API Description", 1.0, PATCH, /my/resource/uri/{uri}
