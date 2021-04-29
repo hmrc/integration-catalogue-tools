@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.integrationcataloguetools.models
 
-import java.time.LocalDateTime
-
 case class PublisherReference(value: String) extends AnyVal
 
 case class Platform(value: String) extends AnyVal

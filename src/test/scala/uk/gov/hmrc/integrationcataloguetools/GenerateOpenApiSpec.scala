@@ -44,8 +44,8 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
     integrationCatalogueExtensions.get("publisher-reference").asInstanceOf[String] shouldBe "My Ref 123"
     
     val pathItem = Option(api.getPaths().get("/my/resource/uri/{uri}"))
-    val parameters = Option(pathItem.get.getParameters()).getOrElse(new java.util.ArrayList()).asScala.toList 
-    parameters.size shouldBe 1 
+    val parameters = Option(pathItem.get.getParameters()).getOrElse(new java.util.ArrayList()).asScala.toList
+    parameters.size shouldBe 1
     parameters.headOption.get.getName() shouldBe "uri"
     parameters.headOption.get.getRequired shouldBe true
     parameters.headOption.get.getIn() shouldBe "path"

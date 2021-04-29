@@ -16,30 +16,14 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import java.io.File
-import java.io.FileReader
-import java.io.BufferedReader
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.nio.charset.StandardCharsets
-
-import scala.concurrent.Future
-
-import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext
-
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
-import collection.JavaConverters._
+import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 import uk.gov.hmrc.integrationcataloguetools.models._
 
-import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
+import java.io.File
+import java.nio.file.{Files, Paths}
+import scala.collection.JavaConverters._
 
 class FileTransferPublisherService(publisherConnector: PublisherConnector) {
-  import scala.concurrent.ExecutionContext.Implicits._
 
   def publishDirectory(directoryPath: String) : Either[String, Unit]= {
     

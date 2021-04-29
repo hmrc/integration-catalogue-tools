@@ -16,28 +16,18 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import io.swagger.v3.oas.models.info.{Contact, Info}
-import io.swagger.v3.oas.models.media.{Content, MediaType}
-import io.swagger.v3.oas.models.parameters.RequestBody
-import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
-import io.swagger.v3.oas.models.media.Schema
-import io.swagger.v3.oas.models.responses.{ApiResponses, ApiResponse}
-
-import com.fasterxml.jackson.databind.ObjectMapper
-
-import scala.collection.JavaConverters._
-import java.util.HashMap
-import java.io.FileReader
-
 import io.swagger.v3.core.util.Yaml
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import java.io.Reader
-
-import uk.gov.hmrc.integrationcataloguetools.models._
+import io.swagger.v3.oas.models.info.Info
+import io.swagger.v3.oas.models.media.Schema
 import io.swagger.v3.oas.models.parameters.Parameter
+import io.swagger.v3.oas.models.responses.{ApiResponse, ApiResponses}
+import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
+import org.apache.commons.csv.CSVRecord
+import uk.gov.hmrc.integrationcataloguetools.models._
+
+import java.io.Reader
+import java.util.HashMap
+import scala.collection.JavaConverters._
 
 object GenerateOpenApi {
   def fromCsvToOasContent(reader : Reader) : Seq[(PublisherReference, String)] = {
@@ -116,7 +106,7 @@ object GenerateOpenApi {
     
     val pathItem = getPathItem(basicApi)
 
-    val paths = new Paths()    
+    val paths = new Paths()
     paths.addPathItem(getEndpointUrl(basicApi), pathItem)
 
     val openApi = new OpenAPI()
@@ -143,7 +133,7 @@ object GenerateOpenApi {
 
     val pathItem = new PathItem()
     basicApi.method.toUpperCase.trim match {
-      case "GET" => pathItem.setGet(operation)  
+      case "GET" => pathItem.setGet(operation)
       case "POST" => pathItem.setPost(operation)
       case "PUT" => pathItem.setPut(operation)
       case "PATCH" => pathItem.setPatch(operation)

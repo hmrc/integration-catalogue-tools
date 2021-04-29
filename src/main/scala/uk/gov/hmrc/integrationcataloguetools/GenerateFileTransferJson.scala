@@ -16,29 +16,11 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import io.swagger.v3.oas.models.info.{Contact, Info}
-import io.swagger.v3.oas.models.media.{Content, MediaType}
-import io.swagger.v3.oas.models.parameters.RequestBody
-import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
-import io.swagger.v3.oas.models.responses.{ApiResponse, ApiResponses}
-
-import com.fasterxml.jackson.databind.ObjectMapper
-
-import scala.collection.JavaConverters._
-import java.util.HashMap
-import java.io.FileReader
-
-import io.swagger.v3.core.util.Yaml
-
+import org.apache.commons.csv.CSVRecord
 import uk.gov.hmrc.integrationcataloguetools.models._
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import java.io.Reader
-import java.time.format.DateTimeFormatter
-import java.time.ZonedDateTime
-import java.time.ZoneOffset
+import scala.collection.JavaConverters._
 
 object GenerateFileTransferJson {
   

@@ -16,16 +16,12 @@
 
 package uk.gov.hmrc.integrationcataloguetools.connectors
 
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
-import org.apache.http.client.methods.HttpPut
-import org.apache.http.entity.StringEntity
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.entity.ContentType
+import org.apache.http.client.methods.{CloseableHttpResponse, HttpPut}
+import org.apache.http.entity.{ContentType, StringEntity}
 import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.client.methods.CloseableHttpResponse
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
+
+import scala.util.{Failure, Success, Try}
 
 case class Response(statusCode: Int, content: String)
 
@@ -34,7 +30,6 @@ class PublisherConnector(url: String, client: CloseableHttpClient, platform: Pla
   def publishApi(headers: Map[String, String], filename: String, oasContent: Array[Byte]): Either[String, Response] = {
     import org.apache.http.entity.ContentType
     import org.apache.http.entity.mime.MultipartEntityBuilder
-    import org.apache.http.Header
 
     var put = new HttpPut(url)
     headers.foreach(header => put.addHeader(header._1, header._2))

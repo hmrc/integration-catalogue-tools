@@ -16,34 +16,17 @@
 
 package uk.gov.hmrc.integrationcataloguetools.service
 
-import java.io.File
-import java.io.FileReader
-import java.io.BufferedReader
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.nio.charset.StandardCharsets
-
-import scala.concurrent.Future
-
-import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext
-
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
-
-import uk.gov.hmrc.integrationcataloguetools.models._
 import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 
+import java.io.File
+import java.nio.file.{Files, Paths}
+
 class ApiPublisherService(publisherConnector: PublisherConnector) {
-  import scala.concurrent.ExecutionContext.Implicits._
 
   def publishDirectory(directoryPath: String, useFilenameAsPublisherReference: Boolean): Either[String, Unit] = {
 
     def isOasFile(file: File): Boolean = {
-      if (file.isDirectory()) return false
+      if (file.isDirectory()) false
       else file.getName().endsWith(".yaml") || file.getName().endsWith(".json")
     }
 
@@ -89,7 +72,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) {
   private def publish(useFilenameAsPublisherReference: Boolean, filename: String, oasContent: Array[Byte]): Either[String, Unit] = {
 
     def getOptionalHeaders() : Map[String, String] = {
-      if (useFilenameAsPublisherReference) Map("x-publisher-reference" -> filenameWithoutExtension(filename)) 
+      if (useFilenameAsPublisherReference) Map("x-publisher-reference" -> filenameWithoutExtension(filename))
       else Map.empty
     }
 

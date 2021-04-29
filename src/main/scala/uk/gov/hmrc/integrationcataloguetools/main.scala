@@ -15,13 +15,6 @@
  */
 
 package uk.gov.hmrc.integrationcataloguetools
-
-import java.io.FileReader
-
-import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
-
-import uk.gov.hmrc.integrationcataloguetools.models._
-import org.apache.http.impl.client.HttpClients
 object Main extends App {
 
    val integrationCatalogueTools = new IntegrationCatalogueTools()
