@@ -1,0 +1,16 @@
+openapi: 3.0.1
+info:
+  title: My API Title
+  description: My API Description
+  version: "1.0"
+  x-integration-catalogue:
+    platform: TEST_PLATFORM
+    publisher-reference: My Ref 123
+paths:
+  /my/resource/uri:
+    get:
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad request
