@@ -168,4 +168,17 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
 
     content shouldBe expectedContent
   }
+
+  "Parse CSV with Query Parameters into OpenAPI Specification with no Query Parameters" in {
+    val csvFile = Source.fromResource("generateopenapispec/Parse-CSV-with-queryParameters-into-OpenAPI.csv")
+    val expectedContent = Source.fromResource("generateopenapispec/Expected-Parse-CSV-with-query-params-into-OpenAPI.yaml").mkString
+
+    val contents = GenerateOpenApi.fromCsvToOasContent(csvFile.bufferedReader())
+
+    contents should have length 1
+
+    val content = contents.head._2
+
+    content shouldBe expectedContent
+  }
 }

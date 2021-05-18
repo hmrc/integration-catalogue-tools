@@ -30,34 +30,40 @@ import java.util
 import scala.collection.JavaConverters._
 
 object GenerateOpenApi {
-  def fromCsvToOasContent(reader : Reader) : Seq[(PublisherReference, String)] = {
-    fromCsvToOpenAPI(reader).map{case (publisherReference, openApi) =>
-      (publisherReference, openApiToContent(openApi))
+
+  def fromCsvToOasContent(reader: Reader): Seq[(PublisherReference, String)] = {
+    fromCsvToOpenAPI(reader).map {
+      case (publisherReference, openApi) =>
+        (publisherReference, openApiToContent(openApi))
     }
   }
 
-  def fromCsvToOpenAPI(reader : Reader) : Seq[(PublisherReference, OpenAPI)] = {
+  def fromCsvToOpenAPI(reader: Reader): Seq[(PublisherReference, OpenAPI)] = {
 
-    def createBasicApi(record: CSVRecord) : BasicApi = {
+    def createBasicApi(record: CSVRecord): BasicApi = {
       val expectedValues = 7
       // TODO : Handle without exception?
       if (record.size() < 7) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber}")
 
-      def parseString(s: String) : String = {
+      def parseString(s: String): String = {
         Option(s).getOrElse("").trim()
       }
 
       def truncateAfter(x: String, p: String) = {
-       val s =  parseString(x)
-        if(s.indexOf(p) > 0) s.substring(0, s.indexOf(p)) else s
+        val s = parseString(x)
+        if (s.indexOf(p) > 0) s.substring(0, s.indexOf(p)) else s
       }
-      
-      def parsePathParameters(endpoint: String) : List[String] = {
+
+      def parsePathParameters(endpoint: String): List[String] = {
         truncateAfter(endpoint, "?")
-        .split("/")
-        .filter(path => path.contains("{") && path.contains("}"))
-        .map(pathParam => pathParam.replace("{", "").replace("}", ""))
-        .toList
+          .split("/")
+          .filter(path => path.contains("{") && path.contains("}"))
+          .map(pathParam => pathParam.replace("{", "").replace("}", ""))
+          .toList
+      }
+
+      def removeQueryParametersFromUrl(url: String): String = {
+        truncateAfter(url, "?").replace("?", "")
       }
 
       BasicApi(
@@ -67,24 +73,25 @@ object GenerateOpenApi {
         description = parseString(record.get(3)),
         version = parseString(record.get(4)),
         method = parseString(record.get(5)),
-        endpoint = parseString(record.get(6)),
+        endpoint = removeQueryParametersFromUrl(parseString(record.get(6))),
         parameters = parsePathParameters(record.get(6))
-      )}
+      )
+    }
 
     org.apache.commons.csv.CSVFormat.EXCEL
       .withFirstRecordAsHeader()
       .parse(reader).getRecords.asScala
       .map(createBasicApi)
-      .map(basicApi => (basicApi.publisherReference, createOpenApi(basicApi)) )
+      .map(basicApi => (basicApi.publisherReference, createOpenApi(basicApi)))
   }
 
   def generateOasContent(basicApi: BasicApi): String = {
-    val openApi : OpenAPI = createOpenApi(basicApi)
+    val openApi: OpenAPI = createOpenApi(basicApi)
 
     openApiToContent(openApi)
   }
 
-  def openApiToContent(openApi: OpenAPI) : String = {
+  def openApiToContent(openApi: OpenAPI): String = {
     Yaml.mapper().writeValueAsString(openApi)
   }
 
@@ -101,9 +108,9 @@ object GenerateOpenApi {
 
     val oasExtensions = new util.HashMap[String, Object]()
     oasExtensions.put("x-integration-catalogue", integrationCatalogueExtensions)
-    
+
     openApiInfo.setExtensions(oasExtensions)
-    
+
     val pathItem = getPathItem(basicApi)
 
     val paths = new Paths()
@@ -116,7 +123,7 @@ object GenerateOpenApi {
     openApi
   }
 
-  def getEndpointUrl(basicApi: BasicApi) : String = {
+  def getEndpointUrl(basicApi: BasicApi): String = {
     if (basicApi.endpoint.startsWith("/")) {
       basicApi.endpoint
     } else {
@@ -126,47 +133,47 @@ object GenerateOpenApi {
     }
   }
 
-  def getPathItem(basicApi: BasicApi) : PathItem = {
+  def getPathItem(basicApi: BasicApi): PathItem = {
     val parameters = createParameters(basicApi)
 
     val pathItem = new PathItem()
     basicApi.method.toUpperCase.trim match {
-      case "GET" => pathItem.setGet(createOperation())
-      case "POST" => pathItem.setPost(createOperation())
-      case "PUT" => pathItem.setPut(createOperation())
-      case "PATCH" => pathItem.setPatch(createOperation())
-      case "DELETE" => pathItem.setDelete(createOperation())
+      case "GET"     => pathItem.setGet(createOperation())
+      case "POST"    => pathItem.setPost(createOperation())
+      case "PUT"     => pathItem.setPut(createOperation())
+      case "PATCH"   => pathItem.setPatch(createOperation())
+      case "DELETE"  => pathItem.setDelete(createOperation())
       case "OPTIONS" => pathItem.setOptions(createOperation())
-      case "HEAD" => pathItem.setHead(createOperation())
-      case unknown => // TODO Handle / filter these?
+      case "HEAD"    => pathItem.setHead(createOperation())
+      case unknown   => // TODO Handle / filter these?
         val error = s"Unsupported method: '$unknown' for publisherReference '${basicApi.publisherReference}'"
         println(error)
         pathItem.setGet(createOperation())
     }
-    if(parameters.nonEmpty) pathItem.setParameters(parameters.asJava)
+    if (parameters.nonEmpty) pathItem.setParameters(parameters.asJava)
     pathItem
   }
 
-  def createOperation() : Operation = {
+  def createOperation(): Operation = {
     val operation = new Operation()
     operation.setResponses(createResponses())
     operation
   }
-  
-  def createParameters(basicApi: BasicApi) : List[Parameter] = {
-      basicApi.parameters.map(param => {
-       val paramObj =  new Parameter()
-       paramObj.setName(param)
-       paramObj.setIn("path")
-       paramObj.setRequired(true)
-       val schema = new Schema()
-       schema.setType("string")
-       paramObj.setSchema(schema)
-       paramObj
-      })
+
+  def createParameters(basicApi: BasicApi): List[Parameter] = {
+    basicApi.parameters.map(param => {
+      val paramObj = new Parameter()
+      paramObj.setName(param)
+      paramObj.setIn("path")
+      paramObj.setRequired(true)
+      val schema = new Schema()
+      schema.setType("string")
+      paramObj.setSchema(schema)
+      paramObj
+    })
   }
 
-  private def createResponses() : ApiResponses = {
+  private def createResponses(): ApiResponses = {
     val ok = new ApiResponse()
     ok.setDescription("OK")
 
@@ -176,7 +183,7 @@ object GenerateOpenApi {
     val responseBodies = new ApiResponses()
     responseBodies.addApiResponse("200", ok)
     responseBodies.addApiResponse("400", badRequest)
-    
+
     responseBodies
   }
 }
