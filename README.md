@@ -4,17 +4,17 @@ This tool allows you manage content for publishing in the API Catalogue.
 
 ## Features
 
-- Generating OpenAPI Specification (OAS) files
-- Generating file-transfer definition files
-- Bulk publishing of OpenAPI or FileTransfer definition files in the API Catalogue
+- Generating OpenAPI Specification files
+- Generating file transfer definition files
+- Bulk publishing of OpenAPI Specification or file transfer definition files in the API Catalogue
 
-## API & Open API Specification
+## API & OpenAPI Specification (OAS)
 
-OpenAPI Specification ([OAS](https://www.openapis.org/)) (version 3)
+[OpenAPI Specification (version 3)](https://www.openapis.org/)) 
 
 ### Generation
 
-You can bulk generated API OAS files from an input comma separated file (csv) with one row per API. Each row must contain a single endpoint and method which will generate a single OAS file as the output.
+You can bulk generated OpenAPI specification files from an input comma separated file (csv) with one row per API. Each row must contain a single endpoint and method which will generate a single OpenAPI Specification file as the output.
 
 ### Format of the CSV
 The first header row is skipped, and each subsequent row must contain these values:
@@ -26,24 +26,25 @@ The first header row is skipped, and each subsequent row must contain these valu
 **Note**: A CSV exported from google sheets will be compliant with regards to values that contain line breaks or quotes around values.
 
 #### Fields:
- - **publisher-reference**: This should be a unique identifier that you use to identify the API. Is used as the output OAS filename.
- - **platform**: This is the identifier of your platform.
- - **title**: Used to populate the title in the OAS.
- - **description**: Used to populate the description in the OAS.
- - **version**: Used to populate the version in the OAS.
- - **method**: Used to populate the method in the OAS for the single endpoint defined.
- - **endpoint**: Used to populate the endpoint in the OAS for the single endpoint defined.
+ - **publisher-reference**: This should be a unique identifier that you use to identify the API. Is used as the output OpenAPI Specification filename
+ - **platform**: This is the identifier of your platform
+ - **title**: Used to populate the title in the OpenAPI Specification
+ - **description**: Used to populate the description in the OpenAPI Specification
+ - **version**: Used to populate the version in the OpenAPI Specification
+ - **method**: Used to populate the method in the OpenAPI Specification for the single endpoint defined
+ - **endpoint**: Used to populate the endpoint in the OpenAPI Specification for the single endpoint defined
 
- #### Example
- CSV with one API.
- ```
+#### Example
+A  CSV with one API defined;
+
+```
 publisherReference,platform,title,description,version,verb,endpoint
 1,DES,"Example API 1","This is an example API.",V0.1.0,GET,/examples
 ```
 
 Note: Be carefully if quoting values to not include a space between the comma and quote. e.g
- - ```1st value,"2nd value"``` -  good
- - ```2st value, "2nd value"``` - bad
+ - ```1st value,"2nd value"``` - correct
+ - ```2st value, "2nd value"``` - incorrect
 
 This will produce a file called ```1.yaml``` with the following content:
 ```
@@ -70,7 +71,7 @@ paths:
 The API catalogue allows the publishing of a File Transfer definition.
 
 ### File Transfer definition specification
-See **TODO**.
+See API catalogue publishers guide.
 
 ### Generation
 
@@ -129,9 +130,22 @@ MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from he
 
  ```
 
+# Downloading the tools
+
+Look in the releases [here](https://github.com/hmrc/integration-catalogue-tools/releases).
+
+Find the latest release that has as `integration-catalogue-tools-x.y.z-SNAPSHOT.zip` as an asset. Download and unzip it.
+
+Note: Make sure tha the `bin` folder is in your path, or run all the commands using the full path to the `integration-catalogue-tools` in the bin folder.
+
 # Running the integration-catalogue-tools
 
 This assumes you've been given a pre-build `integration-catalogue-tools`. You are required to have Java installed on the path.
+
+Tested on: 
+ - Windows 10
+ - Linux (Ubuntu)
+ - macOS
 
 ```
 Usage:
@@ -145,7 +159,7 @@ Usage:
     
     Arguments:
         - directory : All files with .yaml or .json extension will be processed
-        - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OAS file
+        - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OpenAPI Specification file
 ```
 
 # Building the tool from source and releasing
@@ -163,7 +177,7 @@ Usage:
 
 # Running the tool from source
 
-## Convert CSV to OAS files
+## Convert CSV to OpenAPI Specification files
 ```
 sbt 'run --csvToOas "<name-of.csv>" "<output-path>"'
 ```
@@ -180,7 +194,7 @@ A folder
 run --publish --platform DES --filename output2/example-1.yaml --url http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish --authorizationKey <authorization-key>
 ```
 
-A directory of OAS files
+A directory of OpenAPI Specification files
 ```
 run --publish --platform DES --directory output2 --url http://localhost:11114/integration-catalogue-admin-frontend/services/apis/publish --authorizationKey <authorization-key>
 ```
