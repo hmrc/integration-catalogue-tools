@@ -6,6 +6,7 @@ info:
   x-integration-catalogue:
     platform: TEST_PLATFORM
     publisher-reference: My Ref 123
+    status: LIVE
 paths:
   /my/resource/uri/{uri}:
     get:

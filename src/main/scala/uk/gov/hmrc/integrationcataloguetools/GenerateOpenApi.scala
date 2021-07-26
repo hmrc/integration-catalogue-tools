@@ -41,13 +41,18 @@ object GenerateOpenApi {
   def fromCsvToOpenAPI(reader: Reader): Seq[(PublisherReference, OpenAPI)] = {
 
     def createBasicApi(record: CSVRecord): BasicApi = {
-      val expectedValues = 7
+      val expectedValues = 8
       // TODO : Handle without exception?
-      if (record.size() < 7) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber}")
+      if (record.size() < expectedValues) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber}")
 
       def parseString(s: String): String = {
         Option(s).getOrElse("").trim()
       }
+
+      def parseStatus(s: String): String = {
+        Option(s).getOrElse("LIVE").trim()
+      }
+
 
       def truncateAfter(x: String, p: String) = {
         val s = parseString(x)
@@ -74,7 +79,8 @@ object GenerateOpenApi {
         version = parseString(record.get(4)),
         method = parseString(record.get(5)),
         endpoint = removeQueryParametersFromUrl(parseString(record.get(6))),
-        parameters = parsePathParameters(record.get(6))
+        parameters = parsePathParameters(record.get(6)),
+        status = Status(parseStatus(record.get(7)))
       )
     }
 
@@ -105,6 +111,7 @@ object GenerateOpenApi {
     val integrationCatalogueExtensions = new util.HashMap[String, Object]
     integrationCatalogueExtensions.put("platform", basicApi.platform.value)
     integrationCatalogueExtensions.put("publisher-reference", basicApi.publisherReference.value)
+    integrationCatalogueExtensions.put("status", basicApi.status.value)
 
     val oasExtensions = new util.HashMap[String, Object]()
     oasExtensions.put("x-integration-catalogue", integrationCatalogueExtensions)
