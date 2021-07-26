@@ -20,7 +20,7 @@ You can bulk generated OpenAPI specification files from an input comma separated
 The first header row is skipped, and each subsequent row must contain these values:
 
 ```
-<publisher-reference>, <platform>, <title>, <description>, <version>, <method>, <endpoint>
+<publisher-reference>, <platform>, <title>, <description>, <version>, <method>, <endpoint>, <status>
 ```
 
 **Note**: A CSV exported from google sheets will be compliant with regards to values that contain line breaks or quotes around values.
@@ -33,6 +33,7 @@ The first header row is skipped, and each subsequent row must contain these valu
  - **version**: Used to populate the version in the OpenAPI Specification
  - **method**: Used to populate the method in the OpenAPI Specification for the single endpoint defined
  - **endpoint**: Used to populate the endpoint in the OpenAPI Specification for the single endpoint defined
+ - **status**: Used to populate the api status in the OpenAPI Specification, allowed values are [ALPHA, BETA, DEPRECATED or LIVE]
 
 #### Example
 A  CSV with one API defined;

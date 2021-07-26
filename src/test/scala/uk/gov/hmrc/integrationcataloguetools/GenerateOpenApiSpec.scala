@@ -136,7 +136,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
 
     val exception = intercept[RuntimeException] { GenerateOpenApi.fromCsvToOpenAPI(csvFile.bufferedReader()) }
 
-    exception.getMessage shouldBe "Expected 7 values on row 1"
+    exception.getMessage shouldBe "Expected 8 values on row 1"
   }
 
   "Parse CSV with no parameters into OpenAPI list" in new Setup {

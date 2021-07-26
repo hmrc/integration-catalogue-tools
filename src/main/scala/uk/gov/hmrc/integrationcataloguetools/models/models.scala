@@ -19,6 +19,8 @@ package uk.gov.hmrc.integrationcataloguetools.models
 case class PublisherReference(value: String) extends AnyVal
 
 case class Platform(value: String) extends AnyVal
+case class Status(value: String) extends AnyVal
+
 
 case class BasicApi(
   publisherReference: PublisherReference,
@@ -28,7 +30,8 @@ case class BasicApi(
   version: String,
   method: String,
   endpoint: String,
-  parameters: List[String])
+  parameters: List[String],
+  status: Status)
 
 case class ContactInformation(name: String, emailAddress: String)
 
