@@ -31,7 +31,8 @@ case class BasicApi(
   method: String,
   endpoint: String,
   parameters: List[String],
-  status: Status)
+  status: Status,
+  reviewedDate: String)
 
 case class ContactInformation(name: String, emailAddress: String)
 
@@ -42,6 +43,7 @@ case class FileTransferPublishRequest(
     description: String,
     platformType: String,
     lastUpdated: String,
+    reviewedDate: String,
     contact: ContactInformation,
     sourceSystem: List[String], // One or many
     targetSystem: List[String],

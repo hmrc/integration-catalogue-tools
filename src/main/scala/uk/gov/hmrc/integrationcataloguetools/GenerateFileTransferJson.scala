@@ -27,7 +27,7 @@ object GenerateFileTransferJson {
   def fromCsvToFileTransferJson(reader: Reader): Seq[(PublisherReference, FileTransferPublishRequest)] = {
 
     def createFileTransferPublishRequest(record: CSVRecord): FileTransferPublishRequest = {
-       val expectedValues = 9
+       val expectedValues = 10
       if (record.size() < expectedValues) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber}")
 
       def parseString(s: String): String = {
@@ -45,6 +45,7 @@ object GenerateFileTransferJson {
         title = parseString(record.get("Title")),
         description = parseString(record.get("Description")),
         lastUpdated =  parseString(record.get("LastUpdated")),
+        reviewedDate =  parseString(record.get("ReviewedDate")),
         platformType = parseString(record.get("Platform")),
         contact = ContactInformation(parseString(record.get("ContactName")), parseString(record.get("ContactEmail"))),
         sourceSystem = List(parseString(record.get("Source"))),

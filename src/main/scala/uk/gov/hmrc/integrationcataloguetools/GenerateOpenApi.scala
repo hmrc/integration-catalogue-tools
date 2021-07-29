@@ -41,7 +41,7 @@ object GenerateOpenApi {
   def fromCsvToOpenAPI(reader: Reader): Seq[(PublisherReference, OpenAPI)] = {
 
     def createBasicApi(record: CSVRecord): BasicApi = {
-      val expectedValues = 8
+      val expectedValues = 9
       // TODO : Handle without exception?
       if (record.size() < expectedValues) throw new RuntimeException(s"Expected $expectedValues values on row ${record.getRecordNumber}")
 
@@ -80,7 +80,8 @@ object GenerateOpenApi {
         method = parseString(record.get(5)),
         endpoint = removeQueryParametersFromUrl(parseString(record.get(6))),
         parameters = parsePathParameters(record.get(6)),
-        status = Status(parseStatus(record.get(7)))
+        status = Status(parseStatus(record.get(7))),
+        reviewedDate = parseString(record.get(8))
       )
     }
 
@@ -112,6 +113,7 @@ object GenerateOpenApi {
     integrationCatalogueExtensions.put("platform", basicApi.platform.value)
     integrationCatalogueExtensions.put("publisher-reference", basicApi.publisherReference.value)
     integrationCatalogueExtensions.put("status", basicApi.status.value)
+    integrationCatalogueExtensions.put("reviewed-date", basicApi.reviewedDate)
 
     val oasExtensions = new util.HashMap[String, Object]()
     oasExtensions.put("x-integration-catalogue", integrationCatalogueExtensions)
