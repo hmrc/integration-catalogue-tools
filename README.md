@@ -20,7 +20,7 @@ You can bulk generated OpenAPI specification files from an input comma separated
 The first header row is skipped, and each subsequent row must contain these values:
 
 ```
-<publisher-reference>, <platform>, <title>, <description>, <version>, <method>, <endpoint>, <status>
+<publisher-reference>, <platform>, <title>, <description>, <version>, <method>, <endpoint>, <status>, <reviewed-date>
 ```
 
 **Note**: A CSV exported from google sheets will be compliant with regards to values that contain line breaks or quotes around values.
@@ -34,13 +34,14 @@ The first header row is skipped, and each subsequent row must contain these valu
  - **method**: Used to populate the method in the OpenAPI Specification for the single endpoint defined
  - **endpoint**: Used to populate the endpoint in the OpenAPI Specification for the single endpoint defined
  - **status**: Used to populate the api status in the OpenAPI Specification, allowed values are [ALPHA, BETA, DEPRECATED or LIVE]
+- **reviewed-date** : ISO 8601 date of when the api was last reviewed.
 
 #### Example
 A  CSV with one API defined;
 
 ```
-publisherReference,platform,title,description,version,verb,endpoint
-1,DES,"Example API 1","This is an example API.",V0.1.0,GET,/examples
+publisherReference,platform,title,description,version,verb,endpoint,status,reviewedDate
+1,DES,"Example API 1","This is an example API.",V0.1.0,GET,/examples,LIVE,2020-11-04T20:27:05.000Z
 ```
 
 Note: Be carefully if quoting values to not include a space between the comma and quote. e.g
@@ -55,8 +56,10 @@ info:
   description: This is an example API.
   version: V0.1.0
   x-integration-catalogue:
+    reviewed-date: 2020-11-04T20:27:05.000Z
     platform: DES
     publisher-reference: "1"
+    status: LIVE
 paths:
   /examples:
     get:
@@ -82,7 +85,7 @@ You can bulk generate file transfer  definition files from an input comma separa
 The rows are read using the following column headers:
 
 ```
-PublisherReference,Title,Description,LastUpdated,Platform,ContactName,ContactEmail,Source,Target,Pattern
+PublisherReference,Title,Description,LastUpdated,ReviewedDate,Platform,ContactName,ContactEmail,Source,Target,Pattern
 ```
 
 **Note**: A CSV exported from google sheets will be compliant with regards to values that contain line breaks or quotes around values.
@@ -92,6 +95,7 @@ PublisherReference,Title,Description,LastUpdated,Platform,ContactName,ContactEma
 - **Title** :
 - **Description** :
 - **LastUpdated** : ISO 8601 date of when the definition was last updated.
+- **ReviewedDate** : ISO 8601 date of when the definition was last reviewed.
 - **Platform** : This is the identifier of your platform.
 - **ContactName** :
 - **ContactEmail** :
@@ -102,8 +106,8 @@ PublisherReference,Title,Description,LastUpdated,Platform,ContactName,ContactEma
 #### Example CSV Input
 
 ```
-PublisherReference,Title,Description,LastUpdated,Platform,ContactName,ContactEmail,Source,Target,Pattern
-MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from here to over here, 2021-01-01T13:45:10Z, API_Platform, example contact, example@example.con, System A, System B, Corp to Corp
+PublisherReference,Title,Description,LastUpdated,ReviewedDate,Platform,ContactName,ContactEmail,Source,Target,Pattern
+MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from here to over here, 2021-01-01T13:45:10Z, 2020-12-25T20:27:05.000Z, API_Platform, example contact, example@example.con, System A, System B, Corp to Corp
 ```
 
 #### Example File Transfer Definition
@@ -116,6 +120,7 @@ MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from he
    "description":"This is my awesome file transfer. A file goes from here to over here",
    "platformType":"API_Platform",
    "lastUpdated":"2021-01-01T13:45:10Z",
+   "reviewedDate": "2020-11-04T20:27:05.000Z",
    "contact":{
       "name":"example contact",
       "emailAddress":"example@example.con"

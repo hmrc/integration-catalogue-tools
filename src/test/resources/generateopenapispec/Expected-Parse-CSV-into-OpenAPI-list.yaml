@@ -4,6 +4,7 @@ info:
   description: My API Description
   version: "1.0"
   x-integration-catalogue:
+    reviewed-date: 2020-11-04T20:27:05.000Z
     platform: TEST_PLATFORM
     publisher-reference: My Ref 123
     status: LIVE
