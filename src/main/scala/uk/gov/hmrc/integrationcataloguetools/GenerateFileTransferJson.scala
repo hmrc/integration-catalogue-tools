@@ -34,11 +34,17 @@ object GenerateFileTransferJson {
         Option(s).getOrElse("").trim()
       }
 
+      def getTransports() :List[String] ={
+        val transport1 = parseString(record.get("Transport1"))
+        val transport2 = parseString(record.get("Transport2"))
+
+        List(transport1, transport2).filterNot(_.isEmpty)
+      }
       // val dateValue: DateTime = DateTime.parse("04/11/2020 20:27:05", DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss"));
       //TODO: do we validate the date format / validity of the date string here?
       //val date = ZonedDateTime.now()
       //val formattedString2: String = date.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-
+    
       // PublisherReference, title, description, platform, contactName, ContactEmail, sourceSystem, targetSystem, fileTransferPattern, LastUpdated
       FileTransferPublishRequest(
         publisherReference = PublisherReference(parseString(record.get("PublisherReference"))),
@@ -50,6 +56,7 @@ object GenerateFileTransferJson {
         contact = ContactInformation(parseString(record.get("ContactName")), parseString(record.get("ContactEmail"))),
         sourceSystem = List(parseString(record.get("Source"))),
         targetSystem = List(parseString(record.get("Target"))),
+        transports = getTransports(),
         fileTransferPattern = parseString(record.get("Pattern"))
       )
     }
