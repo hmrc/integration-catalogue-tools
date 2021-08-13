@@ -47,4 +47,5 @@ case class FileTransferPublishRequest(
     contact: ContactInformation,
     sourceSystem: List[String], // One or many
     targetSystem: List[String],
+    transports: List[String],
     fileTransferPattern: String)
