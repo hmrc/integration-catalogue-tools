@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-sbt pack
+VERSION="1.16.1"
+
+sbt 'set version:= "'$VERSION'"' clean packArchive
 
 chmod +x target/pack/bin/integration-catalogue-tools                                                                      
 

@@ -171,12 +171,13 @@ Usage:
 # Building the tool from source and releasing
 
 1. Checkout the git tag that you want to release
-1. Build the release locally
+1. Set the version number in '''build_output.sh''' to match the tag.
+1. Package the release by running;
     ```
-    sbt packArchive
+    ./build_output.sh
     ```
 
-    ```target/integration-catalogue-tools-x.y.z-SNAPSHOT.zip``` will contain all the files to run the tool
+    ```target/integration-catalogue-tools-<version>.zip``` will contain all the files to run the tool
 1. Go to the github [releases](https://github.com/hmrc/integration-catalogue-tools/releases) page and find the release for that version
 1. Update the name & notes (if needed).
 1. Upload into the release the ```integration-catalogue-tools-x.y.z-SNAPSHOT.zip``` that you have built
