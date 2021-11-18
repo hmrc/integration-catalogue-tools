@@ -28,7 +28,7 @@ class GenerateFileTransferJsonSpec extends AnyWordSpec with Matchers {
   "Parse CSV into File Transfer Json list" in {
     val csvFile = Source.fromResource("generatefiletransferjsonspec/FileTransferDataCsv.csv")
     
-    val fileTransfers : Seq[(_, FileTransferPublishRequest)] = GenerateFileTransferJson.fromCsvToFileTransferJson(csvFile.bufferedReader())
+    val fileTransfers : Seq[(_, FileTransferPublishRequest)] = GenerateFileTransferJson.fromCsvToFileTransferRequest(csvFile.bufferedReader())
 
     fileTransfers should have length 1
 
@@ -52,7 +52,7 @@ def runTest(csvName: String, expectedJsonFileName: String) ={
       val csvFile = Source.fromResource(s"generatefiletransferjsonspec/$csvName")
     val expectedContent = Source.fromResource(s"generatefiletransferjsonspec/$expectedJsonFileName").mkString
 
-    val contents = GenerateFileTransferJson.fromCsvToFileTransferJson(csvFile.bufferedReader())
+    val contents = GenerateFileTransferJson.fromCsvToFileTransferRequest(csvFile.bufferedReader())
 
     contents should have length 1
 
