@@ -24,7 +24,7 @@ import scala.collection.JavaConverters._
 
 object GenerateFileTransferJson {
   
-  def fromCsvToFileTransferJson(reader: Reader): Seq[(PublisherReference, FileTransferPublishRequest)] = {
+  def fromCsvToFileTransferRequest(reader: Reader): Seq[(PublisherReference, FileTransferPublishRequest)] = {
 
     def createFileTransferPublishRequest(record: CSVRecord): FileTransferPublishRequest = {
        val expectedValues = 10

@@ -17,9 +17,10 @@
 package uk.gov.hmrc.integrationcataloguetools
 
 import net.liftweb.json.DefaultFormats
-import net.liftweb.json.Serialization.write
+import net.liftweb.json.Serialization.writePretty
 
 import java.io.FileReader
+import net.liftweb.json.Formats
 
 object ProcessCsvFile {
 
@@ -50,15 +51,16 @@ object ProcessCsvFile {
   def processFTCsv(inputFilename: String, outputFolder: String): Int = {
     val in = new FileReader(inputFilename)
 
-    implicit val formats: DefaultFormats.type = DefaultFormats
-    try {
+    implicit val formats: Formats = DefaultFormats
 
+    try {
+      
       GenerateFileTransferJson
-        .fromCsvToFileTransferJson(in)
+        .fromCsvToFileTransferRequest(in)
         .map {
-          case (publisherReference, fileTransferJson) =>
+          case (publisherReference, fileTransferRequest) =>
             val filename = s"$outputFolder/${publisherReference.value}.json"
-            writeToFile(filename, write(fileTransferJson))
+            writeToFile(filename, writePretty(fileTransferRequest))
         }.length
     } finally {
       in.close()

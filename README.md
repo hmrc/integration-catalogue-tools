@@ -85,7 +85,7 @@ You can bulk generate file transfer  definition files from an input comma separa
 The rows are read using the following column headers:
 
 ```
-PublisherReference,Title,Description,LastUpdated,ReviewedDate,Platform,ContactName,ContactEmail,Source,Target,Pattern
+PublisherReference,Title,Description,LastUpdated,ReviewedDate,Platform,ContactName,ContactEmail,Source,Target,Transport1,Transport2,Pattern
 ```
 
 **Note**: A CSV exported from google sheets will be compliant with regards to values that contain line breaks or quotes around values.
@@ -101,13 +101,15 @@ PublisherReference,Title,Description,LastUpdated,ReviewedDate,Platform,ContactNa
 - **ContactEmail** :
 - **Source** : This is the source system
 - **Target** : This is the target system
+- **Transport1**: Transport 1
+- **Transport2**: Transport 2 (Optional) **Note**: If you want more than two transports, you can add more in the generated Json file.
 - **Pattern** : This is the architectural pattern name
 
 #### Example CSV Input
 
 ```
-PublisherReference,Title,Description,LastUpdated,ReviewedDate,Platform,ContactName,ContactEmail,Source,Target,Pattern
-MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from here to over here, 2021-01-01T13:45:10Z, 2020-12-25T20:27:05.000Z, API_Platform, example contact, example@example.con, System A, System B, Corp to Corp
+PublisherReference,Title,Description,LastUpdated,ReviewedDate,Platform,ContactName,ContactEmail,Source,Target,Transport1,Transport2,Pattern
+MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from here to over here, 2021-01-01T13:45:10Z, 2020-12-25T20:27:05.000Z, API_Platform, example contact, example@example.con, System A, System B, S3, UTM, Corp to Corp
 ```
 
 #### Example File Transfer Definition
@@ -131,6 +133,10 @@ MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from he
    "targetSystem":[
       "System B"
    ],
+   "transports": [
+    "S3",
+    "UTM"
+  ],
    "fileTransferPattern":"Corp to Corp"
 }
 
