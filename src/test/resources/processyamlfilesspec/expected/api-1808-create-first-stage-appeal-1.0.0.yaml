@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: 'API#1808 Create First Stage Appeal'
+  description: >
+        This API allows a customer to create a first stage appeal against a late submission penalty/ penalty point by providing reasonable excuse and date for a penalty id.
+  version: 1.0.0
+  contact:
+    name: Denin Thomas
+    email: denin.thomas@hmrc.gov.uk
+  x-integration-catalogue:
+    reviewed-date: 2022-04-22T20:27:05Z
+    platform: CORE_IF
+    publisher-reference: 1808
+
+tags:
+  - name: API#1808
+    description: Create First Stage Appeal

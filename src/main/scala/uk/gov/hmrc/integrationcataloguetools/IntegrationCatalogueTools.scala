@@ -68,6 +68,12 @@ class IntegrationCatalogueTools {
       println(s"Exported $rowsProcessed FT Json files to:\n$outputPath")
       Right("")
 
+    case "--yamlAddMetadata" :: inputPath :: platform :: reviewedDate :: outputPath :: Nil =>
+      println(s"Processing YAML Files:\nInput path: $inputPath\nPlatform: $platform\nReviewed date: $reviewedDate")
+      val filesProcessed = ProcessYamlFiles.addMetadata(inputPath, platform, reviewedDate, outputPath)
+      println(s"Processed $filesProcessed files")
+      Right("")
+
     case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
       val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
       publisher.publishFile(oasFilepath, useFilenameAsPublisherReference = false)
