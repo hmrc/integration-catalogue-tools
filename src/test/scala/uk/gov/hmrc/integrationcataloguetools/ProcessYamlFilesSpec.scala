@@ -41,19 +41,19 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
       output shouldBe expected
     }
 
-    def cleanUpOutputFolder = {
+    def cleanUpOutputFolder() = {
       val outputPathFile = new File(s"$testResourcesPath/$outputFolder")
-
-      Files.walk(outputPathFile.toPath)
-        .sorted(Comparator.reverseOrder[Path]())
-        .forEach((x: Path) => Files.delete(x))
+      if(outputPathFile.exists){
+        Files.walk(outputPathFile.toPath)
+          .sorted(Comparator.reverseOrder[Path]())
+          .forEach((x: Path) => Files.delete(x))
+      }
     }
-
   }
 
   "addMetadata" should {
     "write yaml files correctly to the output folder" in new Setup {
-      cleanUpOutputFolder
+      cleanUpOutputFolder()
 
       ProcessYamlFiles.addMetadata(s"$testResourcesPath/$inputFolder", "CORE_IF", "2022-04-22T20:27:05Z", s"$testResourcesPath/$outputFolder")
 
@@ -119,6 +119,57 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
       val result = ProcessYamlFiles.insertXIntegrationCatalogue(input, "PLAT", "2022-07-13T13:21:00Z", "1758")
 
       result shouldBe expectedOutput
+    }
+
+    "insert x-integration-catalogue section when info is the last section" in {
+      val input =
+        """openapi: 3.0.3
+          |info:
+          |  title: API#1758 Get Breathing Space""".stripMargin
+      val expectedOutput =
+        """openapi: 3.0.3
+          |info:
+          |  title: API#1758 Get Breathing Space
+          |  x-integration-catalogue:
+          |    reviewed-date: 2022-07-13T13:21:00Z
+          |    platform: PLAT
+          |    publisher-reference: 1758""".stripMargin
+
+      val result = ProcessYamlFiles.insertXIntegrationCatalogue(input, "PLAT", "2022-07-13T13:21:00Z", "1758")
+
+      result shouldBe expectedOutput
+    }
+
+    "not insert x-integration-catalogue section when input does not have info" in {
+      val input =
+        """openapi: 3.0.3
+          |servers:
+          |  - url: https://{hostname}:{port}""".stripMargin
+      val expectedOutput =
+        """openapi: 3.0.3
+          |servers:
+          |  - url: https://{hostname}:{port}""".stripMargin
+
+      val result = ProcessYamlFiles.insertXIntegrationCatalogue(input, "PLAT", "2022-07-13T13:21:00Z", "1758")
+
+      result shouldBe expectedOutput
+    }
+
+    "not insert x-integration-catalogue section if it already exists" in {
+      val input =
+        """openapi: 3.0.3
+          |info:
+          |  title: API#1758 Get Breathing Space
+          |  x-integration-catalogue:
+          |    reviewed-date: 2020-01-22T13:21:00Z
+          |    platform: CORE_IF
+          |    publisher-reference: 1758
+          |servers:
+          |  - url: https://{hostname}:{port}""".stripMargin
+
+      val result = ProcessYamlFiles.insertXIntegrationCatalogue(input, "PLAT", "2022-07-13T13:21:00Z", "1234")
+
+      result shouldBe input
     }
   }
 }

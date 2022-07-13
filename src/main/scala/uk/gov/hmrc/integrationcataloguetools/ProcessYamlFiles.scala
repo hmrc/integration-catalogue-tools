@@ -57,17 +57,20 @@ object ProcessYamlFiles {
     if (matcher.find()) matcher.group(1) else ""
   }
 
-  private val findInfoRegex = "((.*\\n)*info:(\\n +.*)*)"
-
   def insertXIntegrationCatalogue(fileContents: String, platform: String, reviewedDate: String, publisherReference: String): String = {
-    val xIntegrationCatalogueTemplate =
-      s"""$$1
-         |  x-integration-catalogue:
-         |    reviewed-date: $reviewedDate
-         |    platform: $platform
-         |    publisher-reference: $publisherReference""".stripMargin
+    val xIntegrationCatalogue = "x-integration-catalogue:"
+    if(fileContents.contains(xIntegrationCatalogue)) fileContents
+    else {
+      val xIntegrationCatalogueTemplate =
+        s"""$$1
+           |  $xIntegrationCatalogue
+           |    reviewed-date: $reviewedDate
+           |    platform: $platform
+           |    publisher-reference: $publisherReference""".stripMargin
 
-    fileContents.replaceFirst(findInfoRegex, xIntegrationCatalogueTemplate)
+      // The regex finds the 'info' element so that the x-integration-catalogue can be added at the end
+      fileContents.replaceFirst("((.*\\n)*info:(\\n +.*)*)", xIntegrationCatalogueTemplate)
+    }
   }
 
   private def inputsAreNotValid(inputPath: String, reviewedDate: String, outputPath: String): Boolean = {

@@ -28,5 +28,5 @@ yarn-error.log
 .vscode
 project/metals.sbt
 /input
-/output
+**/output
 /.bsp
