@@ -50,6 +50,7 @@ object ProcessYamlFiles {
     }
   }
 
+  // This regex finds the first 4-digit number after 'api' (*? is a lazy quantifier)
   private val publisherReferenceRegex = Pattern.compile("api.*?(\\d{4})", Pattern.CASE_INSENSITIVE)
 
   def extractPublisherReference(fileName: String): String = {
@@ -57,20 +58,18 @@ object ProcessYamlFiles {
     if (matcher.find()) matcher.group(1) else ""
   }
 
+  // This regex finds the 'info' element so that the x-integration-catalogue can be added at the end of it
+  private val findInfoRegex = Pattern.compile("((.*\\n)*info:(\\n +.*)*)")
+
   def insertXIntegrationCatalogue(fileContents: String, platform: String, reviewedDate: String, publisherReference: String): String = {
     val xIntegrationCatalogue = "x-integration-catalogue:"
-    if(fileContents.contains(xIntegrationCatalogue)) fileContents
-    else {
-      val xIntegrationCatalogueTemplate =
-        s"""$$1
-           |  $xIntegrationCatalogue
-           |    reviewed-date: $reviewedDate
-           |    platform: $platform
-           |    publisher-reference: $publisherReference""".stripMargin
-
-      // The regex finds the 'info' element so that the x-integration-catalogue can be added at the end
-      fileContents.replaceFirst("((.*\\n)*info:(\\n +.*)*)", xIntegrationCatalogueTemplate)
-    }
+    if (fileContents.contains(xIntegrationCatalogue)) fileContents
+    else findInfoRegex.matcher(fileContents).replaceFirst(
+      s"""$$1
+         |  $xIntegrationCatalogue
+         |    reviewed-date: $reviewedDate
+         |    platform: $platform
+         |    publisher-reference: $publisherReference""".stripMargin)
   }
 
   private def inputsAreNotValid(inputPath: String, reviewedDate: String, outputPath: String): Boolean = {
@@ -81,12 +80,11 @@ object ProcessYamlFiles {
       result = true
     }
     val outputDirectory = new File(outputPath)
-
     if (outputDirectory.exists) {
       println("Output path is not empty")
       result = true
     }
-    val reformattedReviewedData = ZonedDateTime.parse(reviewedDate).format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+    val reformattedReviewedData = ZonedDateTime.parse(reviewedDate).format(DateTimeFormatter.ISO_INSTANT)
     if (reviewedDate.trim.isEmpty || reviewedDate != reformattedReviewedData) {
       println("Reviewed date is not in ISO-8601 format")
       result = true
@@ -94,9 +92,9 @@ object ProcessYamlFiles {
     result
   }
 
-  private def writeOutputFile(outputFileName: String, output: String) = {
+  private def writeOutputFile(outputFileName: String, contents: String) = {
     val writer = new BufferedWriter(new FileWriter(new File(outputFileName)))
-    writer.write(output)
+    writer.write(contents)
     writer.close()
   }
 

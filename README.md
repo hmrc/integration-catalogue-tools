@@ -6,6 +6,7 @@ This tool allows you manage content for publishing in the API Catalogue.
 
 - Generating OpenAPI Specification files
 - Generating file transfer definition files
+- Adding metadata to OpenAPI Specification files which do not have it
 - Bulk publishing of OpenAPI Specification or file transfer definition files in the API Catalogue
 
 ## API & OpenAPI Specification (OAS)
@@ -142,6 +143,33 @@ MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from he
 
  ```
 
+### Adding metadata to OpenAPI Specification files
+
+If you create YAML files without the `x-integration-catalogue` element by using another tool, this can be added afterwards.
+Place all the files in an input directory. This input directory, the platform (e.g. CORE_IF) and the review date, and also
+an output directory must be provided as input values. The following constraints apply:
+
+* only files ending `.yaml` will be processed
+* subdirectories are ignored
+* each file must have a name containing 'api' or 'API' (case-insensitive), followed by a 4-digit number.
+  Optionally, 'api' may be followed by a single character such as '#', '-', and so on, before the number.
+* the reviewed date must be in ISO-8601 format in UTC, e.g., 2022-07-13T17:12:00Z
+* the output directory must not exist; it will be created
+
+An `x-integration-catalogue` section will be added to each file that does not already have one.
+It is added at the end of the `info` section, e.g.
+
+```
+info:
+  ...
+  x-integration-catalogue:
+    reviewed-date: 2022-07-13T17:12:00Z
+    platform: CORE_IF
+    publisher-reference: <the 4-digit number from the file name>
+```
+
+The amended files are added to the output directory with the same file names. They will be ready to publish.
+
 # Downloading the tools
 
 Look in the releases [here](https://github.com/hmrc/integration-catalogue-tools/releases).
@@ -165,6 +193,7 @@ Usage:
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <inputCsv> <output directory>
     integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
+    integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
     integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
@@ -198,6 +227,11 @@ sbt 'run --csvToOas "<name-of.csv>" "<output-path>"'
 ## Convert CSV to File Transfer Json files
 ```
 sbt 'run --csvToFileTransferJson "<name-of.csv>" "<output-path>"'
+```
+
+## Add metadata to OpenAPI Specification YAML files
+```
+sbt 'run --yamlAddMetadata <input-path> <platform> <reviewed-date> <output-path>'
 ```
 
 ## To publish API(s)

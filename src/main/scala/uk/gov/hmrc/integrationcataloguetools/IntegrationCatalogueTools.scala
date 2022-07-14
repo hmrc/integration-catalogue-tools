@@ -30,13 +30,14 @@ class IntegrationCatalogueTools {
             integration-catalogue-tools --help | -h
             integration-catalogue-tools --csvToOas <inputCsv> <output directory>
             integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
+            integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
             integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
             integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
             integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
             
             Arguments:
                 - directory : All files with .yaml or .json extension will be processed
-                - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OAS file
+                - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OpenAPI Specification file
         """)
   }
 
@@ -69,7 +70,7 @@ class IntegrationCatalogueTools {
       Right("")
 
     case "--yamlAddMetadata" :: inputPath :: platform :: reviewedDate :: outputPath :: Nil =>
-      println(s"Processing YAML Files:\nInput path: $inputPath\nPlatform: $platform\nReviewed date: $reviewedDate")
+      println(s"Processing YAML Files:\nInput path: $inputPath\nPlatform: $platform\nReviewed date: $reviewedDate\nOutput path: $outputPath")
       val filesProcessed = ProcessYamlFiles.addMetadata(inputPath, platform, reviewedDate, outputPath)
       println(s"Processed $filesProcessed files")
       Right("")
