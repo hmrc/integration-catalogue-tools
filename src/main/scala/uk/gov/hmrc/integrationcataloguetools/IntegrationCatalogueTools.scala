@@ -69,6 +69,12 @@ class IntegrationCatalogueTools {
       println(s"Exported $rowsProcessed FT Json files to:\n$outputPath")
       Right("")
 
+    case "--yamlFindMissingAndMatching" :: beforePath :: afterPath :: Nil =>
+      println(s"Finding Matching And Matching YAML Files:\nInput path: $beforePath\nAfter path: $afterPath")
+      val missingAndMatchingFilenames = CompareYamlFiles.findMissingAndMatching(beforePath, afterPath)
+      println(s"Missing files: \n ${missingAndMatchingFilenames._1}")
+      println(s"Matching files: \n ${missingAndMatchingFilenames._2}")
+      Right("")
     case "--yamlAddMetadata" :: inputPath :: platform :: reviewedDate :: outputPath :: Nil =>
       println(s"Processing YAML Files:\nInput path: $inputPath\nPlatform: $platform\nReviewed date: $reviewedDate\nOutput path: $outputPath")
       val filesProcessed = ProcessYamlFiles.addMetadata(inputPath, platform, reviewedDate, outputPath)

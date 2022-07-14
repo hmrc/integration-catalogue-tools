@@ -65,38 +65,6 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  "extractPublisherReference" should {
-    "find the number in a simple name with lowercase API" in {
-      val result = ProcessYamlFiles.extractPublisherReference("api1234")
-      result shouldBe "1234"
-    }
-
-    "find the number in a simple name with uppercase API" in {
-      val result = ProcessYamlFiles.extractPublisherReference("API1234")
-      result shouldBe "1234"
-    }
-
-    "find the number in a name with # between 'api' and the number" in {
-      val result = ProcessYamlFiles.extractPublisherReference("api#1234")
-      result shouldBe "1234"
-    }
-
-    "find the number in a name with a space between 'api' and the number" in {
-      val result = ProcessYamlFiles.extractPublisherReference("api 1234")
-      result shouldBe "1234"
-    }
-
-    "find the number in a name with random text after the number" in {
-      val result = ProcessYamlFiles.extractPublisherReference("api-1234_name_of_api")
-      result shouldBe "1234"
-    }
-
-    "find the number in with random text before and after the number" in {
-      val result = ProcessYamlFiles.extractPublisherReference("name_of_api_api1234_1.0")
-      result shouldBe "1234"
-    }
-  }
-
   "insertXIntegrationCatalogue" should {
     "insert x-integration-catalogue section" in {
       val input =

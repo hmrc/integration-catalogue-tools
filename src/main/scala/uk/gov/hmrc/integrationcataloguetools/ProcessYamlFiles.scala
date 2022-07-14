@@ -21,6 +21,7 @@ import java.nio.file.Files
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
+import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
 
 object ProcessYamlFiles {
 
@@ -42,20 +43,12 @@ object ProcessYamlFiles {
               new String(Files.readAllBytes(file.toPath)),
               platform,
               reviewedDate,
-              extractPublisherReference(file.getName)
+              file.getName.extractPublisherReference
             )
           )
         }
         .length
     }
-  }
-
-  // This regex finds the first 4-digit number after 'api' (*? is a lazy quantifier)
-  private val publisherReferenceRegex = Pattern.compile("api.*?(\\d{4})", Pattern.CASE_INSENSITIVE)
-
-  def extractPublisherReference(fileName: String): String = {
-    val matcher = publisherReferenceRegex.matcher(fileName)
-    if (matcher.find()) matcher.group(1) else ""
   }
 
   // This regex finds the 'info' element so that the x-integration-catalogue can be added at the end of it
