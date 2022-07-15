@@ -16,19 +16,22 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import java.io.File
 import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
+
+import java.io.File
+import java.nio.file.Files
+import scala.collection.JavaConverters._
 
 object CompareYamlFiles {
 
   def findMissingAndMatching(beforePath: String, afterPath: String): (List[String], List[String]) = {
     if (inputsAreNotValid(beforePath, afterPath)) (List.empty[String], List.empty[String])
     else {
-      val filenamesAndPublisherRefsFromBeforePath: Map[String, String] = getYamlFiles(afterPath)
+      val filenamesAndPublisherRefsFromBeforePath: Map[String, String] = getYamlFiles(beforePath)
         .map(fileName => (fileName.extractPublisherReference, fileName))
         .toMap
 
-      val publisherRefsInAfterPath: Set[String] = getYamlFiles(beforePath)
+      val publisherRefsInAfterPath: Set[String] = getYamlFiles(afterPath)
         .map(_.extractPublisherReference)
         .toSet
 
@@ -39,17 +42,31 @@ object CompareYamlFiles {
     }
   }
 
+  /**
+   *
+   * @param filenamesAndPublisherRefsFromBeforePath
+   * @param publisherRefsInAfterPath
+   * @return List of filenames from filenamesAndPublisherRefsFromBeforePath that do not exist in publisherRefsInAfterPath
+   */
   def getMissingFilenames(filenamesAndPublisherRefsFromBeforePath: Map[String, String], publisherRefsInAfterPath: Set[String]): List[String] =
     filenamesAndPublisherRefsFromBeforePath
       .filterNot(x => publisherRefsInAfterPath.contains(x._1))
       .values
       .toList
+      .sorted
 
+  /**
+   *
+   * @param filenamesAndPublisherRefsFromBeforePath
+   * @param publisherRefsInAfterPath
+   * @return List of filenames from filenamesAndPublisherRefsFromBeforePath that also exist in publisherRefsInAfterPath
+   */
   def getMatchingFilenames(filenamesAndPublisherRefsFromBeforePath: Map[String, String], publisherRefsInAfterPath: Set[String]): List[String] =
     publisherRefsInAfterPath
       .filter(x => filenamesAndPublisherRefsFromBeforePath.contains(x))
       .map(x => filenamesAndPublisherRefsFromBeforePath.getOrElse(x, "Something ugly wrong here"))
       .toList
+      .sorted
 
   private def inputsAreNotValid(beforePath: String, afterPath: String): Boolean = {
     var result = false
@@ -66,10 +83,10 @@ object CompareYamlFiles {
     result
   }
 
-  private def getYamlFiles(beforePath: String) = {
-    new File(beforePath).listFiles
-      .filter(_.isFile)
-      .map(_.getName)
+  private def getYamlFiles(path: String, isRecursive: Boolean = false): List[String] = {
+    Files.walk(new File(path).toPath, isRecursive ? 2 : 1).iterator().asScala
+      .map(_.getFileName.toString)
       .filter(_.endsWith(".yaml"))
+      .toList
   }
 }
