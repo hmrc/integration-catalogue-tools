@@ -20,8 +20,8 @@ import java.util.regex.Pattern
 
 object ExtractPublisherReference {
   implicit class Implicits(fileName: String) {
-    // This regex finds the first 4-digit number after 'api' (*? is a lazy quantifier)
-    private val publisherReferenceRegex = Pattern.compile("api.*?(\\d{4})", Pattern.CASE_INSENSITIVE)
+    // This regex finds the first 4-digit number. Note that (?<!...) is a negative lookbehind and (?!...) is a negative lookahead.
+    private val publisherReferenceRegex = Pattern.compile("(?<!\\d)(\\d{4})(?!\\d)", Pattern.CASE_INSENSITIVE)
 
     def extractPublisherReference: String = {
       val matcher = publisherReferenceRegex.matcher(fileName)

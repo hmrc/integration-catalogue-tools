@@ -75,10 +75,13 @@ class IntegrationCatalogueTools {
       println(s"Missing files: \n ${missingAndMatchingFilenames._1}")
       println(s"Matching files: \n ${missingAndMatchingFilenames._2}")
       Right("")
+
     case "--yamlAddMetadata" :: inputPath :: platform :: reviewedDate :: outputPath :: Nil =>
       println(s"Processing YAML Files:\nInput path: $inputPath\nPlatform: $platform\nReviewed date: $reviewedDate\nOutput path: $outputPath")
-      val filesProcessed = ProcessYamlFiles.addMetadata(inputPath, platform, reviewedDate, outputPath)
-      println(s"Processed $filesProcessed files")
+      ProcessYamlFiles.addMetadata(inputPath, platform, reviewedDate, outputPath) match {
+        case Right(filesProcessed: Int) => println(s"Processed $filesProcessed files")
+        case Left(errorMessage: String) => println(errorMessage)
+      }
       Right("")
 
     case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>

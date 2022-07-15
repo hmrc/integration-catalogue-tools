@@ -55,14 +55,38 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
     "write yaml files correctly to the output folder" in new Setup {
       cleanUpOutputFolder()
 
-      ProcessYamlFiles.addMetadata(s"$testResourcesPath/$inputFolder", "CORE_IF", "2022-04-22T20:27:05Z", s"$testResourcesPath/$outputFolder")
+      val filesProcessed = ProcessYamlFiles.addMetadata(s"$testResourcesPath/$inputFolder", "CORE_IF", "2022-04-22T20:27:05Z", s"$testResourcesPath/$outputFolder")
 
+      filesProcessed shouldBe Right(4)
       checkFileContents("API#1758_Get_Breathing_Space_Status-1.3.0.yaml")
       checkFileContents("API1562_Store_Document_1.6.0.yaml")
       checkFileContents("api-1808-create-first-stage-appeal-1.0.0.yaml")
       checkFileContents("get_employer_API1560_0.1.0.yaml")
 
     }
+  }
+
+  "validateReviewedDate" should {
+    val errorMessage = "Reviewed date is not in ISO-8601 format"
+    "succeed if reviewedDate is valid" in {
+      ProcessYamlFiles.validateReviewedDate("2022-07-13T13:21:00Z") shouldBe None
+    }
+    "succeed if reviewedDate has 000 milliseconds" in {
+      ProcessYamlFiles.validateReviewedDate("2022-07-13T13:21:00.000Z") shouldBe None
+    }
+    "succeed if reviewedDate has 123 milliseconds" in {
+      ProcessYamlFiles.validateReviewedDate("2022-07-13T13:21:00.123Z") shouldBe None
+    }
+    "fail if reviewedDate does not have a timezone" in {
+      ProcessYamlFiles.validateReviewedDate("2022-07-13T13:21:00") shouldBe Some(errorMessage)
+    }
+    "fail if reviewedDate does not have seconds" in {
+      ProcessYamlFiles.validateReviewedDate("2022-07-13T13:21") shouldBe Some(errorMessage)
+    }
+    "fail if reviewedDate has invalid date" in {
+      ProcessYamlFiles.validateReviewedDate("07-15-2022T13:21") shouldBe Some(errorMessage)
+    }
+
   }
 
   "insertXIntegrationCatalogue" should {

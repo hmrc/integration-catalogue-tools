@@ -16,38 +16,39 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
+import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
+
 import java.io.{BufferedWriter, File, FileWriter}
 import java.nio.file.Files
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
+import java.time.Instant
 import java.util.regex.Pattern
-import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
+import scala.util.{Failure, Success, Try}
 
 object ProcessYamlFiles {
 
-  def addMetadata(inputPath: String, platform: String, reviewedDate: String, outputPath: String): Long = {
-    if (inputsAreNotValid(inputPath, reviewedDate, outputPath)) {
-      0
-    } else {
-      val outputDirectory = new File(outputPath)
-      outputDirectory.mkdirs()
+  def addMetadata(inputPath: String, platform: String, reviewedDate: String, outputPath: String): Either[String, Int] = {
+    validateInputs(inputPath, reviewedDate, outputPath) match {
+      case Some(errorMessage) => Left(errorMessage)
+      case None               => Right {
 
-      val inputDirectory = new File(inputPath)
-      inputDirectory.listFiles
-        .filter(_.isFile)
-        .filter(_.getName.endsWith(".yaml"))
-        .map { file =>
-          writeOutputFile(
-            s"$outputPath/${file.getName}",
-            insertXIntegrationCatalogue(
-              new String(Files.readAllBytes(file.toPath)),
-              platform,
-              reviewedDate,
-              file.getName.extractPublisherReference
-            )
-          )
+          new File(outputPath).mkdirs()
+
+          new File(inputPath)
+            .listFiles
+            .filter(_.isFile)
+            .filter(_.getName.endsWith(".yaml"))
+            .map { file =>
+              writeOutputFile(
+                s"$outputPath/${file.getName}",
+                insertXIntegrationCatalogue(
+                  new String(Files.readAllBytes(file.toPath)),
+                  platform,
+                  reviewedDate,
+                  file.getName.extractPublisherReference
+                )
+              )
+            }.length
         }
-        .length
     }
   }
 
@@ -57,32 +58,35 @@ object ProcessYamlFiles {
   def insertXIntegrationCatalogue(fileContents: String, platform: String, reviewedDate: String, publisherReference: String): String = {
     val xIntegrationCatalogue = "x-integration-catalogue:"
     if (fileContents.contains(xIntegrationCatalogue)) fileContents
-    else findInfoRegex.matcher(fileContents).replaceFirst(
-      s"""$$1
-         |  $xIntegrationCatalogue
-         |    reviewed-date: $reviewedDate
-         |    platform: $platform
-         |    publisher-reference: $publisherReference""".stripMargin)
+    else
+      findInfoRegex.matcher(fileContents).replaceFirst(
+        s"""$$1
+           |  $xIntegrationCatalogue
+           |    reviewed-date: $reviewedDate
+           |    platform: $platform
+           |    publisher-reference: $publisherReference""".stripMargin
+      )
   }
 
-  private def inputsAreNotValid(inputPath: String, reviewedDate: String, outputPath: String): Boolean = {
-    var result = false
+  private def validateInputs(inputPath: String, reviewedDate: String, outputPath: String): Option[String] = {
     val inputDirectory = new File(inputPath)
     if (!inputDirectory.exists || !inputDirectory.isDirectory) {
-      println("Input path is not a directory")
-      result = true
+      Some("Input path is not a directory")
+    } else if (new File(outputPath).exists) {
+      Some("Output path is not empty")
+    } else {
+      validateReviewedDate(reviewedDate)
     }
-    val outputDirectory = new File(outputPath)
-    if (outputDirectory.exists) {
-      println("Output path is not empty")
-      result = true
+  }
+
+  def validateReviewedDate(reviewedDate: String): Option[String] = {
+    val errorMessage = "Reviewed date is not in ISO-8601 format"
+    Try {
+      Instant.parse(reviewedDate)
+    } match {
+      case Success(_) => None
+      case Failure(_) => Some(errorMessage)
     }
-    val reformattedReviewedData = ZonedDateTime.parse(reviewedDate).format(DateTimeFormatter.ISO_INSTANT)
-    if (reviewedDate.trim.isEmpty || reviewedDate != reformattedReviewedData) {
-      println("Reviewed date is not in ISO-8601 format")
-      result = true
-    }
-    result
   }
 
   private def writeOutputFile(outputFileName: String, contents: String) = {

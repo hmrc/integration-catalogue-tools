@@ -23,33 +23,49 @@ import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Imp
 class ExtractPublisherReferenceSpec extends AnyWordSpec with Matchers {
   
   "extractPublisherReference" should {
-    "find the number in a simple name with lowercase API" in {
+
+    "find the number with just the number in the text" in {
+      val result = "1234".extractPublisherReference
+      result shouldBe "1234"
+    }
+
+    "find the number with just four digits in the text" in {
+      val result = "12345 6789".extractPublisherReference
+      result shouldBe "6789"
+    }
+
+    "find the number with first four digits in the text" in {
+      val result = "1234 5678".extractPublisherReference
+      result shouldBe "1234"
+    }
+
+    "find the number with lowercase 'api' before the number" in {
       val result = "api1234".extractPublisherReference
       result shouldBe "1234"
     }
 
-    "find the number in a simple name with uppercase API" in {
+    "find the number with uppercase 'API' before the number" in {
       val result = "API1234".extractPublisherReference
       result shouldBe "1234"
     }
 
-    "find the number in a name with # between 'api' and the number" in {
+    "find the number with # between 'api' and the number" in {
       val result = "api#1234".extractPublisherReference
       result shouldBe "1234"
     }
 
-    "find the number in a name with a space between 'api' and the number" in {
+    "find the number with a space between 'api' and the number" in {
       val result = "api 1234".extractPublisherReference
       result shouldBe "1234"
     }
 
-    "find the number in a name with random text after the number" in {
+    "find the number with text before and after the number" in {
       val result = "api-1234_name_of_api".extractPublisherReference
       result shouldBe "1234"
     }
 
-    "find the number in with random text before and after the number" in {
-      val result = "name_of_api_api1234_1.0".extractPublisherReference
+    "find the number with text before and after the number with no api in text" in {
+      val result = "name_of_1234_1.0".extractPublisherReference
       result shouldBe "1234"
     }
   }
