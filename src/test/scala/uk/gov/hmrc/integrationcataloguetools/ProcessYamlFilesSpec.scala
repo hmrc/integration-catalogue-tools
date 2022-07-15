@@ -52,17 +52,34 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
   }
 
   "addMetadata" should {
-    "write yaml files correctly to the output folder" in new Setup {
+    "write yaml files correctly to the output folder and return the number of files processed" in new Setup {
       cleanUpOutputFolder()
 
-      val filesProcessed = ProcessYamlFiles.addMetadata(s"$testResourcesPath/$inputFolder", "CORE_IF", "2022-04-22T20:27:05Z", s"$testResourcesPath/$outputFolder")
+      val result = ProcessYamlFiles.addMetadata(s"$testResourcesPath/$inputFolder", "CORE_IF", "2022-04-22T20:27:05Z", s"$testResourcesPath/$outputFolder")
 
-      filesProcessed shouldBe Right(4)
+      result shouldBe Right(4)
       checkFileContents("API#1758_Get_Breathing_Space_Status-1.3.0.yaml")
       checkFileContents("API1562_Store_Document_1.6.0.yaml")
       checkFileContents("api-1808-create-first-stage-appeal-1.0.0.yaml")
       checkFileContents("get_employer_API1560_0.1.0.yaml")
+    }
 
+    "return an error message if the input path is not a directory" in new Setup {
+      cleanUpOutputFolder()
+      val result = ProcessYamlFiles.addMetadata("bad-folder-name", "CORE_IF", "2022-04-22T20:27:05Z", s"$testResourcesPath/$outputFolder")
+      result shouldBe Left("Input path is not a directory")
+    }
+
+    "return an error message if the output path is not empty" in new Setup {
+      cleanUpOutputFolder()
+      val result = ProcessYamlFiles.addMetadata(s"$testResourcesPath/$inputFolder", "CORE_IF", "2022-04-22T20:27:05Z", testResourcesPath)
+      result shouldBe Left("Output path is not empty")
+    }
+
+    "return an error message if the reviewed date is not valid ISO-8601" in new Setup {
+      cleanUpOutputFolder()
+      val result = ProcessYamlFiles.addMetadata(s"$testResourcesPath/$inputFolder", "CORE_IF", "2022-04-22", s"$testResourcesPath/$outputFolder")
+      result shouldBe Left("Reviewed date is not in ISO-8601 format")
     }
   }
 

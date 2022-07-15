@@ -39,6 +39,11 @@ class ExtractPublisherReferenceSpec extends AnyWordSpec with Matchers {
       result shouldBe "1234"
     }
 
+    "return an empty string if there are no four digit numbers" in {
+      val result = "123".extractPublisherReference
+      result shouldBe ""
+    }
+
     "find the number with lowercase 'api' before the number" in {
       val result = "api1234".extractPublisherReference
       result shouldBe "1234"

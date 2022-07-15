@@ -85,13 +85,23 @@ class CompareYamlFilesSpec extends AnyWordSpec with Matchers {
 
   "findMissingAndMatching" should {
     "return missing and matching when comparing old platform filenames against new platform files" in new Setup {
-      CompareYamlFiles.findMissingAndMatching(oldPlatformFolder, newPlatformFolder) shouldBe
+      CompareYamlFiles.findMissingAndMatching(oldPlatformFolder, includeSubfolders = false, newPlatformFolder) shouldBe
         (oldPlatformFilesMissingFromNewPlatform, oldPlatformFilesMatchingNewPlatform)
     }
 
     "return missing and matching when comparing legacy platform filenames against new platform files" in new Setup {
-      CompareYamlFiles.findMissingAndMatching(legacyPlatformFolder, newPlatformFolder) shouldBe
+      CompareYamlFiles.findMissingAndMatching(legacyPlatformFolder, includeSubfolders = true, newPlatformFolder) shouldBe
         (legacyPlatformFilesMissingFromNewPlatform, legacyPlatformFilesMatchingNewPlatform)
+    }
+
+    "return empty lists when the before path is not a directory" in new Setup {
+      CompareYamlFiles.findMissingAndMatching("bad-folder-name", includeSubfolders = false, newPlatformFolder) shouldBe
+        (List.empty, List.empty)
+    }
+
+    "return empty lists when the after path is not a directory" in new Setup {
+      CompareYamlFiles.findMissingAndMatching("oldPlatformFolder", includeSubfolders = false, "bad-folder-name") shouldBe
+        (List.empty, List.empty)
     }
   }
 

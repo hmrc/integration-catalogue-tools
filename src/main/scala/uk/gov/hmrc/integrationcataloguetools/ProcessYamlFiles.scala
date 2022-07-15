@@ -80,12 +80,11 @@ object ProcessYamlFiles {
   }
 
   def validateReviewedDate(reviewedDate: String): Option[String] = {
-    val errorMessage = "Reviewed date is not in ISO-8601 format"
     Try {
       Instant.parse(reviewedDate)
     } match {
       case Success(_) => None
-      case Failure(_) => Some(errorMessage)
+      case Failure(_) => Some("Reviewed date is not in ISO-8601 format")
     }
   }
 

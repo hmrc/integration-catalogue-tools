@@ -24,10 +24,10 @@ import scala.collection.JavaConverters._
 
 object CompareYamlFiles {
 
-  def findMissingAndMatching(beforePath: String, afterPath: String): (List[String], List[String]) = {
+  def findMissingAndMatching(beforePath: String, includeSubfolders: Boolean, afterPath: String): (List[String], List[String]) = {
     if (inputsAreNotValid(beforePath, afterPath)) (List.empty[String], List.empty[String])
     else {
-      val filenamesAndPublisherRefsFromBeforePath: Map[String, String] = getYamlFiles(beforePath)
+      val filenamesAndPublisherRefsFromBeforePath: Map[String, String] = getYamlFiles(beforePath, includeSubfolders)
         .map(fileName => (fileName.extractPublisherReference, fileName))
         .toMap
 
@@ -42,12 +42,7 @@ object CompareYamlFiles {
     }
   }
 
-  /**
-   *
-   * @param filenamesAndPublisherRefsFromBeforePath
-   * @param publisherRefsInAfterPath
-   * @return List of filenames from filenamesAndPublisherRefsFromBeforePath that do not exist in publisherRefsInAfterPath
-   */
+  // List of filenames from filenamesAndPublisherRefsFromBeforePath that do not exist in publisherRefsInAfterPath
   def getMissingFilenames(filenamesAndPublisherRefsFromBeforePath: Map[String, String], publisherRefsInAfterPath: Set[String]): List[String] =
     filenamesAndPublisherRefsFromBeforePath
       .filterNot(x => publisherRefsInAfterPath.contains(x._1))
@@ -55,12 +50,7 @@ object CompareYamlFiles {
       .toList
       .sorted
 
-  /**
-   *
-   * @param filenamesAndPublisherRefsFromBeforePath
-   * @param publisherRefsInAfterPath
-   * @return List of filenames from filenamesAndPublisherRefsFromBeforePath that also exist in publisherRefsInAfterPath
-   */
+  // List of filenames from filenamesAndPublisherRefsFromBeforePath that also exist in publisherRefsInAfterPath
   def getMatchingFilenames(filenamesAndPublisherRefsFromBeforePath: Map[String, String], publisherRefsInAfterPath: Set[String]): List[String] =
     publisherRefsInAfterPath
       .filter(x => filenamesAndPublisherRefsFromBeforePath.contains(x))
@@ -84,7 +74,8 @@ object CompareYamlFiles {
   }
 
   private def getYamlFiles(path: String, isRecursive: Boolean = false): List[String] = {
-    Files.walk(new File(path).toPath, isRecursive ? 2 : 1).iterator().asScala
+    Files.walk(new File(path).toPath, if (isRecursive) 2 else 1)
+      .iterator().asScala
       .map(_.getFileName.toString)
       .filter(_.endsWith(".yaml"))
       .toList
