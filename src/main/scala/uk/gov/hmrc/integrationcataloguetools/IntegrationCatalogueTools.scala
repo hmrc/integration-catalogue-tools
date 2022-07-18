@@ -113,11 +113,10 @@ class IntegrationCatalogueTools {
   private def findMissingAndMatching(beforePath: String, afterPath: String, includeSubfolders: Boolean = false) = {
     CompareYamlFiles.findMissingAndMatching(beforePath, afterPath, includeSubfolders) match {
       case Right((missingFiles, matchingFiles)) =>
-        println(s"Missing files: \n $missingFiles")
-        println(s"Matching files: \n $matchingFiles")
+        println(s"Missing files: \n ${missingFiles.mkString(" \n")}")
+        println(s"Matching files: \n ${matchingFiles.mkString(" \n")}")
         Right(())
-      case Left(errorMessage)                   =>
-        println(s"Error: $errorMessage")
+      case Left(errorMessage) =>
         Left(errorMessage)
     }
   }
@@ -128,7 +127,6 @@ class IntegrationCatalogueTools {
         println(s"Processed $filesProcessed files")
         Right(())
       case Left(errorMessage: String) =>
-        println(s"Error: $errorMessage")
         Left(errorMessage)
     }
   }

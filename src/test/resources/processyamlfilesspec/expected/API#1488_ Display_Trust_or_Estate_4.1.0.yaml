@@ -1,0 +1,2213 @@
+﻿openapi: 3.0.3
+info:
+  title: 'API#1488 Display Trust or Estate'
+  description: This API provides the capability for retriving registation details of Trusts or Estates.
+  version: 4.1.0
+  contact:
+    name: Denin Thomas
+    email: denin.thomas@hmrc.gov.uk
+  x-integration-catalogue:
+    reviewed-date: 2022-04-22T20:27:05Z
+    platform: CORE_IF
+    publisher-reference: 1488
+servers:
+  - url: 'https://hostname'
+    description: Actual environment values can be obtained from IF platforms team for each environment
+tags:
+  - name: 'API#1488'
+    description: This API provides the capability for retriving registation details of Trusts or Estates.
+paths:
+  '/trusts/registration/{idType}/{idValue}':
+    get:
+      summary: 'API#1488 Registration of Estate'
+      description: |
+        ```UTR Example /trusts/registration/UTR/1234567890```<br>
+        ```URN Example /trusts/registration/URN/XATRUST80000001```
+        ```
+
+        Change Log
+
+        Version Date        Author         Description
+        0.1.0   29-01-2019  Niyi Oladeji  Initial Draft
+        0.2.0   21-03-2019  Niyi Oladeji  Added willTypeEstate to separate estate/deceased
+                                          Changed dateOfDeath to optional in willType
+                                          Updated the URI and associated request example
+                                          Changed shareofIncomeString to string
+                                          Updated otherAssetType to correct error in the pattern
+                                          Removed Declaration.declaration field.
+                                          added bpMatchStatus to trust and estate entities
+                                          changed trustOrEstateDisplay to optional
+                                          added responseHeader group with formBundleNo and dfmcaReturnUserStatus
+                                          changed lineId to lineNo
+                                          changed estatePerRepOrg.identification to identificationOrgTyp
+        0.3.0   22-03-2019  Niyi Oladeji     deleted "increased the max number of entities from 25 to 50" from change log
+                                          changed bpMatchStatus to optional
+                                          updated lineNoType and bpMatchStatusType regex pattern
+                                          added lineNoType and bpMatchStatusType to trusteeOrgType
+                                          updated the sample success response
+        0.4.0   04-04-2019  Niyi Oladeji	    deleted identificationTypeNP
+                                          updated willType and willTypeEstate to use identificationType
+                                          created a type identificationTypeNPLT with both address and passport made mandatory
+                                          updated leadTrusteeIndType and estatePerRepInd to use identificationTypeNPLT instead of identificationType
+                                          Updated orgName field in assetsType to mandatory
+                                          Updated numberOfShares field in assetsType to optional
+        1.0.0   08 04-2019  Niyi Oladeji	    Created sample success response for when dfmcaReturnUserStatus is not Processed
+                                          Baselined
+        1.1.0   28-06-2019  Niyi Oladeji     Updated the length of safeIdType from 13 to 1,15
+                                          Changed the formBundleNo from Integer to string with numeric pattern
+        2.0.0   01-07-2019  Niyi Oladeji     BASELINED
+        2.1.0   10-09-2019  Niyi Oladeji     Updated identificationOrgType, identificationTypeNPLT, identificationType to combine safeId with address and passport
+                                          Updated shareOfIncomeString pattern
+        3.0.0   11-09-2019  Niyi Oladeji     Revert shareOfIncomeString pattern change made in version 2.1.0
+                                          Updated the sample response json
+                                          BASELINED
+        3.0.1   09-10-2019  Niyi Oladeji     Updated trustees format in the  sample response json to align with MDTP requirements
+        3.0.2   10-10-2019  Niyi Oladeji     BASELINED
+        3.1.0   01-07-2020  Denin Thomas   Migrated existing specification into OpenAPI Specification
+        3.2.0   20-07-2020  Denin Thomas   Updated Request uri to support new URN identifier
+                                           Updated error INVALID_REGIME to http 422 
+                                           Updated the following in response schema
+                                            -Added new element 'submissionDate' under $.trustOrEstateDisplay
+                                            -Added new element 'urn' under $.trustOrEstateDisplay.matchData 
+                                            -Added new elements 'welsh', 'braille' under $.trustOrEstateDisplay.correspondence
+                                            -Added new elements 'trustTaxable', 'expressTrust','trustUKResident','trustUKProperty' under $.trustOrEstateDisplay.details.trust.details
+                                            -Updated 'typeOfTrust' to optional under $.trustOrEstateDisplay.details.trust.details
+                                            -Added new elements 'countryOfResidence', 'nationality' and 'legallyIncapable'
+                                            under $.trustOrEstateDisplay.details.trust.entities for
+                                              - naturalPerson
+                                              - beneficiary.individualDetails
+                                              - leadTrustees (Individual)
+                                              - trustees.trusteeInd
+                                              - protectors.protector
+                                              - settlors.settlor
+                                            - Added new element 'countryOfResidence' under $.trustOrEstateDisplay.details.trust.entities for
+                                              - beneficiary.company
+                                              - beneficiary.trust
+                                              - beneficiary.charity
+                                              - beneficiary.large
+                                              - beneficiary.other
+                                              - leadTrustees  (Organisation)
+                                              - trustees.trusteeOrg
+                                              - protectors.protectorCompany
+                                              - settlors.settlorCompany
+                                            - Added new elements 'countryOfResidence' and 'nationality' 
+                                              under $.trustOrEstateDisplay.details.trust.entities
+                                              - deceased
+                                            - Added new array structure 'nonEEABusiness' under $.trustOrEstateDisplay.details.trust.assets
+        3.3.0   23-07-2020  Denin Thomas   Updated the following in response schema
+                                            - Updated 'utr' and 'urn' as optional under $.trustOrEstateDisplay.matchData and removed the choice option to support return of UTR and / or URN
+                                            - Updated 'urnString' to support alphanumeric characters
+        4.0.0   28-07-2020  Denin Thomas   Baselined. Added missing history and updated version numbers to align with history. No changes to specification
+        4.1.0   18-11-2020  Denin Thomas    Updated the following in response schema (5MLD CR10)
+                                            -Added optional elements 'trustRecorded' and 'trustUKRelation' under response structure $.trustOrEstateDisplay.details.trust.details
+      operationId: getRegistrationDetails
+      tags:
+        - 'API#1488'
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/correlationId'
+        - $ref: '#/components/parameters/idTypeParam'
+        - $ref: '#/components/parameters/idValueParam'
+      responses:
+        '200':
+          description: Successful Response
+          headers:
+            CorrelationId:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/successResponse'
+              examples:
+                Sample_Response:
+                  $ref: '#/components/examples/Sample_Response'
+        '400':
+          description: |-
+            Bad request
+            ```
+            A bad request has been made; this could be due to one or more issues with the request
+            "code"                 "reason"
+            INVALID_IDTYPE          Submission has not passed validation. Invalid parameter idType.
+            INVALID_IDVALUE         Submission has not passed validation. Invalid parameter idValue.
+            INVALID_CORRELATIONID   Submission has not passed validation. Invalid Header CorrelationId.
+          headers:
+            CorrelationId:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/failureResponse'
+              examples:
+                Error_InvalidIDType:
+                  $ref: '#/components/examples/Error_InvalidIDType'
+                Error_InvalidIDValue:
+                  $ref: '#/components/examples/Error_InvalidIDValue'
+                Error_InvalidCorrelationId:
+                  $ref: '#/components/examples/Error_InvalidCorrelationId'
+        '404':
+          description: |-
+            Not Found
+             ```
+             Error at backend ; this could be due to one or more issues with the request
+             "code"                 "reason"
+             RESOURCE_NOT_FOUND    The back end has indicated that there is no match found for the given identifier.
+          headers:
+            CorrelationId:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/failureResponse'
+              examples:
+                Error_Not_Found:
+                  $ref: '#/components/examples/Error_NotFound'
+        '422':
+          description: |-
+            Unprocessable Entity
+            ```
+            A bad request has been made; this could be due to one or more issues with the request
+            "code"                 "reason"
+            INVALID_REGIME          The remote endpoint has indicated that the REGIME provided is invalid.
+          headers:
+            CorrelationId:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/failureResponse'
+              examples:
+
+                Error_InvalidRegime:
+                  $ref: '#/components/examples/Error_InvalidRegime'  
+        '500':
+          description: |-
+            Server Error
+            ```
+            "code"         "reason"
+            SERVER_ERROR   IF is currently experiencing problems that require live service intervention.
+          headers:
+            CorrelationId:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/failureResponse'
+              examples:
+                ServerError:
+                  $ref: '#/components/examples/ServerError'
+        '503':
+          description: |-
+            Service unavailable
+            ```
+            "code"         "reason"
+            SERVICE_UNAVAILABLE   Dependent systems are currently not responding.
+          headers:
+            CorrelationId:
+              $ref: '#/components/headers/CorrelationId'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/failureResponse'
+              examples:
+                ServiceUnavailable:
+                  $ref: '#/components/examples/ServiceUnavailable'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  headers:
+    CorrelationId:
+      description: A UUID format string for the transaction used for traceability purposes
+      schema:
+        type: string
+        pattern: '^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$'
+    Content-Type:
+      description: Tells the client what the content type of the returned content actually is
+      schema:
+        type: string
+        enum:
+          - application/json
+  parameters:
+    idTypeParam:
+      in: path
+      name: idType
+      description: 'Required - Possible values for idType: UTR or URN'
+      required: true
+      schema:
+        type: string
+        pattern: '^[A-Z0-9]{3,6}$'
+    idValueParam:
+      in: path
+      name: idValue
+      description: 'Required - Value of UTR or URN '
+      required: true
+      schema:
+        type: string
+        pattern: '^([A-Z0-9]{1,15})$'
+    environment:
+      in: header
+      name: Environment
+      description: Mandatory. The environment in use.
+      required: true
+      schema:
+        type: string
+        enum:
+          - ist0
+          - clone
+          - live
+    correlationId:
+      in: header
+      name: CorrelationId
+      description: Optional. A UUID format string for the transaction. If not specified the IF will create a UUID value to be used
+      required: false
+      schema:
+        type: string
+        pattern: '^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$'
+  schemas:
+    failureResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - failures
+      properties:
+        failures:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: object
+            additionalProperties: false
+            required:
+              - code
+              - reason
+            properties:
+              code:
+                description: Keys for all the errors returned
+                type: string
+                pattern: '^[A-Z0-9_-]{1,160}$'
+              reason:
+                description: A simple description for the failure
+                type: string
+                minLength: 1
+                maxLength: 160
+    successResponse:
+      title: Display Trust or Estate - Response
+      description: 'API#1488 Response schema'
+      type: object
+      properties:
+        trustOrEstateDisplay:
+          type: object
+          properties:
+            applicationType:
+              description: '01-Trust,02-Estate'
+              type: string
+              enum:
+                - '01'
+                - '02'
+            matchData:
+              type: object
+              description: 'Possible options - UTR to be returned for Taxable , URN for Non- Taxable , UTR and URN if Trust has converted from Non-taxable to Taxable'
+              properties:
+                utr:
+                  $ref: '#/components/schemas/utrString'
+                urn:
+                  $ref: '#/components/schemas/urnString'  
+              additionalProperties: false
+            correspondence:
+              type: object
+              properties:
+                abroadIndicator:
+                  type: boolean
+                name:
+                  $ref: '#/components/schemas/corNameType'
+                address:
+                  $ref: '#/components/schemas/addressType'
+                phoneNumber:
+                  $ref: '#/components/schemas/phoneString'
+                welsh:
+                  $ref: '#/components/schemas/checkElement'
+                braille:
+                  $ref: '#/components/schemas/checkElement'
+              required:
+                - abroadIndicator
+                - name
+                - address
+                - phoneNumber
+              additionalProperties: false
+            declaration:
+              type: object
+              properties:
+                name:
+                  $ref: '#/components/schemas/nameType'
+                address:
+                  $ref: '#/components/schemas/addressType'
+              required:
+                - name
+                - address
+              additionalProperties: false
+            details:
+              description: Trust Or Estate Details
+              type: object
+              oneOf:
+                - $ref: '#/components/schemas/trustType'
+                - $ref: '#/components/schemas/estateType'
+            submissionDate:
+              $ref: '#/components/schemas/dateString'
+          required:
+            - applicationType
+            - matchData
+            - correspondence
+            - declaration
+            - details
+          additionalProperties: false
+        responseHeader:
+          type: object
+          properties:
+            dfmcaReturnUserStatus:
+              type: string
+              enum:
+                - Processed
+                - In Processing
+                - Pending Closure
+                - Closed
+                - Suspended
+                - Parked
+                - Obsoleted
+            formBundleNo:
+              type: string
+              pattern: '^[0-9]{12}$'
+          required:
+            - dfmcaReturnUserStatus
+            - formBundleNo
+          additionalProperties: false
+      required:
+        - responseHeader
+      additionalProperties: false
+    trustType:
+      type: object
+      properties:
+        trust:
+          type: object
+          properties:
+            details:
+              $ref: '#/components/schemas/trustDetailsType'
+            entities:
+              $ref: '#/components/schemas/trustEntitiesType'
+            assets:
+              $ref: '#/components/schemas/assetsType'
+          required:
+            - details
+            - entities
+          additionalProperties: false
+      required:
+        - trust
+      additionalProperties: false
+    trustEntitiesType:
+      type: object
+      properties:
+        naturalPerson:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/naturalPersonType'
+        beneficiary:
+          $ref: '#/components/schemas/beneficiaryType'
+        deceased:
+          $ref: '#/components/schemas/willType'
+        leadTrustees:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/leadTrusteeOrgType'
+            - $ref: '#/components/schemas/leadTrusteeIndType'
+        trustees:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/trusteeType'
+        protectors:
+          type: object
+          properties:
+            protector:
+              type: array
+              minItems: 1
+              maxItems: 25
+              items:
+                type: object
+                properties:
+                  lineNo:
+                    $ref: '#/components/schemas/lineNoType'
+                  bpMatchStatus:
+                    $ref: '#/components/schemas/bpMatchStatusType'
+                  name:
+                    $ref: '#/components/schemas/nameType'
+                  dateOfBirth:
+                    $ref: '#/components/schemas/dateString'
+                  identification:
+                    $ref: '#/components/schemas/identificationType'
+                  entityStart:
+                    $ref: '#/components/schemas/dateString'
+                  countryOfResidence:
+                    $ref: '#/components/schemas/countryType'
+                  nationality:
+                    $ref: '#/components/schemas/countryType'
+                  legallyIncapable:
+                    $ref: '#/components/schemas/checkElement'
+                required:
+                  - lineNo
+                  - name
+                  - entityStart
+                additionalProperties: false
+            protectorCompany:
+              type: array
+              minItems: 1
+              maxItems: 25
+              items:
+                type: object
+                properties:
+                  lineNo:
+                    $ref: '#/components/schemas/lineNoType'
+                  bpMatchStatus:
+                    $ref: '#/components/schemas/bpMatchStatusType'
+                  name:
+                    $ref: '#/components/schemas/orgNameString'
+                  identification:
+                    $ref: '#/components/schemas/identificationOrgType'
+                  entityStart:
+                    $ref: '#/components/schemas/dateString'
+                  countryOfResidence:
+                    $ref: '#/components/schemas/countryType'
+                required:
+                  - lineNo
+                  - name
+                  - entityStart
+                additionalProperties: false
+          additionalProperties: false
+        settlors:
+          type: object
+          properties:
+            settlor:
+              type: array
+              minItems: 1
+              maxItems: 25
+              items:
+                type: object
+                properties:
+                  lineNo:
+                    $ref: '#/components/schemas/lineNoType'
+                  bpMatchStatus:
+                    $ref: '#/components/schemas/bpMatchStatusType'
+                  name:
+                    $ref: '#/components/schemas/nameType'
+                  dateOfBirth:
+                    $ref: '#/components/schemas/dateString'
+                  identification:
+                    $ref: '#/components/schemas/identificationType'
+                  entityStart:
+                    $ref: '#/components/schemas/dateString'
+                  countryOfResidence:
+                    $ref: '#/components/schemas/countryType'
+                  nationality:
+                    $ref: '#/components/schemas/countryType'
+                  legallyIncapable:
+                    $ref: '#/components/schemas/checkElement'
+                required:
+                  - lineNo
+                  - name
+                  - entityStart
+                additionalProperties: false
+            settlorCompany:
+              type: array
+              minItems: 1
+              maxItems: 25
+              items:
+                type: object
+                properties:
+                  lineNo:
+                    $ref: '#/components/schemas/lineNoType'
+                  bpMatchStatus:
+                    $ref: '#/components/schemas/bpMatchStatusType'
+                  name:
+                    $ref: '#/components/schemas/orgNameString'
+                  companyType:
+                    type: string
+                    enum:
+                      - Trading
+                      - Investment
+                  companyTime:
+                    type: boolean
+                  identification:
+                    $ref: '#/components/schemas/identificationOrgType'
+                  entityStart:
+                    $ref: '#/components/schemas/dateString'
+                  countryOfResidence:
+                    $ref: '#/components/schemas/countryType'
+                required:
+                  - lineNo
+                  - name
+                  - entityStart
+                additionalProperties: false
+          additionalProperties: false
+      required:
+        - beneficiary
+        - leadTrustees
+      additionalProperties: false
+    assetsType:
+      type: object
+      properties:
+        monetary:
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            type: object
+            properties:
+              assetMonetaryAmount:
+                $ref: '#/components/schemas/monetaryType'
+            required:
+              - assetMonetaryAmount
+            additionalProperties: false
+        propertyOrLand:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/propertyLandType'
+        shares:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/sharesType'
+        business:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/businessAssetType'
+        partnerShip:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/partnershipType'
+        other:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/otherAssetType'
+        nonEEABusiness:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/nonEEABusinessType'
+      additionalProperties: false
+    otherAssetType:
+      type: object
+      properties:
+        description:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,56}$'
+        value:
+          $ref: '#/components/schemas/monetaryType'
+      required:
+        - description
+      additionalProperties: false
+    trustDetailsType:
+      type: object
+      properties:
+        startDate:
+          $ref: '#/components/schemas/dateString'
+        trustTaxable:
+          $ref: '#/components/schemas/checkElement'
+        expressTrust:
+          $ref: '#/components/schemas/checkElement'
+        trustUKResident:
+          $ref: '#/components/schemas/checkElement'
+        trustUKProperty:
+          $ref: '#/components/schemas/checkElement'
+        trustRecorded:
+          $ref: '#/components/schemas/checkElement'
+        trustUKRelation:
+          $ref: '#/components/schemas/checkElement'  
+        lawCountry:
+          $ref: '#/components/schemas/nonUKCountryType'
+        administrationCountry:
+          $ref: '#/components/schemas/countryType'
+        residentialStatus:
+          type: object
+          oneOf:
+            - type: object
+              properties:
+                uk:
+                  type: object
+                  properties:
+                    scottishLaw:
+                      type: boolean
+                    preOffShore:
+                      $ref: '#/components/schemas/countryType'
+                  required:
+                    - scottishLaw
+                  additionalProperties: false
+              required:
+                - uk
+              additionalProperties: false
+            - type: object
+              properties:
+                nonUK:
+                  type: object
+                  properties:
+                    sch5atcgga92:
+                      type: boolean
+                    s218ihta84:
+                      type: boolean
+                    agentS218IHTA84:
+                      type: boolean
+                    trusteeStatus:
+                      type: string
+                      enum:
+                        - Non Resident Domiciled
+                        - Non Resident Non Domiciled
+                        - Non Resident Cease Resident
+                  required:
+                    - sch5atcgga92
+                  additionalProperties: false
+              required:
+                - nonUK
+              additionalProperties: false
+        typeOfTrust:
+          type: string
+          enum:
+            - Will Trust or Intestacy Trust
+            - Deed of Variation Trust or Family Arrangement
+            - Inter vivos Settlement
+            - Employment Related
+            - Heritage Maintenance Fund
+            - Flat Management Company or Sinking Fund
+        deedOfVariation:
+          type: string
+          enum:
+            - Previously there was only an absolute interest under the will
+            - Replaced the will trust
+            - Addition to the will trust
+        interVivos:
+          type: boolean
+        efrbsStartDate:
+          $ref: '#/components/schemas/dateString'
+      required:
+        - startDate
+        - trustUKResident
+      additionalProperties: false
+    estateType:
+      type: object
+      properties:
+        estate:
+          type: object
+          properties:
+            entities:
+              $ref: '#/components/schemas/entitiesType'
+            administrationEndDate:
+              $ref: '#/components/schemas/dateString'
+            periodTaxDues:
+              description: '01-Total Income Tax and Capital Gains due for the administration period more than £10,000, 02-Date of Death before 05 April 2016 and the sale of estates assets by administrators is £225,000 in any  one tax year, 03-Date of Death After 05 April 2016 and the sale of estates assets by administrators is £250.00 in any one tax year, 04-Estate worth more than 2.5 million at the death of death'
+              type: string
+              enum:
+                - '01'
+                - '02'
+                - '03'
+                - '04'
+          required:
+            - entities
+            - periodTaxDues
+          additionalProperties: false
+      required:
+        - estate
+      additionalProperties: false
+    entitiesType:
+      type: object
+      properties:
+        deceased:
+          $ref: '#/components/schemas/willTypeEstate'
+        personalRepresentative:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/estatePerRepInd'
+            - $ref: '#/components/schemas/estatePerRepOrg'
+      required:
+        - deceased
+        - personalRepresentative
+      additionalProperties: false
+    estatePerRepInd:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        name:
+          $ref: '#/components/schemas/nameType'
+        dateOfBirth:
+          $ref: '#/components/schemas/dateString'
+        identification:
+          $ref: '#/components/schemas/identificationTypeNPLT'
+        phoneNumber:
+          $ref: '#/components/schemas/phoneString'
+        email:
+          type: string
+          format: email
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+      required:
+        - lineNo
+        - name
+        - dateOfBirth
+        - identification
+        - phoneNumber
+        - entityStart
+      additionalProperties: false
+    estatePerRepOrg:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        orgName:
+          $ref: '#/components/schemas/orgName56String'
+        phoneNumber:
+          $ref: '#/components/schemas/phoneString'
+        email:
+          type: string
+          format: email
+        identification:
+          $ref: '#/components/schemas/identificationOrgType'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+      required:
+        - lineNo
+        - orgName
+        - phoneNumber
+        - identification
+        - entityStart
+      additionalProperties: false
+    naturalPersonType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        name:
+          $ref: '#/components/schemas/nameType'
+        dateOfBirth:
+          $ref: '#/components/schemas/dateString'
+        identification:
+          $ref: '#/components/schemas/identificationType'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+        nationality:
+          $ref: '#/components/schemas/countryType'
+        legallyIncapable:
+          $ref: '#/components/schemas/checkElement'
+      required:
+        - lineNo
+        - name
+        - entityStart
+      additionalProperties: false
+    identificationType:
+      type: object
+      oneOf:
+        - type: object
+          properties:
+            nino:
+              $ref: '#/components/schemas/ninoType'
+          required:
+            - nino
+          additionalProperties: false
+        - type: object
+          properties:
+            passport:
+              $ref: '#/components/schemas/passportType'
+            address:
+              $ref: '#/components/schemas/addressType'
+            safeId:
+              $ref: '#/components/schemas/safeIdType'
+          additionalProperties: false
+    identificationTypeNPLT:
+      type: object
+      oneOf:
+        - type: object
+          properties:
+            nino:
+              $ref: '#/components/schemas/ninoType'
+          required:
+            - nino
+          additionalProperties: false
+        - type: object
+          properties:
+            passport:
+              $ref: '#/components/schemas/passportType'
+            address:
+              $ref: '#/components/schemas/addressType'
+            safeId:
+              $ref: '#/components/schemas/safeIdType'
+          required:
+            - passport
+            - address
+          additionalProperties: false
+    identificationOrgType:
+      type: object
+      oneOf:
+        - type: object
+          properties:
+            utr:
+              $ref: '#/components/schemas/utrString'
+          required:
+            - utr
+          additionalProperties: false
+        - type: object
+          properties:
+            address:
+              $ref: '#/components/schemas/addressType'
+            safeId:
+              $ref: '#/components/schemas/safeIdType'
+          required:
+            - address
+          additionalProperties: false
+    beneficiaryType:
+      type: object
+      properties:
+        individualDetails:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/individualDetailsType'
+        company:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/companyType'
+        trust:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/beneficiaryTrustType'
+        charity:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/charityType'
+        unidentified:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/unidentifiedType'
+        large:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/largeType'
+        other:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            $ref: '#/components/schemas/otherType'
+      additionalProperties: false
+    individualDetailsType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        name:
+          $ref: '#/components/schemas/nameType'
+        dateOfBirth:
+          $ref: '#/components/schemas/dateString'
+        vulnerableBeneficiary:
+          type: boolean
+        beneficiaryType:
+          type: string
+          enum:
+            - Director
+            - Employee
+            - NA
+        beneficiaryDiscretion:
+          type: boolean
+        beneficiaryShareOfIncome:
+          $ref: '#/components/schemas/shareofIncomeString'
+        identification:
+          $ref: '#/components/schemas/identificationType'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+        nationality:
+          $ref: '#/components/schemas/countryType'
+        legallyIncapable:
+          $ref: '#/components/schemas/checkElement'
+      required:
+        - lineNo
+        - name
+        - entityStart
+      additionalProperties: false
+    beneficiaryTrustType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        organisationName:
+          $ref: '#/components/schemas/orgNameString'
+        beneficiaryDiscretion:
+          type: boolean
+        beneficiaryShareOfIncome:
+          $ref: '#/components/schemas/shareofIncomeString'
+        identification:
+          $ref: '#/components/schemas/identificationOrgType'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+      required:
+        - lineNo
+        - organisationName
+        - entityStart
+      additionalProperties: false
+    charityType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        organisationName:
+          $ref: '#/components/schemas/orgNameString'
+        beneficiaryDiscretion:
+          type: boolean
+        beneficiaryShareOfIncome:
+          $ref: '#/components/schemas/shareofIncomeString'
+        identification:
+          $ref: '#/components/schemas/identificationOrgType'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+      required:
+        - lineNo
+        - organisationName
+        - entityStart
+      additionalProperties: false
+    unidentifiedType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        description:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,56}$'
+        beneficiaryDiscretion:
+          type: boolean
+        beneficiaryShareOfIncome:
+          $ref: '#/components/schemas/shareofIncomeString'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+      required:
+        - lineNo
+        - description
+        - entityStart
+      additionalProperties: false
+    largeType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        organisationName:
+          $ref: '#/components/schemas/orgNameString'
+        description:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,70}$'
+        description1:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,70}$'
+        description2:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,70}$'
+        description3:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,70}$'
+        description4:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,70}$'
+        numberOfBeneficiary:
+          type: string
+          pattern: '^[0-9a-zA-Z]{1,4}$'
+        identification:
+          $ref: '#/components/schemas/identificationOrgType'
+        beneficiaryDiscretion:
+          type: boolean
+        beneficiaryShareOfIncome:
+          $ref: '#/components/schemas/shareofIncomeString'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+      required:
+        - lineNo
+        - organisationName
+        - description
+        - numberOfBeneficiary
+        - entityStart
+      additionalProperties: false
+    otherType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        description:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,70}$'
+        address:
+          $ref: '#/components/schemas/addressType'
+        beneficiaryDiscretion:
+          type: boolean
+        beneficiaryShareOfIncome:
+          $ref: '#/components/schemas/shareofIncomeString'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+      required:
+        - lineNo
+        - description
+        - entityStart
+      additionalProperties: false
+    companyType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        organisationName:
+          $ref: '#/components/schemas/orgNameString'
+        beneficiaryDiscretion:
+          type: boolean
+        beneficiaryShareOfIncome:
+          $ref: '#/components/schemas/shareofIncomeString'
+        identification:
+          $ref: '#/components/schemas/identificationOrgType'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+      required:
+        - lineNo
+        - organisationName
+        - entityStart
+      additionalProperties: false
+    willType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        name:
+          $ref: '#/components/schemas/nameType'
+        dateOfBirth:
+          $ref: '#/components/schemas/dateString'
+        dateOfDeath:
+          $ref: '#/components/schemas/dateString'
+        identification:
+          $ref: '#/components/schemas/identificationType'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+        nationality:
+          $ref: '#/components/schemas/countryType'
+      required:
+        - lineNo
+        - name
+        - entityStart
+      additionalProperties: false
+    willTypeEstate:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        name:
+          $ref: '#/components/schemas/nameType'
+        dateOfBirth:
+          $ref: '#/components/schemas/dateString'
+        dateOfDeath:
+          $ref: '#/components/schemas/dateString'
+        identification:
+          $ref: '#/components/schemas/identificationType'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+      required:
+        - lineNo
+        - name
+        - dateOfDeath
+        - entityStart
+      additionalProperties: false
+    leadTrusteeOrgType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        name:
+          $ref: '#/components/schemas/orgName56String'
+        phoneNumber:
+          $ref: '#/components/schemas/phoneString'
+        email:
+          type: string
+          format: email
+        identification:
+          $ref: '#/components/schemas/identificationOrgType'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+      required:
+        - lineNo
+        - name
+        - phoneNumber
+        - identification
+        - entityStart
+      additionalProperties: false
+    trusteeType:
+      type: object
+      properties:
+        trusteeInd:
+          $ref: '#/components/schemas/trusteeIndType'
+        trusteeOrg:
+          $ref: '#/components/schemas/trusteeOrgType'
+      additionalProperties: false
+    trusteeIndType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        name:
+          $ref: '#/components/schemas/nameType'
+        dateOfBirth:
+          $ref: '#/components/schemas/dateString'
+        identification:
+          $ref: '#/components/schemas/identificationType'
+        phoneNumber:
+          $ref: '#/components/schemas/phoneString'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+        nationality:
+          $ref: '#/components/schemas/countryType'
+        legallyIncapable:
+          $ref: '#/components/schemas/checkElement'
+      required:
+        - lineNo
+        - name
+        - entityStart
+      additionalProperties: false
+    trusteeOrgType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        name:
+          $ref: '#/components/schemas/orgName56String'
+        phoneNumber:
+          $ref: '#/components/schemas/phoneString'
+        email:
+          type: string
+          format: email
+        identification:
+          $ref: '#/components/schemas/identificationOrgType'
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+      required:
+        - lineNo
+        - name
+        - entityStart
+      additionalProperties: false
+    addressType:
+      type: object
+      oneOf:
+        - type: object
+          properties:
+            line1:
+              $ref: '#/components/schemas/addressLineType'
+            line2:
+              $ref: '#/components/schemas/addressLineType'
+            line3:
+              $ref: '#/components/schemas/addressLineType'
+            line4:
+              $ref: '#/components/schemas/addressLineType'
+            postCode:
+              type: string
+              pattern: '^[A-Za-z0-9 ]{1,10}$'
+            country:
+              type: string
+              enum:
+                - GB
+          required:
+            - line1
+            - line2
+            - postCode
+            - country
+          additionalProperties: false
+        - type: object
+          properties:
+            line1:
+              $ref: '#/components/schemas/addressLineType'
+            line2:
+              $ref: '#/components/schemas/addressLineType'
+            line3:
+              $ref: '#/components/schemas/addressLineType'
+            line4:
+              $ref: '#/components/schemas/addressLineType'
+            country:
+              $ref: '#/components/schemas/nonUKCountryType'
+          required:
+            - line1
+            - line2
+            - country
+          additionalProperties: false
+    leadTrusteeIndType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        bpMatchStatus:
+          $ref: '#/components/schemas/bpMatchStatusType'
+        name:
+          $ref: '#/components/schemas/nameType'
+        dateOfBirth:
+          $ref: '#/components/schemas/dateString'
+        identification:
+          $ref: '#/components/schemas/identificationTypeNPLT'
+        phoneNumber:
+          $ref: '#/components/schemas/phoneString'
+        email:
+          type: string
+          format: email
+        entityStart:
+          $ref: '#/components/schemas/dateString'
+        countryOfResidence:
+          $ref: '#/components/schemas/countryType'
+        nationality:
+          $ref: '#/components/schemas/countryType'
+        legallyIncapable:
+          $ref: '#/components/schemas/checkElement'
+      required:
+        - lineNo
+        - name
+        - dateOfBirth
+        - identification
+        - phoneNumber
+        - entityStart
+      additionalProperties: false
+    sharesType:
+      type: object
+      properties:
+        numberOfShares:
+          type: string
+          pattern: '^[0-9]{1,12}$'
+        orgName:
+          $ref: '#/components/schemas/orgNameString'
+        utr:
+          $ref: '#/components/schemas/utrString'
+        shareClass:
+          type: string
+          enum:
+            - Ordinary shares
+            - Non-voting shares
+            - Redeemable shares
+            - Preference shares
+            - Deferred ordinary shares
+            - Management shares
+            - Other classes of shares
+            - Voting shares
+            - Dividend shares
+            - Capital share
+            - Other
+        typeOfShare:
+          type: string
+          enum:
+            - Quoted
+            - Unquoted
+        value:
+          $ref: '#/components/schemas/monetaryType'
+      required:
+        - orgName
+      additionalProperties: false
+    businessAssetType:
+      type: object
+      properties:
+        orgName:
+          $ref: '#/components/schemas/orgNameString'
+        utr:
+          $ref: '#/components/schemas/utrString'
+        businessDescription:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,56}$'
+        address:
+          $ref: '#/components/schemas/addressType'
+        businessValue:
+          $ref: '#/components/schemas/monetaryType'
+      required:
+        - orgName
+        - businessDescription
+      additionalProperties: false
+    partnershipType:
+      type: object
+      properties:
+        utr:
+          $ref: '#/components/schemas/utrString'
+        description:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,56}$'
+        partnershipStart:
+          $ref: '#/components/schemas/dateString'
+      required:
+        - description
+      additionalProperties: false
+    nonEEABusinessType:
+      type: object
+      properties:
+        lineNo:
+          $ref: '#/components/schemas/lineNoType'
+        orgName:
+          $ref: '#/components/schemas/orgNameString'
+        address:
+          $ref: '#/components/schemas/addressType'
+        govLawCountry:
+          $ref: '#/components/schemas/countryType'
+        startDate:
+          $ref: '#/components/schemas/dateString'
+        endDate:
+          $ref: '#/components/schemas/dateString'
+      required:
+        - lineNo
+        - orgName
+        - address
+        - govLawCountry
+        - startDate
+      additionalProperties: false
+    passportType:
+      type: object
+      properties:
+        number:
+          type: string
+          pattern: '^[A-Za-z0-9]{1,30}$'
+        expirationDate:
+          $ref: '#/components/schemas/dateString'
+        countryOfIssue:
+          $ref: '#/components/schemas/countryType'
+      required:
+        - number
+        - expirationDate
+        - countryOfIssue
+      additionalProperties: false
+    shareofIncomeString:
+      type: string
+      pattern: '^([0-9]|[1-9][0-9]|100)$'
+    phoneString:
+      type: string
+      pattern: '^\+[0-9 ]{1,18}$|^[0-9 ]{1,19}$'
+    nameType:
+      type: object
+      properties:
+        firstName:
+          $ref: '#/components/schemas/nameString'
+        middleName:
+          $ref: '#/components/schemas/nameString'
+        lastName:
+          $ref: '#/components/schemas/nameString'
+      required:
+        - firstName
+        - lastName
+      additionalProperties: false
+    addressLineType:
+      type: string
+      pattern: '^[A-Za-z0-9 ,.()/&''-]{1,35}$'
+    nameString:
+      type: string
+      pattern: '^[A-Za-z0-9 ,.()/&''-]{1,35}$'
+    orgNameString:
+      type: string
+      pattern: '^[A-Za-z0-9 ,.()/&''-]{1,105}$'
+    orgName56String:
+      type: string
+      pattern: '^[A-Za-z0-9 ,.()/&''-]{1,56}$'
+    utrString:
+      type: string
+      pattern: '^[0-9]{10}$'
+    safeIdType:
+      type: string
+      pattern: '^[A-Z0-9]{1,15}$'
+    monetaryType:
+      description: Integer up to 12 digits max; 1250 represents 1250 pounds
+      type: integer
+      minimum: 0
+      maximum: 999999999999
+    corNameType:
+      type: string
+      pattern: '^[A-Za-z0-9 ,.()/&*''-]{1,56}$'
+    ninoType:
+      type: string
+      pattern: '^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]?$'
+    bpMatchStatusType:
+      type: string
+      pattern: '^[0-9]{2}$'
+    lineNoType:
+      type: string
+      pattern: '^[0-9]{1,4}$'
+    propertyLandType:
+      type: object
+      properties:
+        buildingLandName:
+          type: string
+          pattern: '^[0-9a-zA-Z{À-˿’}\- \u005C&`''^]{1,56}$'
+        address:
+          $ref: '#/components/schemas/addressType'
+        valueFull:
+          $ref: '#/components/schemas/monetaryType'
+        valuePrevious:
+          $ref: '#/components/schemas/monetaryType'
+      additionalProperties: false
+    dateString:
+      description: YYYY-MM-DD
+      type: string
+      pattern: '^(((15|16|17|18|19|20)([2468][048]|[13579][26]|0[48])|2000|1600)[-]02[-]29|((15|16|17|18|19|20)[0-9]{2}[-](0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(15|16|17|18|19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(15|16|17|18|19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$'
+    countryType:
+      type: string
+      oneOf:
+        - type: string
+          enum:
+            - GB
+        - $ref: '#/components/schemas/nonUKCountryType'
+    nonUKCountryType:
+      type: string
+      enum:
+        - AD
+        - AE
+        - AF
+        - AG
+        - AI
+        - AL
+        - AM
+        - AN
+        - AO
+        - AQ
+        - AR
+        - AS
+        - AT
+        - AU
+        - AW
+        - AX
+        - AZ
+        - BA
+        - BB
+        - BD
+        - BE
+        - BF
+        - BG
+        - BH
+        - BI
+        - BJ
+        - BM
+        - BN
+        - BO
+        - BQ
+        - BR
+        - BS
+        - BT
+        - BV
+        - BW
+        - BY
+        - BZ
+        - CA
+        - CC
+        - CD
+        - CF
+        - CG
+        - CH
+        - CI
+        - CK
+        - CL
+        - CM
+        - CN
+        - CO
+        - CR
+        - CS
+        - CU
+        - CV
+        - CW
+        - CX
+        - CY
+        - CZ
+        - DE
+        - DJ
+        - DK
+        - DM
+        - DO
+        - DZ
+        - EC
+        - EE
+        - EG
+        - EH
+        - ER
+        - ES
+        - ET
+        - FC
+        - FI
+        - FJ
+        - FK
+        - FM
+        - FO
+        - FR
+        - GA
+        - GD
+        - GE
+        - GF
+        - GG
+        - GH
+        - GI
+        - GL
+        - GM
+        - GN
+        - GP
+        - GQ
+        - GR
+        - GS
+        - GT
+        - GU
+        - GW
+        - GY
+        - HK
+        - HM
+        - HN
+        - HR
+        - HT
+        - HU
+        - ID
+        - IE
+        - IL
+        - IM
+        - IN
+        - IO
+        - IQ
+        - IR
+        - IS
+        - IT
+        - JE
+        - JM
+        - JO
+        - JP
+        - KE
+        - KG
+        - KH
+        - KI
+        - KM
+        - KN
+        - KP
+        - KR
+        - KW
+        - KY
+        - KZ
+        - LA
+        - LB
+        - LC
+        - LI
+        - LK
+        - LR
+        - LS
+        - LT
+        - LU
+        - LV
+        - LY
+        - MA
+        - MC
+        - MD
+        - ME
+        - MF
+        - MG
+        - MH
+        - MK
+        - ML
+        - MM
+        - MN
+        - MO
+        - MP
+        - MQ
+        - MR
+        - MS
+        - MT
+        - MU
+        - MV
+        - MW
+        - MX
+        - MY
+        - MZ
+        - NA
+        - NC
+        - NE
+        - NF
+        - NG
+        - NI
+        - NL
+        - NO
+        - NP
+        - NR
+        - NU
+        - NZ
+        - OM
+        - PA
+        - PE
+        - PF
+        - PG
+        - PH
+        - PK
+        - PL
+        - PM
+        - PN
+        - PR
+        - PS
+        - PT
+        - PW
+        - PY
+        - QA
+        - RE
+        - RO
+        - RS
+        - RU
+        - RW
+        - SA
+        - SB
+        - SC
+        - SD
+        - SE
+        - SG
+        - SH
+        - SI
+        - SJ
+        - SK
+        - SL
+        - SM
+        - SN
+        - SO
+        - SR
+        - SS
+        - ST
+        - SV
+        - SX
+        - SY
+        - SZ
+        - TC
+        - TD
+        - TF
+        - TG
+        - TH
+        - TJ
+        - TK
+        - TL
+        - TM
+        - TN
+        - TO
+        - TP
+        - TR
+        - TT
+        - TV
+        - TW
+        - TZ
+        - UA
+        - UG
+        - UM
+        - US
+        - UY
+        - UZ
+        - VA
+        - VC
+        - VE
+        - VG
+        - VI
+        - VN
+        - VU
+        - WF
+        - WS
+        - YE
+        - YT
+        - ZA
+        - ZM
+        - ZW
+    urnString:
+      type: string
+      pattern: '^[0-9A-Z]{15}$'
+    checkElement:
+      description: True or False
+      type: boolean
+  examples:
+    ServiceUnavailable:
+      value:
+        failures:
+          - code: SERVICE_UNAVAILABLE
+            reason: Dependent systems are currently not responding.
+    ServerError:
+      value:
+        failures:
+          - code: SERVER_ERROR
+            reason: IF is currently experiencing problems that require live service intervention.
+    Error_InvalidIDType:
+      value:
+        failures:
+          - code: INVALID_IDTYPE
+            reason: Submission has not passed validation. Invalid parameter idType.
+    Error_InvalidIDValue:
+      value:
+        failures:
+          - code: INVALID_IDVALUE
+            reason: Submission has not passed validation. Invalid parameter idValue.
+    Error_InvalidRegime:
+      value:
+        failures:
+          - code: INVALID_REGIME
+            reason: The remote endpoint has indicated that the REGIME provided is invalid.
+    Error_InvalidCorrelationId:
+      value:
+        failures:
+          - code: INVALID_CORRELATIONID
+            reason: Submission has not passed validation. Invalid CorrelationId.
+    Error_NotFound:
+      value:
+        failures:
+          - code: RESOURCE_NOT_FOUND
+            reason: The back end has indicated that there is no match found for the given identifier.
+    Sample_Response:
+      value:
+        responseHeader:
+          dfmcaReturnUserStatus: Processed
+          formBundleNo: '123456789012'
+        trustOrEstateDisplay:
+          applicationType: '01'
+          matchData:
+            utr: '2134514321'
+          correspondence:
+            abroadIndicator: true
+            name: Nelson James
+            address:
+              line1: 1010 EASY ST
+              line2: OTTAWA
+              line3: ONTARIO
+              line4: ONTARIO
+              postCode: K1A 0B1
+              country: GB
+            phoneNumber: '+10392019203'
+          declaration:
+            name:
+              firstName: Nelson
+              middleName: Nicola
+              lastName: James
+            address:
+              line1: 1010 EASY ST
+              line2: OTTAWA
+              line3: ONTARIO
+              line4: ONTARIO
+              postCode: K1A 0B1
+              country: GB
+          details:
+            trust:
+              details:
+                startDate: '2001-01-01'
+                trustTaxable: true
+                expressTrust: false
+                trustUKResident: true
+                trustUKProperty: false
+                trustRecorded: true
+                trustUKRelation: false
+                lawCountry: GB
+                administrationCountry: GB
+                residentialStatus:
+                  nonUK:
+                    sch5atcgga92: false
+                typeOfTrust: Will Trust or Intestacy Trust
+                deedOfVariation: Previously there was only an absolute interest under the will
+                interVivos: false
+                efrbsStartDate: '2001-01-01'
+              entities:
+                naturalPerson:
+                  - lineNo: '1'
+                    bpMatchStatus: '01'
+                    name:
+                      firstName: Nicola
+                      middleName: Andrey
+                      lastName: Jackson
+                    dateOfBirth: '1970-02-28'
+                    identification:
+                      address:
+                        line1: 1344 Army Road
+                        line2: Suite 111
+                        line4: Telford
+                        postCode: TF1 5DR
+                        country: GB
+                      safeId: '2222200000000'
+                    entityStart: '2017-02-28'
+                    countryOfResidence: GB
+                    nationality: GB
+                    legallyIncapable: true
+                beneficiary:
+                  individualDetails:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      name:
+                        firstName: Nicola
+                        middleName: Andrey
+                        lastName: Jackson
+                      dateOfBirth: '1970-02-28'
+                      vulnerableBeneficiary: true
+                      beneficiaryType: Director
+                      beneficiaryDiscretion: true
+                      beneficiaryShareOfIncome: '0'
+                      identification:
+                        passport:
+                          number: abcdefgh
+                          expirationDate: '2001-01-01'
+                          countryOfIssue: GB
+                        address:
+                          line1: 1344 Army Road
+                          line2: Suite 111
+                          line4: Telford
+                          postCode: TF1 5DR
+                          country: GB
+                        safeId: '2222200000000'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                      nationality: GB
+                      legallyIncapable: true
+                  company:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      organisationName: ' '
+                      beneficiaryDiscretion: true
+                      beneficiaryShareOfIncome: '0'
+                      identification:
+                        address:
+                          line1: 1344 Army Road
+                          line2: Suite 111
+                          line4: Telford
+                          postCode: TF1 5DR
+                          country: GB
+                        safeId: '2222200000000'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                  trust:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      organisationName: 'Nelson Ltd '
+                      beneficiaryDiscretion: true
+                      beneficiaryShareOfIncome: '0'
+                      identification:
+                        address:
+                          line1: 1344 Army Road
+                          line2: Suite 111
+                          line4: Telford
+                          postCode: TF1 5DR
+                          country: GB
+                        safeId: '2222200000000'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                  charity:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      organisationName: Nelson Ltd
+                      beneficiaryDiscretion: true
+                      beneficiaryShareOfIncome: '0'
+                      identification:
+                        address:
+                          line1: 1344 Army Road
+                          line2: Suite 111
+                          line4: Telford
+                          postCode: TF1 5DR
+                          country: GB
+                        safeId: '2222200000000'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                  unidentified:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      description: Reserve money
+                      beneficiaryDiscretion: true
+                      beneficiaryShareOfIncome: '0'
+                      entityStart: '2017-02-28'
+                  large:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      organisationName: Nelson Ltd
+                      description: This is a must
+                      description1: This is a optional
+                      description2: This is a optional
+                      description3: This is a optional
+                      description4: This is a optional
+                      numberOfBeneficiary: '0'
+                      identification:
+                        address:
+                          line1: 1344 Army Road
+                          line2: Suite 111
+                          line4: Telford
+                          postCode: TF1 5DR
+                          country: GB
+                        safeId: '2222200000000'
+                      beneficiaryDiscretion: true
+                      beneficiaryShareOfIncome: '0'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                  other:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      description: Joint Fund
+                      address:
+                        line1: 1010 EASY ST
+                        line2: OTTAWA
+                        line3: ONTARIO
+                        line4: ONTARIO
+                        postCode: K1A 0B1
+                        country: GB
+                      beneficiaryDiscretion: true
+                      beneficiaryShareOfIncome: '0'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                deceased:
+                  lineNo: '1'
+                  bpMatchStatus: '01'
+                  name:
+                    firstName: James
+                    middleName: Kingsley
+                    lastName: Bond
+                  dateOfBirth: '1965-02-28'
+                  dateOfDeath: '2018-02-28'
+                  identification:
+                    address:
+                      line1: 1344 Army Road
+                      line2: Suite 111
+                      line4: Telford
+                      postCode: TF1 5DR
+                      country: GB
+                    safeId: '2222200000000'
+                  entityStart: '2017-02-28'
+                  countryOfResidence: GB
+                  nationality: GB
+                leadTrustees:
+                  lineNo: '1'
+                  bpMatchStatus: '01'
+                  name:
+                    firstName: Tamara
+                    middleName: Hingis
+                    lastName: Jones
+                  dateOfBirth: '1965-02-28'
+                  phoneNumber: 0123456789
+                  email: a@test.com
+                  identification:
+                    passport:
+                      number: '1234567890'
+                      expirationDate: '2020-12-12'
+                      countryOfIssue: GB
+                    address:
+                      line1: 1344 Army Road
+                      line2: Suite 111
+                      line4: Telford
+                      postCode: TF1 5DR
+                      country: GB
+                    safeId: '2222200000000'
+                  entityStart: '2017-02-28'
+                  countryOfResidence: GB
+                  nationality: GB
+                  legallyIncapable: false
+                trustees:
+                  - trusteeInd:
+                      lineNo: '1'
+                      bpMatchStatus: '01'
+                      name:
+                        firstName: Tamara
+                        middleName: Hingis
+                        lastName: Jones
+                      dateOfBirth: '1965-02-28'
+                      identification:
+                        address:
+                          line1: 1344 Army Road
+                          line2: Suite 111
+                          line4: Telford
+                          postCode: TF1 5DR
+                          country: GB
+                        safeId: '2222200000000'
+                      phoneNumber: '+447456788112'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                      nationality: GB
+                      legallyIncapable: false
+                  - trusteeOrg:
+                      lineNo: '1'
+                      name: MyOrg Incorporated
+                      phoneNumber: '+447456788112'
+                      email: a@test.com
+                      identification:
+                        address:
+                          line1: 1344 Army Road
+                          line2: Suite 111
+                          line4: Telford
+                          postCode: TF1 5DR
+                          country: GB
+                        safeId: '2222200000000'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                protectors:
+                  protector:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      name:
+                        firstName: Bruce
+                        middleName: Bob
+                        lastName: Branson
+                      dateOfBirth: '1965-02-28'
+                      identification:
+                        safeId: '2222200000000'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                      nationality: GB
+                      legallyIncapable: false
+                  protectorCompany:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      name: Raga Dandy
+                      identification:
+                        address:
+                          line1: 1344 Army Road
+                          line2: Suite 111
+                          line4: Telford
+                          postCode: TF1 5DR
+                          country: GB
+                        safeId: '2222200000000'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                settlors:
+                  settlor:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      name:
+                        firstName: Bruce
+                        middleName: Bob
+                        lastName: Branson
+                      dateOfBirth: '1965-02-28'
+                      identification:
+                        address:
+                          line1: 1344 Army Road
+                          line2: Suite 111
+                          line4: Telford
+                          postCode: TF1 5DR
+                          country: GB
+                        safeId: '2222200000000'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+                      nationality: GB
+                      legallyIncapable: false
+                  settlorCompany:
+                    - lineNo: '1'
+                      bpMatchStatus: '01'
+                      name: 'Completors Limited '
+                      companyType: Trading
+                      companyTime: true
+                      identification:
+                        address:
+                          line1: 1344 Army Road
+                          line2: Suite 111
+                          line4: Telford
+                          postCode: TF1 5DR
+                          country: GB
+                        safeId: '2222200000000'
+                      entityStart: '2017-02-28'
+                      countryOfResidence: GB
+              assets:
+                monetary:
+                  - assetMonetaryAmount: 0
+                propertyOrLand:
+                  - buildingLandName: Tokyo Campus
+                    address:
+                      line1: '10 Enderson Road '
+                      line2: Cheapside
+                      line3: 'Riverside '
+                      line4: 'Boston '
+                      postCode: SN8 4DD
+                      country: GB
+                    valueFull: 1892090
+                    valuePrevious: 1699000
+                shares:
+                  - numberOfShares: '0'
+                    orgName: Smart Estates
+                    utr: '2134514321'
+                    shareClass: Ordinary shares
+                    typeOfShare: Quoted
+                    value: 9891828
+                business:
+                  - orgName: Lone Wolf Ltd
+                    utr: '2134514321'
+                    businessDescription: Travel Business
+                    address:
+                      line1: Suite 10
+                      line2: Wealthy Arena
+                      line3: 'Trafagar Square '
+                      line4: London
+                      postCode: SE2 2HB
+                      country: GB
+                    businessValue: 0
+                partnerShip:
+                  - utr: '2134514321'
+                    description: Real Estates partnership
+                    partnershipStart: '2010-02-28'
+                other:
+                  - description: Jewelries
+                    value: 781720
+                nonEEABusiness:
+                  - lineNo: '1'
+                    orgName: ABC Ltd
+                    address:
+                      line1: Line 1 address
+                      line2: Line 2 address
+                      postCode: TF3 4ER
+                      country: GB
+                    govLawCountry: GB
+                    startDate: '2020-02-20'
+          submissionDate: '2020-06-09'

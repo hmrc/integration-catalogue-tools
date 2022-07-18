@@ -57,7 +57,9 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
 
       val result = ProcessYamlFiles.addMetadata(s"$testResourcesPath/$inputFolder", "CORE_IF", "2022-04-22T20:27:05Z", s"$testResourcesPath/$outputFolder")
 
-      result shouldBe Right(4)
+      result shouldBe Right(5)
+      // The first of these files has a UTF-8 Byte Order Mark, and CRLF line endings
+      checkFileContents("API#1488_ Display_Trust_or_Estate_4.1.0.yaml")
       checkFileContents("API#1758_Get_Breathing_Space_Status-1.3.0.yaml")
       checkFileContents("API1562_Store_Document_1.6.0.yaml")
       checkFileContents("api-1808-create-first-stage-appeal-1.0.0.yaml")

@@ -52,8 +52,11 @@ object ProcessYamlFiles {
     }
   }
 
+  // Handle Windows, MacOS and Linux line endings
+  private val newLineRegex = "(\\r\\n|\\r|\\n)"
   // This regex finds the 'info' element so that the x-integration-catalogue can be added at the end of it
-  private val findInfoRegex = Pattern.compile("((.*\\n)*info:(\\n +.*)*)")
+  // The \X at the start will detect any Byte Order Marks, e.g., the UTF-8 BOM, found in some YAML files
+  private val findInfoRegex = Pattern.compile(s"((\\X*$newLineRegex)*info:($newLineRegex .*)*)")
 
   def insertXIntegrationCatalogue(fileContents: String, platform: String, reviewedDate: String, publisherReference: String): String = {
     val xIntegrationCatalogue = "x-integration-catalogue:"
