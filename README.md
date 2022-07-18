@@ -6,7 +6,7 @@ This tool allows you manage content for publishing in the API Catalogue.
 
 - Generating OpenAPI Specification files
 - Generating file transfer definition files
-- Adding metadata to OpenAPI Specification files which do not have it
+- Processing OpenAPI Specification files which do not have publication metadata
 - Bulk publishing of OpenAPI Specification or file transfer definition files in the API Catalogue
 
 ## API & OpenAPI Specification (OAS)
@@ -143,16 +143,48 @@ MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from he
 
  ```
 
+## Processing OpenAPI Specification files which do not have publication metadata
+
+If a platform team does not publish its own API documentation but passes it to the API Platform team for publication,
+the tools below assist in publication.
+
+The first tool can manage the OAS files in the integration-catalogue-oas-files repository by looking for APIs that
+are deleted or moved from legacy platforms.
+
+The second tool adds the `x-integration-catalogue` publication metadata section if it is not already present.
+
+### Comparing file lists to find files that must be deleted
+
+If the new documentation is provided as a complete set of API documentation files, this tool works out whether any of the
+files in the integration-catalogue-oas-files repository must be deleted because it is no longer required. Place all the new
+files in some directory (called the 'after' directory). As input to the tool, provide the path to this directory as well as
+the path to the existing files in the repository (called the 'before' directory) that may need to be deleted.
+The tool compares files based on the first 4-digit number in the filenames, which is assumed to be the API number.
+It outputs two lists, one with the files in the before directory but not in the after directory (aka missing files) and
+one with the files in both the before and after directories (aka matching files). An example usage is for the files
+in the core-if directory to be deleted if they are missing from the new file set, and for files in the des directory
+to be deleted if they are matching in the new file set, because they must be moved into core-if.
+
+There is an option for the tool to look not only at files in the existing directory but also in immediate subdirectories
+of that directory, as this was the structure found in the des directory.
+
+The following input constraints apply:
+
+* both the 'before' and 'after' directories must exist
+* only files ending `.yaml` will be taken into account
+* subdirectories of the 'after' directory are always ignored
+* subdirectories of the 'before' directory are ignored unless the `--includeSubfolders` option is added as an argument
+
 ### Adding metadata to OpenAPI Specification files
 
 If you create YAML files without the `x-integration-catalogue` element by using another tool, this can be added afterwards.
 Place all the files in an input directory. This input directory, the platform (e.g. CORE_IF) and the review date, and also
-an output directory must be provided as input values. The following constraints apply:
+an output directory must be provided as input values. The following input constraints apply:
 
+* the input directory must exist
 * only files ending `.yaml` will be processed
 * subdirectories are ignored
-* each file must have a name containing 'api' or 'API' (case-insensitive), followed by a 4-digit number.
-  Optionally, 'api' may be followed by a single character such as '#', '-', and so on, before the number.
+* file names must have at least one 4-digit number that is taken to be the publication reference; longer numbers are ignored
 * the reviewed date must be in ISO-8601 format in UTC, e.g., 2022-07-13T17:12:00Z
 * the output directory must not exist; it will be created
 
@@ -193,6 +225,7 @@ Usage:
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <inputCsv> <output directory>
     integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
+    integration-catalogue-tools --yamlFindMissingAndMatching" [--includeSubfolders] <before directory> <after directory> 
     integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
@@ -200,6 +233,7 @@ Usage:
     
     Arguments:
         - directory : All files with .yaml or .json extension will be processed
+        - includeSubfolders : Include files in the immediate subfolders of the <before directory>
         - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OpenAPI Specification file
 ```
 
@@ -227,6 +261,11 @@ sbt 'run --csvToOas "<name-of.csv>" "<output-path>"'
 ## Convert CSV to File Transfer Json files
 ```
 sbt 'run --csvToFileTransferJson "<name-of.csv>" "<output-path>"'
+```
+
+## Comparing file lists to find files that must be deleted
+```
+sbt 'run --yamlAddMetadata [--includeSubfolders] <before-path> <after-path>'
 ```
 
 ## Add metadata to OpenAPI Specification YAML files

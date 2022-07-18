@@ -26,7 +26,6 @@ import uk.gov.hmrc.integrationcataloguetools.models.Platform
 import io.swagger.v3.oas.models.PathItem
 import io.swagger.v3.oas.models.Operation
 import io.swagger.v3.oas.models.responses.ApiResponses
-import io.swagger.v3.oas.models.responses.ApiResponse
 
 class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
 

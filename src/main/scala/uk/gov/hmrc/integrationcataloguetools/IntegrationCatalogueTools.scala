@@ -23,13 +23,14 @@ import uk.gov.hmrc.integrationcataloguetools.service.{ApiPublisherService, FileT
 
 class IntegrationCatalogueTools {
 
- def printUsage(): Unit = {
-     println("""
+  def printUsage(): Unit = {
+    println("""
         Usage:
             integration-catalogue-tools --version | -v
             integration-catalogue-tools --help | -h
             integration-catalogue-tools --csvToOas <inputCsv> <output directory>
             integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
+            integration-catalogue-tools --yamlFindMissingAndMatching" [--includeSubfolders] <before directory> <after directory> 
             integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
             integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
             integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
@@ -37,76 +38,98 @@ class IntegrationCatalogueTools {
             
             Arguments:
                 - directory : All files with .yaml or .json extension will be processed
+                - includeSubfolders : Include files in the immediate subfolders of the <before directory>
                 - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OpenAPI Specification file
         """)
   }
 
   def printVersion(): Unit = {
     //val title = getClass.getPackage.getImplementationTitle
-    val version =getClass.getPackage.getImplementationVersion
+    val version = getClass.getPackage.getImplementationVersion
 
     println(s"integration-catalogue-tools version '$version'")
   }
 
-  def runApplication(args  : List[String]): Either[String, Unit] = {
-       val client = HttpClients.createDefault()
- try {
-  args match {
-    case Nil | "--help" :: Nil | "-h" :: Nil =>
-      printUsage()
-      Right("")
-    case "--version" :: Nil | "-v" :: Nil =>
-      printVersion()
-      Right("")
-    case "--csvToOas" :: inputCsvFile :: outputPath :: Nil =>
-      println(s"Exporting CSV to OAS Files:\nInput file: $inputCsvFile\noutput path: $outputPath")
-      val rowsProcessed = ProcessCsvFile.processApiCsv(inputCsvFile, outputPath)
-      println(s"Exported $rowsProcessed OAS files to:\n$outputPath")
-      Right("")
-    case "--csvToFileTransferJson" :: inputCsvFile :: outputPath :: Nil =>
-      println(s"Exporting CSV to FT Json Files:\nInput file: $inputCsvFile\noutput path: $outputPath")
-      val rowsProcessed = ProcessCsvFile.processFTCsv(inputCsvFile, outputPath)
-      println(s"Exported $rowsProcessed FT Json files to:\n$outputPath")
-      Right("")
+  def runApplication(args: List[String]): Either[String, Unit] = {
+    val client = HttpClients.createDefault()
+    try {
+      args match {
+        case Nil | "--help" :: Nil | "-h" :: Nil =>
+          printUsage()
+          Right(())
+        case "--version" :: Nil | "-v" :: Nil =>
+          printVersion()
+          Right(())
+        case "--csvToOas" :: inputCsvFile :: outputPath :: Nil =>
+          println(s"Exporting CSV to OAS Files:\nInput file: $inputCsvFile\noutput path: $outputPath")
+          val rowsProcessed = ProcessCsvFile.processApiCsv(inputCsvFile, outputPath)
+          println(s"Exported $rowsProcessed OAS files to:\n$outputPath")
+          Right(())
+        case "--csvToFileTransferJson" :: inputCsvFile :: outputPath :: Nil =>
+          println(s"Exporting CSV to FT Json Files:\nInput file: $inputCsvFile\noutput path: $outputPath")
+          val rowsProcessed = ProcessCsvFile.processFTCsv(inputCsvFile, outputPath)
+          println(s"Exported $rowsProcessed FT Json files to:\n$outputPath")
+          Right(())
 
-    case "--yamlFindMissingAndMatching" :: beforePath :: "--includeSubfolders" :: includeSubfolders :: afterPath :: Nil =>
-      println(s"Finding Matching And Matching YAML Files:\nInput path: $beforePath\nincludeSubfolders: $includeSubfolders\nAfter path: $afterPath")
-      val missingAndMatchingFilenames = CompareYamlFiles.findMissingAndMatching(beforePath, includeSubfolders.toLowerCase == "yes", afterPath)
-      println(s"Missing files: \n ${missingAndMatchingFilenames._1}")
-      println(s"Matching files: \n ${missingAndMatchingFilenames._2}")
-      Right("")
+        case "--yamlFindMissingAndMatching" :: beforePath :: afterPath :: Nil =>
+          println(s"Finding Missing And Matching YAML Files:\nBefore path: $beforePath\nAfter path: $afterPath")
+          findMissingAndMatching(beforePath, afterPath)
 
-    case "--yamlAddMetadata" :: inputPath :: platform :: reviewedDate :: outputPath :: Nil =>
-      println(s"Processing YAML Files:\nInput path: $inputPath\nPlatform: $platform\nReviewed date: $reviewedDate\nOutput path: $outputPath")
-      ProcessYamlFiles.addMetadata(inputPath, platform, reviewedDate, outputPath) match {
-        case Right(filesProcessed: Int) => println(s"Processed $filesProcessed files")
-        case Left(errorMessage: String) => println(errorMessage)
+        case "--yamlFindMissingAndMatching" :: "--includeSubfolders" :: beforePath :: afterPath :: Nil =>
+          println(s"Finding Missing And Matching YAML Files:\nBefore path (including subfolders): $beforePath\nAfter path: $afterPath")
+          findMissingAndMatching(beforePath, afterPath, includeSubfolders = true)
+
+        case "--yamlAddMetadata" :: inputPath :: platform :: reviewedDate :: outputPath :: Nil =>
+          println(s"Adding Metadata to YAML Files:\nInput path: $inputPath\nPlatform: $platform\nReviewed date: $reviewedDate\nOutput path: $outputPath")
+          addMetadataToYamlFiles(inputPath, platform, reviewedDate, outputPath)
+
+        case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
+          val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
+          publisher.publishFile(oasFilepath, useFilenameAsPublisherReference = false)
+
+        case "--publish" :: "--useFilenameAsPublisherReference" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
+          val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
+          publisher.publishFile(oasFilepath, useFilenameAsPublisherReference = true)
+
+        case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
+          val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
+          publisher.publishDirectory(oasDirectory, useFilenameAsPublisherReference = false)
+
+        case "--publish" :: "--useFilenameAsPublisherReference" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
+          val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
+          publisher.publishDirectory(oasDirectory, useFilenameAsPublisherReference = true)
+
+        case "--publishFileTransfers" :: "--platform" :: platform :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
+          val publisher = new FileTransferPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
+          publisher.publishDirectory(ftDirectory)
+
+        case options => Left(s"Invalid, unknown or mismatched options or arguments : $options\nArgs:$args")
       }
-      Right("")
-
-    case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
-      publisher.publishFile(oasFilepath, useFilenameAsPublisherReference = false)
-
-    case "--publish" :: "--useFilenameAsPublisherReference" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
-      publisher.publishFile(oasFilepath, useFilenameAsPublisherReference = true)
-
-    case "--publish" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
-      publisher.publishDirectory(oasDirectory, useFilenameAsPublisherReference = false)
-
-    case "--publish" :: "--useFilenameAsPublisherReference" :: "--platform" :: platform :: "--directory" :: oasDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
-      val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
-      publisher.publishDirectory(oasDirectory, useFilenameAsPublisherReference = true)
-
-    case "--publishFileTransfers" :: "--platform" :: platform :: "--directory" :: ftDirectory :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
-      val publisher = new FileTransferPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
-      publisher.publishDirectory(ftDirectory)
-    case options => Left(s"Invalid, unknown or mismatched options or arguments : $options\nArgs:$args")
-  }
-} finally {
+    } finally {
       client.close()
+    }
+  }
+
+  private def findMissingAndMatching(beforePath: String, afterPath: String, includeSubfolders: Boolean = false) = {
+    CompareYamlFiles.findMissingAndMatching(beforePath, afterPath, includeSubfolders) match {
+      case Right((missingFiles, matchingFiles)) =>
+        println(s"Missing files: \n $missingFiles")
+        println(s"Matching files: \n $matchingFiles")
+        Right(())
+      case Left(errorMessage)                   =>
+        println(s"Error: $errorMessage")
+        Left(errorMessage)
+    }
+  }
+
+  private def addMetadataToYamlFiles(inputPath: String, platform: String, reviewedDate: String, outputPath: String) = {
+    ProcessYamlFiles.addMetadata(inputPath, platform, reviewedDate, outputPath) match {
+      case Right(filesProcessed: Int) =>
+        println(s"Processed $filesProcessed files")
+        Right(())
+      case Left(errorMessage: String) =>
+        println(s"Error: $errorMessage")
+        Left(errorMessage)
     }
   }
 }

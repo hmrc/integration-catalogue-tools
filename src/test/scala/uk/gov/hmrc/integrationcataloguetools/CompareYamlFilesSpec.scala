@@ -19,6 +19,20 @@ package uk.gov.hmrc.integrationcataloguetools
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+/*
+ * Explanation of the three sets of test files
+ * 
+ * - legacy files (e.g. des)           --> one that remains in legacy folder (1001), two that are moved out of legacy (1002, 1003)
+ * - old platform files (e.g. core-if) --> two that are deleted altogether (1004, 1005), one that has been updated (1006)
+ * - new files for core-if             --> one that is new (1007), plus the ones matching legacy or old files
+ * 
+ * If files in legacy are also in the new files, they must be removed from legacy, and instead be the final list in core-if
+ * If files in the old file lists are missing from the new files, they will be removed altogether and no longer in core-if
+ * 
+ * So the new files are: 1002, 1003, 1006, 1007
+ * 
+ * Note: having two files missing or matching allows checking of sorting
+ */
 class CompareYamlFilesSpec extends AnyWordSpec with Matchers {
 
   trait Setup {
@@ -85,36 +99,24 @@ class CompareYamlFilesSpec extends AnyWordSpec with Matchers {
 
   "findMissingAndMatching" should {
     "return missing and matching when comparing old platform filenames against new platform files" in new Setup {
-      CompareYamlFiles.findMissingAndMatching(oldPlatformFolder, includeSubfolders = false, newPlatformFolder) shouldBe
-        (oldPlatformFilesMissingFromNewPlatform, oldPlatformFilesMatchingNewPlatform)
+      CompareYamlFiles.findMissingAndMatching(oldPlatformFolder, newPlatformFolder) shouldBe
+        Right((oldPlatformFilesMissingFromNewPlatform, oldPlatformFilesMatchingNewPlatform))
     }
 
     "return missing and matching when comparing legacy platform filenames against new platform files" in new Setup {
-      CompareYamlFiles.findMissingAndMatching(legacyPlatformFolder, includeSubfolders = true, newPlatformFolder) shouldBe
-        (legacyPlatformFilesMissingFromNewPlatform, legacyPlatformFilesMatchingNewPlatform)
+      CompareYamlFiles.findMissingAndMatching(legacyPlatformFolder, newPlatformFolder, includeSubfolders = true) shouldBe
+        Right((legacyPlatformFilesMissingFromNewPlatform, legacyPlatformFilesMatchingNewPlatform))
     }
 
     "return empty lists when the before path is not a directory" in new Setup {
-      CompareYamlFiles.findMissingAndMatching("bad-folder-name", includeSubfolders = false, newPlatformFolder) shouldBe
-        (List.empty, List.empty)
+      CompareYamlFiles.findMissingAndMatching("bad-folder-name", newPlatformFolder) shouldBe
+        Left("Before path is not a directory")
     }
 
     "return empty lists when the after path is not a directory" in new Setup {
-      CompareYamlFiles.findMissingAndMatching("oldPlatformFolder", includeSubfolders = false, "bad-folder-name") shouldBe
-        (List.empty, List.empty)
+      CompareYamlFiles.findMissingAndMatching(oldPlatformFolder, "bad-folder-name") shouldBe
+        Left("After path is not a directory")
     }
   }
 
 }
-
-/*
- * legacy platform          --> one that remains legacy (1001), two that are moved to destination platform (1002, 1003)
- * destination platform old --> two that are deleted altogether (1004, 1005), one that's updated (1006)
- * destination platform new --> one that's new (1007), so contents of new = 1002, 1003, 1006, 1007
- *
- * TOTAL files = 7
- *
- * Tests:
- * - when running legacy compared to new, the result is: missing: [1001]; matching: [1002, 1003] >> we will delete matching files
- * - when running old compared to new, the result is: missing: [1004, 1005]; matching: [1006] >> we will delete missing files
- */

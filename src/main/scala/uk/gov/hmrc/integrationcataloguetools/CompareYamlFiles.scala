@@ -24,21 +24,23 @@ import scala.collection.JavaConverters._
 
 object CompareYamlFiles {
 
-  def findMissingAndMatching(beforePath: String, includeSubfolders: Boolean, afterPath: String): (List[String], List[String]) = {
-    if (inputsAreNotValid(beforePath, afterPath)) (List.empty[String], List.empty[String])
-    else {
-      val filenamesAndPublisherRefsFromBeforePath: Map[String, String] = getYamlFiles(beforePath, includeSubfolders)
-        .map(fileName => (fileName.extractPublisherReference, fileName))
-        .toMap
+  def findMissingAndMatching(beforePath: String, afterPath: String, includeSubfolders: Boolean = false): Either[String, (List[String], List[String])] = {
+    validateInputs(beforePath, afterPath) match {
+      case Some(errorMessage) => Left(errorMessage)
+      case None => Right {
+        val filenamesAndPublisherRefsFromBeforePath: Map[String, String] = getYamlFiles(beforePath, includeSubfolders)
+          .map(fileName => (fileName.extractPublisherReference, fileName))
+          .toMap
 
-      val publisherRefsInAfterPath: Set[String] = getYamlFiles(afterPath)
-        .map(_.extractPublisherReference)
-        .toSet
+        val publisherRefsInAfterPath: Set[String] = getYamlFiles(afterPath)
+          .map(_.extractPublisherReference)
+          .toSet
 
-      (
-        getMissingFilenames(filenamesAndPublisherRefsFromBeforePath, publisherRefsInAfterPath),
-        getMatchingFilenames(filenamesAndPublisherRefsFromBeforePath, publisherRefsInAfterPath)
-      )
+        (
+          getMissingFilenames(filenamesAndPublisherRefsFromBeforePath, publisherRefsInAfterPath),
+          getMatchingFilenames(filenamesAndPublisherRefsFromBeforePath, publisherRefsInAfterPath)
+        )
+      }
     }
   }
 
@@ -58,19 +60,14 @@ object CompareYamlFiles {
       .toList
       .sorted
 
-  private def inputsAreNotValid(beforePath: String, afterPath: String): Boolean = {
-    var result = false
+  private def validateInputs(beforePath: String, afterPath: String): Option[String] = {
     val beforeDirectory = new File(beforePath)
-    if (!beforeDirectory.exists || !beforeDirectory.isDirectory) {
-      println("Before path is not a directory")
-      result = true
-    }
     val afterDirectory = new File(afterPath)
-    if (!afterDirectory.exists || !afterDirectory.exists) {
-      println("After path is not a directory")
-      result = true
-    }
-    result
+    if (!beforeDirectory.exists || !beforeDirectory.isDirectory) {
+      Some("Before path is not a directory")
+    } else if (!afterDirectory.exists || !afterDirectory.exists) {
+      Some("After path is not a directory")
+    } else None
   }
 
   private def getYamlFiles(path: String, isRecursive: Boolean = false): List[String] = {
