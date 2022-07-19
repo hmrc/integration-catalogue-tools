@@ -7,11 +7,11 @@ info:
   contact:
     name: Joe Bloggs
     email: joe.bloggs@example.com
+
   x-integration-catalogue:
     reviewed-date: 2022-04-22T20:27:05Z
     platform: CORE_IF
     publisher-reference: 1808
-
 tags:
   - name: API#1808
     description: API description.

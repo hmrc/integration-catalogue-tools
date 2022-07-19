@@ -58,7 +58,7 @@ object ProcessYamlFiles {
     if (fileContents.exists(_.contains(xIntegrationCatalogue)) || !fileContents.exists(_.startsWith("info:"))) {
       fileContents
     } else {
-      val afterInfoSection = fileContents.dropWhile(!_.startsWith("info:")).drop(1).dropWhile(_.startsWith(" "))
+      val afterInfoSection = fileContents.dropWhile(!_.startsWith("info:")).drop(1).dropWhile(next => next.startsWith(" ") || next.isEmpty)
       val upToInfoSection = fileContents.take(fileContents.size - afterInfoSection.size)
 
       upToInfoSection ++ List(

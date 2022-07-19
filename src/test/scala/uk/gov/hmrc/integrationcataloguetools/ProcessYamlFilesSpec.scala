@@ -155,6 +155,31 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
       result shouldBe expectedOutput
     }
 
+    "allow blank lines in the info section" in {
+      val input = List(
+        "openapi: 3.0.3",
+        "info:",
+        "  title: API#1758 Get Breathing Space\n",
+        "servers:",
+        "  - url: https://{hostname}:{port}"
+      )
+      val expectedOutput = List(
+        "openapi: 3.0.3",
+        "info:",
+        "  title: API#1758 Get Breathing Space\n",
+        "  x-integration-catalogue:",
+        "    reviewed-date: 2022-07-13T13:21:00Z",
+        "    platform: PLAT",
+        "    publisher-reference: 1758",
+        "servers:",
+        "  - url: https://{hostname}:{port}"
+      )
+
+      val result = ProcessYamlFiles.insertXIntegrationCatalogue(input, "PLAT", "2022-07-13T13:21:00Z", "1758")
+
+      result shouldBe expectedOutput
+    }
+
     "not insert x-integration-catalogue section when input does not have info" in {
       val input = List(
         "openapi: 3.0.3",
