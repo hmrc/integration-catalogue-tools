@@ -110,12 +110,12 @@ class CompareYamlFilesSpec extends AnyWordSpec with Matchers {
 
     "return an error when the before path is not a directory" in new Setup {
       CompareYamlFiles.findFilesToRemoveFromPlatform("bad-folder-name", newPlatformFolder) shouldBe
-        Left("Before path is not a directory")
+        Left("Path is not a directory: bad-folder-name")
     }
 
     "return an error when the after path is not a directory" in new Setup {
       CompareYamlFiles.findFilesToRemoveFromPlatform(oldPlatformFolder, "bad-folder-name") shouldBe
-        Left("After path is not a directory")
+        Left("Path is not a directory: bad-folder-name")
     }
   }
 

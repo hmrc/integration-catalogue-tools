@@ -146,34 +146,39 @@ MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from he
 ## Processing OpenAPI Specification files which do not have publication metadata
 
 If a platform team does not publish its own API documentation but passes it to the API Platform team for publication,
-the tools below assist in publication.
+the tools in this section assist with publication.
 
 The first tool can manage the OAS files in the integration-catalogue-oas-files repository by looking for APIs that
 are deleted or moved from legacy platforms.
 
-The second tool adds the `x-integration-catalogue` publication metadata section if it is not already present.
+The second tool adds the `x-integration-catalogue` publication metadata section to each file if it is not already present.
 
-### Comparing file lists to find files that must be deleted
+### Comparing file lists to find files that must be removed
 
 If the new documentation is provided as a complete set of API documentation files, this tool works out whether any of the
-files in the integration-catalogue-oas-files repository must be deleted because it is no longer required. Place all the new
-files in some directory (called the 'after' directory). As input to the tool, provide the path to this directory as well as
-the path to the existing files in the repository (called the 'before' directory) that may need to be deleted.
-The tool compares files based on the first 4-digit number in the filenames, which is assumed to be the API number.
-It outputs two lists, one with the files in the before directory but not in the after directory (aka missing files) and
-one with the files in both the before and after directories (aka matching files). An example usage is for the files
-in the core-if directory to be deleted if they are missing from the new file set, and for files in the des directory
-to be deleted if they are matching in the new file set, because they must be moved into core-if.
+files in the integration-catalogue-oas-files repository must be removed because they are no longer required. Place all the new
+files in some directory (called the 'new files' directory). As input to the tool, provide the path to this directory as well as
+the path to the existing files in the repository that may need to be deleted.
 
-There is an option for the tool to look not only at files in the existing directory but also in immediate subdirectories
-of that directory, as this was the structure found in the des directory.
+If the tool is run as `yamlFindFilesToRemoveFromPlatform`, then the existing files are in a 'platform' directory. Any that
+are not in the new files must be removed from the published documentation of the platform concerned. The output lists these
+missing files.
+
+If the tool is run as `yamlFindFilesToRemoveFromLegacy`, then the existing files are in a 'legacy' directory. Any that are
+in the new files must be removed from the published documentation of the legacy platform, as they are moving to the 
+platform concerned. The output lists these matching files.
+
+The tool compares files based on the first 4-digit number in their filenames, which is assumed to be the API reference number.
+
+An example usage is for the files in the core-if directory to be deleted if they are missing from the new file set, and for 
+files in the des directory to be deleted if they are matching in the new file set, because they must be moved into core-if.
+
+The tool looks at files in the given platform and legacy directories and their immediate subdirectories.
 
 The following input constraints apply:
 
-* both the 'before' and 'after' directories must exist
+* the 'platform' or 'legacy', and 'new files' directories must exist
 * only files ending `.yaml` will be taken into account
-* subdirectories of the 'after' directory are always ignored
-* subdirectories of the 'before' directory are ignored unless the `--includeSubfolders` option is added as an argument
 
 ### Adding metadata to OpenAPI Specification files
 
@@ -225,7 +230,8 @@ Usage:
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <inputCsv> <output directory>
     integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-    integration-catalogue-tools --yamlFindMissingAndMatching" [--includeSubfolders] <before directory> <after directory> 
+    integration-catalogue-tools --yamlFindFilesToRemoveFromPlatform <platform directory> <new files directory>
+    integration-catalogue-tools --yamlFindFilesToRemoveFromLegacy <legacy directory> <new files directory>
     integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
@@ -233,7 +239,6 @@ Usage:
     
     Arguments:
         - directory : All files with .yaml or .json extension will be processed
-        - includeSubfolders : Include files in the immediate subfolders of the <before directory>
         - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OpenAPI Specification file
 ```
 
@@ -263,9 +268,10 @@ sbt 'run --csvToOas "<name-of.csv>" "<output-path>"'
 sbt 'run --csvToFileTransferJson "<name-of.csv>" "<output-path>"'
 ```
 
-## Comparing file lists to find files that must be deleted
+## Comparing file lists to find files that must be removed
 ```
-sbt 'run --yamlAddMetadata [--includeSubfolders] <before-path> <after-path>'
+sbt 'run --yamlFindFilesToRemoveFromPlatform <platform-path> <new-files-path>'
+sbt 'run --yamlFindFilesToRemoveFromLegacy <legacy-path> <new-files-path>'
 ```
 
 ## Add metadata to OpenAPI Specification YAML files

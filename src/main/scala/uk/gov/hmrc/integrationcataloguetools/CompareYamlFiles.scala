@@ -67,9 +67,9 @@ object CompareYamlFiles {
     val beforeDirectory = new File(beforePath)
     val afterDirectory = new File(afterPath)
     if (!beforeDirectory.exists || !beforeDirectory.isDirectory) {
-      Some("Before path is not a directory")
+      Some(s"Path is not a directory: $beforePath")
     } else if (!afterDirectory.exists || !afterDirectory.exists) {
-      Some("After path is not a directory")
+      Some(s"Path is not a directory: $afterPath")
     } else None
   }
 

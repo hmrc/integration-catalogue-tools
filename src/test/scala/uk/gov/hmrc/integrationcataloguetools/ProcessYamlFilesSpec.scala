@@ -69,13 +69,13 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
     "return an error message if the input path is not a directory" in new Setup {
       cleanUpOutputFolder()
       val result = ProcessYamlFiles.addMetadata("bad-folder-name", "CORE_IF", "2022-04-22T20:27:05Z", s"$testResourcesPath/$outputFolder")
-      result shouldBe Left("Input path is not a directory")
+      result shouldBe Left(s"Path is not a directory: bad-folder-name")
     }
 
     "return an error message if the output path is not empty" in new Setup {
       cleanUpOutputFolder()
       val result = ProcessYamlFiles.addMetadata(s"$testResourcesPath/$inputFolder", "CORE_IF", "2022-04-22T20:27:05Z", testResourcesPath)
-      result shouldBe Left("Output path is not empty")
+      result shouldBe Left(s"Path is not empty: $testResourcesPath")
     }
 
     "return an error message if the reviewed date is not valid ISO-8601" in new Setup {

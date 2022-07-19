@@ -73,9 +73,9 @@ object ProcessYamlFiles {
   private def validateInputs(inputPath: String, reviewedDate: String, outputPath: String): Option[String] = {
     val inputDirectory = new File(inputPath)
     if (!inputDirectory.exists || !inputDirectory.isDirectory) {
-      Some("Input path is not a directory")
+      Some(s"Path is not a directory: $inputPath")
     } else if (new File(outputPath).exists) {
-      Some("Output path is not empty")
+      Some(s"Path is not empty: $outputPath")
     } else {
       validateReviewedDate(reviewedDate)
     }
