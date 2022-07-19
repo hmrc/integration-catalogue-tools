@@ -24,23 +24,26 @@ import scala.collection.JavaConverters._
 
 object CompareYamlFiles {
 
-  def findMissingAndMatching(beforePath: String, afterPath: String, includeSubfolders: Boolean = false): Either[String, (List[String], List[String])] = {
+  def findFilesToRemoveFromPlatform(beforePath: String, afterPath: String): Either[String, List[String]] =
+    findFiles(beforePath, afterPath, getMissingFilenames)
+
+  def findFilesToRemoveFromLegacy(beforePath: String, afterPath: String): Either[String, List[String]] =
+    findFiles(beforePath, afterPath, getMatchingFilenames)
+
+  private def findFiles(beforePath: String, afterPath: String, f: (Map[String, String], Set[String]) => List[String]): Either[String, List[String]] = {
     validateInputs(beforePath, afterPath) match {
       case Some(errorMessage) => Left(errorMessage)
-      case None => Right {
-        val filenamesAndPublisherRefsFromBeforePath: Map[String, String] = getYamlFiles(beforePath, includeSubfolders)
-          .map(fileName => (fileName.extractPublisherReference, fileName))
-          .toMap
+      case None               => Right {
+          val filenamesAndPublisherRefsFromBeforePath: Map[String, String] = getYamlFiles(beforePath)
+            .map(fileName => (fileName.extractPublisherReference, fileName))
+            .toMap
 
-        val publisherRefsInAfterPath: Set[String] = getYamlFiles(afterPath)
-          .map(_.extractPublisherReference)
-          .toSet
+          val publisherRefsInAfterPath: Set[String] = getYamlFiles(afterPath)
+            .map(_.extractPublisherReference)
+            .toSet
 
-        (
-          getMissingFilenames(filenamesAndPublisherRefsFromBeforePath, publisherRefsInAfterPath),
-          getMatchingFilenames(filenamesAndPublisherRefsFromBeforePath, publisherRefsInAfterPath)
-        )
-      }
+          f(filenamesAndPublisherRefsFromBeforePath, publisherRefsInAfterPath)
+        }
     }
   }
 
@@ -70,8 +73,8 @@ object CompareYamlFiles {
     } else None
   }
 
-  private def getYamlFiles(path: String, isRecursive: Boolean = false): List[String] = {
-    Files.walk(new File(path).toPath, if (isRecursive) 2 else 1)
+  private def getYamlFiles(path: String): List[String] = {
+    Files.walk(new File(path).toPath, 2)
       .iterator().asScala
       .map(_.getFileName.toString)
       .filter(_.endsWith(".yaml"))

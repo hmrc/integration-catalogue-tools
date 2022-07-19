@@ -30,7 +30,8 @@ class IntegrationCatalogueTools {
             integration-catalogue-tools --help | -h
             integration-catalogue-tools --csvToOas <inputCsv> <output directory>
             integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-            integration-catalogue-tools --yamlFindMissingAndMatching" [--includeSubfolders] <before directory> <after directory> 
+            integration-catalogue-tools --yamlFindFilesToRemoveFromPlatform <platform directory> <new files directory>
+            integration-catalogue-tools --yamlFindFilesToRemoveFromLegacy <legacy directory> <new files directory>
             integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
             integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
             integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
@@ -38,7 +39,6 @@ class IntegrationCatalogueTools {
             
             Arguments:
                 - directory : All files with .yaml or .json extension will be processed
-                - includeSubfolders : Include files in the immediate subfolders of the <before directory>
                 - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OpenAPI Specification file
         """)
   }
@@ -71,17 +71,32 @@ class IntegrationCatalogueTools {
           println(s"Exported $rowsProcessed FT Json files to:\n$outputPath")
           Right(())
 
-        case "--yamlFindMissingAndMatching" :: beforePath :: afterPath :: Nil =>
-          println(s"Finding Missing And Matching YAML Files:\nBefore path: $beforePath\nAfter path: $afterPath")
-          findMissingAndMatching(beforePath, afterPath)
+        case "--yamlFindFilesToRemoveFromPlatform" :: platformPath :: newFilesPath :: Nil =>
+          println(s"Finding YAML Files to Remove from ${substringAfterLastSlash(platformPath)}:\nPlatform path: $platformPath\nNew files path: $newFilesPath")
+          CompareYamlFiles.findFilesToRemoveFromPlatform(platformPath, newFilesPath) match {
+            case Right(missingFiles) =>
+              println(s"Files to remove: \n ${missingFiles.mkString(" \n")}")
+              Right(())
+            case Left(errorMessage) => Left(errorMessage)
+          }
 
-        case "--yamlFindMissingAndMatching" :: "--includeSubfolders" :: beforePath :: afterPath :: Nil =>
-          println(s"Finding Missing And Matching YAML Files:\nBefore path (including subfolders): $beforePath\nAfter path: $afterPath")
-          findMissingAndMatching(beforePath, afterPath, includeSubfolders = true)
+        case "--yamlFindFilesToRemoveFromLegacy" :: legacyPath :: newFilesPath :: Nil =>
+          println(s"Finding YAML Files to Remove from Legacy:\nLegacy path (including subfolders): $legacyPath\nNew files path: $newFilesPath")
+          CompareYamlFiles.findFilesToRemoveFromLegacy(legacyPath, newFilesPath) match {
+            case Right(matchingFiles) =>
+              println(s"Files to remove: \n ${matchingFiles.mkString(" \n")}")
+              Right(())
+            case Left(errorMessage) => Left(errorMessage)
+          }
 
         case "--yamlAddMetadata" :: inputPath :: platform :: reviewedDate :: outputPath :: Nil =>
           println(s"Adding Metadata to YAML Files:\nInput path: $inputPath\nPlatform: $platform\nReviewed date: $reviewedDate\nOutput path: $outputPath")
-          addMetadataToYamlFiles(inputPath, platform, reviewedDate, outputPath)
+          ProcessYamlFiles.addMetadata(inputPath, platform, reviewedDate, outputPath) match {
+            case Right(filesProcessed: Int) =>
+              println(s"Processed $filesProcessed files")
+              Right(())
+            case Left(errorMessage: String) => Left(errorMessage)
+          }
 
         case "--publish" :: "--platform" :: platform :: "--filename" :: oasFilepath :: "--url" :: publishUrl :: "--authorizationKey" :: authorizationKey :: Nil =>
           val publisher = new ApiPublisherService(new PublisherConnector(publishUrl, client, Platform(platform), authorizationKey))
@@ -110,24 +125,6 @@ class IntegrationCatalogueTools {
     }
   }
 
-  private def findMissingAndMatching(beforePath: String, afterPath: String, includeSubfolders: Boolean = false) = {
-    CompareYamlFiles.findMissingAndMatching(beforePath, afterPath, includeSubfolders) match {
-      case Right((missingFiles, matchingFiles)) =>
-        println(s"Missing files: \n ${missingFiles.mkString(" \n")}")
-        println(s"Matching files: \n ${matchingFiles.mkString(" \n")}")
-        Right(())
-      case Left(errorMessage) =>
-        Left(errorMessage)
-    }
-  }
+  private def substringAfterLastSlash(s: String) = s.reverse.takeWhile(_ != '/').reverse.toUpperCase
 
-  private def addMetadataToYamlFiles(inputPath: String, platform: String, reviewedDate: String, outputPath: String) = {
-    ProcessYamlFiles.addMetadata(inputPath, platform, reviewedDate, outputPath) match {
-      case Right(filesProcessed: Int) =>
-        println(s"Processed $filesProcessed files")
-        Right(())
-      case Left(errorMessage: String) =>
-        Left(errorMessage)
-    }
-  }
 }

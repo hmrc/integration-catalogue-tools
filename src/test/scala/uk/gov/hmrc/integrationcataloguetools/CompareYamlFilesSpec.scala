@@ -98,23 +98,23 @@ class CompareYamlFilesSpec extends AnyWordSpec with Matchers {
   }
 
   "findMissingAndMatching" should {
-    "return missing and matching when comparing old platform filenames against new platform files" in new Setup {
-      CompareYamlFiles.findMissingAndMatching(oldPlatformFolder, newPlatformFolder) shouldBe
-        Right((oldPlatformFilesMissingFromNewPlatform, oldPlatformFilesMatchingNewPlatform))
+    "return files to remove when comparing old platform filenames against new platform files" in new Setup {
+      CompareYamlFiles.findFilesToRemoveFromPlatform(oldPlatformFolder, newPlatformFolder) shouldBe
+        Right(oldPlatformFilesMissingFromNewPlatform)
     }
 
-    "return missing and matching when comparing legacy platform filenames against new platform files" in new Setup {
-      CompareYamlFiles.findMissingAndMatching(legacyPlatformFolder, newPlatformFolder, includeSubfolders = true) shouldBe
-        Right((legacyPlatformFilesMissingFromNewPlatform, legacyPlatformFilesMatchingNewPlatform))
+    "return files to remove when comparing legacy platform filenames against new platform files" in new Setup {
+      CompareYamlFiles.findFilesToRemoveFromLegacy(legacyPlatformFolder, newPlatformFolder) shouldBe
+        Right(legacyPlatformFilesMatchingNewPlatform)
     }
 
-    "return empty lists when the before path is not a directory" in new Setup {
-      CompareYamlFiles.findMissingAndMatching("bad-folder-name", newPlatformFolder) shouldBe
+    "return an error when the before path is not a directory" in new Setup {
+      CompareYamlFiles.findFilesToRemoveFromPlatform("bad-folder-name", newPlatformFolder) shouldBe
         Left("Before path is not a directory")
     }
 
-    "return empty lists when the after path is not a directory" in new Setup {
-      CompareYamlFiles.findMissingAndMatching(oldPlatformFolder, "bad-folder-name") shouldBe
+    "return an error when the after path is not a directory" in new Setup {
+      CompareYamlFiles.findFilesToRemoveFromPlatform(oldPlatformFolder, "bad-folder-name") shouldBe
         Left("After path is not a directory")
     }
   }
