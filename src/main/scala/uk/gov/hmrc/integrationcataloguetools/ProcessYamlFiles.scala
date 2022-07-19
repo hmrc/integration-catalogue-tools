@@ -18,10 +18,9 @@ package uk.gov.hmrc.integrationcataloguetools
 
 import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
 
-import java.io.{BufferedWriter, File, FileWriter}
-import java.nio.file.Files
+import java.io.{File, PrintWriter}
 import java.time.Instant
-import java.util.regex.Pattern
+import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
 object ProcessYamlFiles {
@@ -38,37 +37,37 @@ object ProcessYamlFiles {
             .filter(_.isFile)
             .filter(_.getName.endsWith(".yaml"))
             .map { file =>
+              val source = Source.fromFile(file)
               writeOutputFile(
-                s"$outputPath/${file.getName}",
+                new File(s"$outputPath/${file.getName}"),
                 insertXIntegrationCatalogue(
-                  new String(Files.readAllBytes(file.toPath)),
+                  source.getLines().toList,
                   platform,
                   reviewedDate,
                   file.getName.extractPublisherReference
                 )
               )
+              source.close()
             }.length
         }
     }
   }
 
-  // Handle Windows, MacOS and Linux line endings
-  private val newLineRegex = "(\\r\\n|\\r|\\n)"
-  // This regex finds the 'info' element so that the x-integration-catalogue can be added at the end of it
-  // The \X at the start will detect any Byte Order Marks, e.g., the UTF-8 BOM, found in some YAML files
-  private val findInfoRegex = Pattern.compile(s"((\\X*$newLineRegex)*info:($newLineRegex .*)*)")
-
-  def insertXIntegrationCatalogue(fileContents: String, platform: String, reviewedDate: String, publisherReference: String): String = {
+  def insertXIntegrationCatalogue(fileContents: List[String], platform: String, reviewedDate: String, publisherReference: String): List[String] = {
     val xIntegrationCatalogue = "x-integration-catalogue:"
-    if (fileContents.contains(xIntegrationCatalogue)) fileContents
-    else
-      findInfoRegex.matcher(fileContents).replaceFirst(
-        s"""$$1
-           |  $xIntegrationCatalogue
-           |    reviewed-date: $reviewedDate
-           |    platform: $platform
-           |    publisher-reference: $publisherReference""".stripMargin
-      )
+    if (fileContents.exists(_.contains(xIntegrationCatalogue)) || !fileContents.exists(_.startsWith("info:"))) {
+      fileContents
+    } else {
+      val afterInfoSection = fileContents.dropWhile(!_.startsWith("info:")).drop(1).dropWhile(_.startsWith(" "))
+      val upToInfoSection = fileContents.take(fileContents.size - afterInfoSection.size)
+
+      upToInfoSection ++ List(
+        s"  $xIntegrationCatalogue",
+        s"    reviewed-date: $reviewedDate",
+        s"    platform: $platform",
+        s"    publisher-reference: $publisherReference"
+      ) ++ afterInfoSection
+    }
   }
 
   private def validateInputs(inputPath: String, reviewedDate: String, outputPath: String): Option[String] = {
@@ -91,10 +90,11 @@ object ProcessYamlFiles {
     }
   }
 
-  private def writeOutputFile(outputFileName: String, contents: String) = {
-    val writer = new BufferedWriter(new FileWriter(new File(outputFileName)))
-    writer.write(contents)
-    writer.close()
+  private def writeOutputFile(outputFile: File, contents: List[String]): Unit = {
+    new PrintWriter(outputFile) {
+      contents.foreach(println)
+      close()
+    }
   }
 
 }
