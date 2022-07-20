@@ -148,19 +148,18 @@ MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from he
 If a platform team does not publish its own API documentation but passes it to the API Platform team for publication,
 this section assists with publication.
 
-The [first step](#comparing-file-lists-to-find-files-that-must-be-removed) can manage the OAS files in the
-integration-catalogue-oas-files repository by looking for APIs that are no longer required and must be removed.
+The [first step](#comparing-file-lists-to-find-apis-that-must-be-unpublished) can manage the OAS files in the
+integration-catalogue-oas-files repository by looking for APIs that are no longer required and must be unpublished.
 
 The [second step](#adding-metadata-to-openapi-specification-files) adds the `x-integration-catalogue` metadata section
 to each file if it is not already present.
 
-### Comparing file lists to find files that must be removed
+### Comparing file lists to find APIs that must be unpublished
 
-This assumes that the updated documentation is provided as a complete set of the current API documentation files.
-Thus, any files in the integration-catalogue-oas-files repository that are not in the updated set are no longer required.
-Place all the updated files in some directory.
-As input to the tool, provide the path to this directory as well as the path to the previous files that are in the repository.
-The output lists the files from the previous list that need to be removed.
+This assumes that the updated YAML files are the complete set of the API files for that platform.
+Thus, any API files in the integration-catalogue-oas-files repository that are not in the updated set are no longer required.
+As input, put all the updated files in some directory, which will be compared to files in the previous path.
+The console outputs a list of API filenames that need to be unpublished.
 
 The tool compares files based on the first 4-digit number in their filenames, which is assumed to be the API reference number.
 
@@ -172,8 +171,8 @@ The following input constraints apply:
 ### Adding metadata to OpenAPI Specification files
 
 If the YAML files do not have the `x-integration-catalogue` section, this can be added programmatically.
-Place all the updated files in an input directory. This input directory, the platform concerned (e.g. CORE_IF), the reviewed date,
-and an output directory must be provided as input values. The following input constraints apply:
+As input, provide the path to the updated files used in the previous step, together with the platform concerned (e.g. CORE_IF),
+the reviewed date, and an output directory. The following input constraints apply:
 
 * the input directory must exist
 * only files ending `.yaml` will be processed
@@ -220,7 +219,7 @@ Usage:
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <inputCsv> <output directory>
     integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-    integration-catalogue-tools --yamlFindFilesToRemove <before directory> <after directory>
+    integration-catalogue-tools --yamlFindApisToUnpublish <previous directory> <updated directory>
     integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
@@ -257,9 +256,9 @@ sbt 'run --csvToOas "<name-of.csv>" "<output-path>"'
 sbt 'run --csvToFileTransferJson "<name-of.csv>" "<output-path>"'
 ```
 
-## Comparing file lists to find files that must be removed
+## Comparing file lists to find APIs that must be unpublished
 ```
-sbt 'run --yamlFindFilesToRemoveFromPlatform <before-path> <after-path>'
+sbt 'run --yamlFindApisToUnpublish <prevoius-path> <updated-path>'
 ```
 
 ## Add metadata to OpenAPI Specification YAML files

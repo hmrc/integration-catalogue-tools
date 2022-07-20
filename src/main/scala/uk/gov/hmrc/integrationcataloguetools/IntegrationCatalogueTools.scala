@@ -30,7 +30,7 @@ class IntegrationCatalogueTools {
             integration-catalogue-tools --help | -h
             integration-catalogue-tools --csvToOas <inputCsv> <output directory>
             integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-            integration-catalogue-tools --yamlFindFilesToRemove <old directory> <new directory>
+            integration-catalogue-tools --yamlFindApisToUnpublish <previous directory> <updated directory>
             integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
             integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
             integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
@@ -70,11 +70,11 @@ class IntegrationCatalogueTools {
           println(s"Exported $rowsProcessed FT Json files to:\n$outputPath")
           Right(())
 
-        case "--yamlFindFilesToRemove" :: previousPath :: updatedPath :: Nil =>
-          println(s"Finding YAML Files to Remove from ${substringAfterLastSlash(previousPath)}:\nPrevious path: $previousPath\nUpdated path: $updatedPath")
-          CompareYamlFiles.findFilesToRemove(previousPath, updatedPath) match {
-            case Right(filesToRemove) =>
-              println(s"Files to remove: \n ${filesToRemove.mkString(" \n")}")
+        case "--yamlFindApisToUnpublish" :: previousPath :: updatedPath :: Nil =>
+          println(s"Finding APIs to Unpublish from ${substringAfterLastSlash(previousPath)}:\nPrevious path: $previousPath\nUpdated path: $updatedPath")
+          CompareYamlFiles.findApisToUnpublish(previousPath, updatedPath) match {
+            case Right(apisToUnpublish) =>
+              println(s"APIs to unpublish: \n ${apisToUnpublish.mkString(" \n")}")
               Right(())
             case Left(errorMessage) => Left(errorMessage)
           }

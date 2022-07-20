@@ -24,7 +24,7 @@ import scala.collection.JavaConverters._
 
 object CompareYamlFiles {
 
-  def findFilesToRemove(previousPath: String, updatedPath: String): Either[String, List[String]] = {
+  def findApisToUnpublish(previousPath: String, updatedPath: String): Either[String, List[String]] = {
     validateInputs(previousPath, updatedPath) match {
       case Some(errorMessage) => Left(errorMessage)
       case None               => Right {

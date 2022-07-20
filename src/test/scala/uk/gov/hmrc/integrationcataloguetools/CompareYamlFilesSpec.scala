@@ -46,19 +46,19 @@ class CompareYamlFilesSpec extends AnyWordSpec with Matchers {
     )
   }
 
-  "findFilesToRemove" should {
-    "return files to remove when comparing previous platform filenames against updated platform files" in new Setup {
-      CompareYamlFiles.findFilesToRemove(previousPath, updatedPath) shouldBe
+  "findApisToUnpublish" should {
+    "return APIs to unpublish when comparing previous platform filenames against updated platform files" in new Setup {
+      CompareYamlFiles.findApisToUnpublish(previousPath, updatedPath) shouldBe
         Right(previousFilesMissingFromUpdatedPath)
     }
 
     "return an error when the previous path is not a directory" in new Setup {
-      CompareYamlFiles.findFilesToRemove("bad-folder-name", updatedPath) shouldBe
+      CompareYamlFiles.findApisToUnpublish("bad-folder-name", updatedPath) shouldBe
         Left("Path is not a directory: bad-folder-name")
     }
 
     "return an error when the updated path is not a directory" in new Setup {
-      CompareYamlFiles.findFilesToRemove(previousPath, "bad-folder-name") shouldBe
+      CompareYamlFiles.findApisToUnpublish(previousPath, "bad-folder-name") shouldBe
         Left("Path is not a directory: bad-folder-name")
     }
   }

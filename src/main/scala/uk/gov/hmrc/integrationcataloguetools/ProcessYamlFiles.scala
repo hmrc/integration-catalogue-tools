@@ -75,7 +75,7 @@ object ProcessYamlFiles {
     if (!inputDirectory.exists || !inputDirectory.isDirectory) {
       Some(s"Path is not a directory: $inputPath")
     } else if (new File(outputPath).exists) {
-      Some(s"Path is not empty: $outputPath")
+      Some(s"Path must not exist: $outputPath")
     } else {
       validateReviewedDate(reviewedDate)
     }

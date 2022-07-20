@@ -75,7 +75,7 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
     "return an error message if the output path is not empty" in new Setup {
       cleanUpOutputFolder()
       val result = ProcessYamlFiles.addMetadata(s"$testResourcesPath/$inputFolder", "CORE_IF", "2022-04-22T20:27:05Z", testResourcesPath)
-      result shouldBe Left(s"Path is not empty: $testResourcesPath")
+      result shouldBe Left(s"Path must not exist: $testResourcesPath")
     }
 
     "return an error message if the reviewed date is not valid ISO-8601" in new Setup {
