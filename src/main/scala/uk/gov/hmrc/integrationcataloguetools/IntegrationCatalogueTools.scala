@@ -30,8 +30,7 @@ class IntegrationCatalogueTools {
             integration-catalogue-tools --help | -h
             integration-catalogue-tools --csvToOas <inputCsv> <output directory>
             integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-            integration-catalogue-tools --yamlFindFilesToRemoveFromPlatform <platform directory> <new files directory>
-            integration-catalogue-tools --yamlFindFilesToRemoveFromLegacy <legacy directory> <new files directory>
+            integration-catalogue-tools --yamlFindFilesToRemove <old directory> <new directory>
             integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
             integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
             integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
@@ -71,20 +70,11 @@ class IntegrationCatalogueTools {
           println(s"Exported $rowsProcessed FT Json files to:\n$outputPath")
           Right(())
 
-        case "--yamlFindFilesToRemoveFromPlatform" :: platformPath :: newFilesPath :: Nil =>
-          println(s"Finding YAML Files to Remove from ${substringAfterLastSlash(platformPath)}:\nPlatform path: $platformPath\nNew files path: $newFilesPath")
-          CompareYamlFiles.findFilesToRemoveFromPlatform(platformPath, newFilesPath) match {
-            case Right(missingFiles) =>
-              println(s"Files to remove: \n ${missingFiles.mkString(" \n")}")
-              Right(())
-            case Left(errorMessage) => Left(errorMessage)
-          }
-
-        case "--yamlFindFilesToRemoveFromLegacy" :: legacyPath :: newFilesPath :: Nil =>
-          println(s"Finding YAML Files to Remove from Legacy:\nLegacy path (including subfolders): $legacyPath\nNew files path: $newFilesPath")
-          CompareYamlFiles.findFilesToRemoveFromLegacy(legacyPath, newFilesPath) match {
-            case Right(matchingFiles) =>
-              println(s"Files to remove: \n ${matchingFiles.mkString(" \n")}")
+        case "--yamlFindFilesToRemove" :: previousPath :: updatedPath :: Nil =>
+          println(s"Finding YAML Files to Remove from ${substringAfterLastSlash(previousPath)}:\nPrevious path: $previousPath\nUpdated path: $updatedPath")
+          CompareYamlFiles.findFilesToRemove(previousPath, updatedPath) match {
+            case Right(filesToRemove) =>
+              println(s"Files to remove: \n ${filesToRemove.mkString(" \n")}")
               Right(())
             case Left(errorMessage) => Left(errorMessage)
           }

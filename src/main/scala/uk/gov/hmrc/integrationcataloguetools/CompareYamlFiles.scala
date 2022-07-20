@@ -24,42 +24,28 @@ import scala.collection.JavaConverters._
 
 object CompareYamlFiles {
 
-  def findFilesToRemoveFromPlatform(beforePath: String, afterPath: String): Either[String, List[String]] =
-    findFiles(beforePath, afterPath, getMissingFilenames)
-
-  def findFilesToRemoveFromLegacy(beforePath: String, afterPath: String): Either[String, List[String]] =
-    findFiles(beforePath, afterPath, getMatchingFilenames)
-
-  private def findFiles(beforePath: String, afterPath: String, f: (Map[String, String], Set[String]) => List[String]): Either[String, List[String]] = {
-    validateInputs(beforePath, afterPath) match {
+  def findFilesToRemove(previousPath: String, updatedPath: String): Either[String, List[String]] = {
+    validateInputs(previousPath, updatedPath) match {
       case Some(errorMessage) => Left(errorMessage)
       case None               => Right {
-          val filenamesAndPublisherRefsFromBeforePath: Map[String, String] = getYamlFiles(beforePath)
+          val filenamesAndPublisherRefsFromBeforePath: Map[String, String] = getYamlFiles(previousPath)
             .map(fileName => (fileName.extractPublisherReference, fileName))
             .toMap
 
-          val publisherRefsInAfterPath: Set[String] = getYamlFiles(afterPath)
+          val publisherRefsInAfterPath: Set[String] = getYamlFiles(updatedPath)
             .map(_.extractPublisherReference)
             .toSet
 
-          f(filenamesAndPublisherRefsFromBeforePath, publisherRefsInAfterPath)
+          getMissingFilenames(filenamesAndPublisherRefsFromBeforePath, publisherRefsInAfterPath)
         }
     }
   }
 
-  // List of filenames from filenamesAndPublisherRefsFromBeforePath that do not exist in publisherRefsInAfterPath
-  def getMissingFilenames(filenamesAndPublisherRefsFromBeforePath: Map[String, String], publisherRefsInAfterPath: Set[String]): List[String] =
-    filenamesAndPublisherRefsFromBeforePath
-      .filterNot(x => publisherRefsInAfterPath.contains(x._1))
+  // List of filenames from filenamesAndPublisherRefs whose publisherRefs (map keys) are not in the publisherRefs set
+  private def getMissingFilenames(filenamesAndPublisherRefs: Map[String, String], publisherRefs: Set[String]): List[String] =
+    filenamesAndPublisherRefs
+      .filterNot(x => publisherRefs.contains(x._1))
       .values
-      .toList
-      .sorted
-
-  // List of filenames from filenamesAndPublisherRefsFromBeforePath that also exist in publisherRefsInAfterPath
-  def getMatchingFilenames(filenamesAndPublisherRefsFromBeforePath: Map[String, String], publisherRefsInAfterPath: Set[String]): List[String] =
-    publisherRefsInAfterPath
-      .filter(x => filenamesAndPublisherRefsFromBeforePath.contains(x))
-      .map(x => filenamesAndPublisherRefsFromBeforePath.getOrElse(x, "Something ugly wrong here"))
       .toList
       .sorted
 
@@ -74,7 +60,7 @@ object CompareYamlFiles {
   }
 
   private def getYamlFiles(path: String): List[String] = {
-    Files.walk(new File(path).toPath, 2)
+    Files.walk(new File(path).toPath)
       .iterator().asScala
       .map(_.getFileName.toString)
       .filter(_.endsWith(".yaml"))

@@ -6,7 +6,7 @@ This tool allows you manage content for publishing in the API Catalogue.
 
 - Generating OpenAPI Specification files
 - Generating file transfer definition files
-- Processing OpenAPI Specification files which do not have publication metadata
+- Processing OpenAPI Specification files which do not have x-integration-catalogue metadata
 - Bulk publishing of OpenAPI Specification or file transfer definition files in the API Catalogue
 
 ## API & OpenAPI Specification (OAS)
@@ -143,48 +143,37 @@ MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from he
 
  ```
 
-## Processing OpenAPI Specification files which do not have publication metadata
+## Processing OpenAPI Specification files which do not have x-integration-catalogue metadata
 
 If a platform team does not publish its own API documentation but passes it to the API Platform team for publication,
-the tools in this section assist with publication.
+this section assists with publication.
 
-The first tool can manage the OAS files in the integration-catalogue-oas-files repository by looking for APIs that
-are deleted or moved from legacy platforms.
+The [first step](#comparing-file-lists-to-find-files-that-must-be-removed) can manage the OAS files in the
+integration-catalogue-oas-files repository by looking for APIs that are no longer required and must be removed.
 
-The second tool adds the `x-integration-catalogue` publication metadata section to each file if it is not already present.
+The [second step](#adding-metadata-to-openapi-specification-files) adds the `x-integration-catalogue` metadata section
+to each file if it is not already present.
 
 ### Comparing file lists to find files that must be removed
 
-If the new documentation is provided as a complete set of API documentation files, this tool works out whether any of the
-files in the integration-catalogue-oas-files repository must be removed because they are no longer required. Place all the new
-files in some directory (called the 'new files' directory). As input to the tool, provide the path to this directory as well as
-the path to the existing files in the repository that may need to be deleted.
-
-If the tool is run as `yamlFindFilesToRemoveFromPlatform`, then the existing files are in a 'platform' directory. Any that
-are not in the new files must be removed from the published documentation of the platform concerned. The output lists these
-missing files.
-
-If the tool is run as `yamlFindFilesToRemoveFromLegacy`, then the existing files are in a 'legacy' directory. Any that are
-in the new files must be removed from the published documentation of the legacy platform, as they are moving to the 
-platform concerned. The output lists these matching files.
+This assumes that the updated documentation is provided as a complete set of the current API documentation files.
+Thus, any files in the integration-catalogue-oas-files repository that are not in the updated set are no longer required.
+Place all the updated files in some directory.
+As input to the tool, provide the path to this directory as well as the path to the previous files that are in the repository.
+The output lists the files from the previous list that need to be removed.
 
 The tool compares files based on the first 4-digit number in their filenames, which is assumed to be the API reference number.
 
-An example usage is for the files in the core-if directory to be deleted if they are missing from the new file set, and for 
-files in the des directory to be deleted if they are matching in the new file set, because they must be moved into core-if.
-
-The tool looks at files in the given platform and legacy directories and their immediate subdirectories.
-
 The following input constraints apply:
 
-* the 'platform' or 'legacy', and 'new files' directories must exist
+* the 'previous' and 'updated' directories must exist
 * only files ending `.yaml` will be taken into account
 
 ### Adding metadata to OpenAPI Specification files
 
-If you create YAML files without the `x-integration-catalogue` element by using another tool, this can be added afterwards.
-Place all the files in an input directory. This input directory, the platform (e.g. CORE_IF) and the review date, and also
-an output directory must be provided as input values. The following input constraints apply:
+If the YAML files do not have the `x-integration-catalogue` section, this can be added programmatically.
+Place all the updated files in an input directory. This input directory, the platform concerned (e.g. CORE_IF), the reviewed date,
+and an output directory must be provided as input values. The following input constraints apply:
 
 * the input directory must exist
 * only files ending `.yaml` will be processed
@@ -198,14 +187,15 @@ It is added at the end of the `info` section, e.g.
 
 ```
 info:
-  ...
+  title: An superb API
   x-integration-catalogue:
     reviewed-date: 2022-07-13T17:12:00Z
     platform: CORE_IF
     publisher-reference: <the 4-digit number from the file name>
+servers:
 ```
 
-The amended files are added to the output directory with the same file names. They will be ready to publish.
+The amended files are added to the output directory using the same file names. They will be ready to publish.
 
 # Downloading the tools
 
@@ -230,8 +220,7 @@ Usage:
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <inputCsv> <output directory>
     integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-    integration-catalogue-tools --yamlFindFilesToRemoveFromPlatform <platform directory> <new files directory>
-    integration-catalogue-tools --yamlFindFilesToRemoveFromLegacy <legacy directory> <new files directory>
+    integration-catalogue-tools --yamlFindFilesToRemove <before directory> <after directory>
     integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
@@ -270,8 +259,7 @@ sbt 'run --csvToFileTransferJson "<name-of.csv>" "<output-path>"'
 
 ## Comparing file lists to find files that must be removed
 ```
-sbt 'run --yamlFindFilesToRemoveFromPlatform <platform-path> <new-files-path>'
-sbt 'run --yamlFindFilesToRemoveFromLegacy <legacy-path> <new-files-path>'
+sbt 'run --yamlFindFilesToRemoveFromPlatform <before-path> <after-path>'
 ```
 
 ## Add metadata to OpenAPI Specification YAML files
