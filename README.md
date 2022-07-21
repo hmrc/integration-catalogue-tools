@@ -6,6 +6,7 @@ This tool allows you manage content for publishing in the API Catalogue.
 
 - Generating OpenAPI Specification files
 - Generating file transfer definition files
+- Processing OpenAPI Specification files which do not have x-integration-catalogue metadata
 - Bulk publishing of OpenAPI Specification or file transfer definition files in the API Catalogue
 
 ## API & OpenAPI Specification (OAS)
@@ -142,6 +143,59 @@ MyRef-1, My File Transfer, This is my awesome file transfer. A file goes from he
 
  ```
 
+## Processing OpenAPI Specification files which do not have x-integration-catalogue metadata
+
+If a platform team does not publish its own API documentation but passes it to the API Platform team for publication,
+this section assists with publication.
+
+The [first step](#comparing-file-lists-to-find-apis-that-must-be-unpublished) can manage the OAS files in the
+integration-catalogue-oas-files repository by looking for APIs that are no longer required and must be unpublished.
+
+The [second step](#adding-metadata-to-openapi-specification-files) adds the `x-integration-catalogue` metadata section
+to each file if it is not already present.
+
+### Comparing file lists to find APIs that must be unpublished
+
+This assumes that the updated YAML files are the complete set of the API files for that platform.
+Thus, any API files in the integration-catalogue-oas-files repository that are not in the updated set are no longer required.
+As input, put all the updated files in some directory, which will be compared to files in the previous path.
+The console outputs a list of API filenames that need to be unpublished.
+
+The tool compares files based on the first 4-digit number in their filenames, which is assumed to be the API reference number.
+
+The following input constraints apply:
+
+* the 'previous' and 'updated' directories must exist
+* only files ending `.yaml` will be taken into account
+
+### Adding metadata to OpenAPI Specification files
+
+If the YAML files do not have the `x-integration-catalogue` section, this can be added programmatically.
+As input, provide the path to the updated files used in the previous step, together with the platform concerned (e.g. CORE_IF),
+the reviewed date, and an output directory. The following input constraints apply:
+
+* the input directory must exist
+* only files ending `.yaml` will be processed
+* subdirectories are ignored
+* file names must have at least one 4-digit number that is taken to be the publication reference; longer numbers are ignored
+* the reviewed date must be in ISO-8601 format in UTC, e.g., 2022-07-13T17:12:00Z
+* the output directory must not exist; it will be created
+
+An `x-integration-catalogue` section will be added to each file that does not already have one.
+It is added at the end of the `info` section, e.g.
+
+```
+info:
+  title: An superb API
+  x-integration-catalogue:
+    reviewed-date: 2022-07-13T17:12:00Z
+    platform: CORE_IF
+    publisher-reference: <the 4-digit number from the file name>
+servers:
+```
+
+The amended files are added to the output directory using the same file names. They will be ready to publish.
+
 # Downloading the tools
 
 Look in the releases [here](https://github.com/hmrc/integration-catalogue-tools/releases).
@@ -165,6 +219,8 @@ Usage:
     integration-catalogue-tools --help | -h
     integration-catalogue-tools --csvToOas <inputCsv> <output directory>
     integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
+    integration-catalogue-tools --yamlFindApisToUnpublish <previous directory> <updated directory>
+    integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
     integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
     integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
@@ -198,6 +254,16 @@ sbt 'run --csvToOas "<name-of.csv>" "<output-path>"'
 ## Convert CSV to File Transfer Json files
 ```
 sbt 'run --csvToFileTransferJson "<name-of.csv>" "<output-path>"'
+```
+
+## Comparing file lists to find APIs that must be unpublished
+```
+sbt 'run --yamlFindApisToUnpublish <prevoius-path> <updated-path>'
+```
+
+## Add metadata to OpenAPI Specification YAML files
+```
+sbt 'run --yamlAddMetadata <input-path> <platform> <reviewed-date> <output-path>'
 ```
 
 ## To publish API(s)

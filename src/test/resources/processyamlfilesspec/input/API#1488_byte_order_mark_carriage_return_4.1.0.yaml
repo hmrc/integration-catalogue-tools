@@ -1,0 +1,14 @@
+﻿openapi: 3.0.3
+info:
+  title: 'API#1488 has byte order mark and carriage return line feed'
+  description: This API provides the capability.
+  version: 4.1.0
+  contact:
+    name: Joe Bloggs
+    email: joe.bloggs@example.com
+servers:
+  - url: 'https://hostname'
+    description: Actual environment values can be obtained
+tags:
+  - name: 'API#1488'
+    description: This API provides the capability.

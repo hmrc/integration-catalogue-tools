@@ -18,13 +18,9 @@ package uk.gov.hmrc.integrationcataloguetools
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import scala.io.Source
-import io.swagger.v3.oas.models.OpenAPI
 
 import uk.gov.hmrc.integrationcataloguetools.connectors._
 
-import scala.collection.JavaConverters._
-import org.mockito.Mock
 import org.mockito.MockitoSugar
 import org.mockito.ArgumentMatchersSugar
 import java.nio.charset.StandardCharsets
@@ -52,7 +48,7 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
 
       val result = service.publishFile(filepath1, true)
 
-      result shouldBe Right()
+      result shouldBe Right(())
 
       val expectedHeaders = Map(
           "x-specification-type" -> specificationType,
@@ -68,7 +64,7 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
 
       val result = service.publishFile(filepath1, false)
 
-      result shouldBe Right()
+      result shouldBe Right(())
 
       val expectedHeaders = Map(
           "x-specification-type" -> specificationType)
@@ -82,7 +78,7 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
 
       val result = service.publishFile(filepath1, true)
 
-      result shouldBe Right()
+      result shouldBe Right(())
     }
   
     "be unsucessfull if publish returns a non 2xx when useFilenameAsPublisherReference is true" in new Setup {
@@ -113,7 +109,7 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
 
       val result = service.publishDirectory(directoryPath, true)
 
-      result shouldBe Right()
+      result shouldBe Right(())
 
       val expectedHeaders1 = Map(
           "x-specification-type" -> specificationType,
@@ -138,7 +134,7 @@ class ApiPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSuga
 
       val result = service.publishDirectory(directoryPath, false)
 
-      result shouldBe Right()
+      result shouldBe Right(())
 
       val expectedHeaders1 = Map(
           "x-specification-type" -> specificationType)

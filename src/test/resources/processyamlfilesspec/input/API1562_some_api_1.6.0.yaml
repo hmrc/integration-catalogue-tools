@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: API1562
+  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod'
+  version: 1.6.0
+  contact:
+    name: Joe Bloggs
+    email: joe.bloggs@example.com
+tags:
+  - name: 'API#1562'
+    description: An API.
