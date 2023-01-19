@@ -56,7 +56,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
     }
 
     def validateResponses(responses: ApiResponses) = {
-      val responseOK = Option(responses.get("200"))
+      val responseOK         = Option(responses.get("200"))
       responseOK.isDefined shouldBe true
       responseOK.get.getDescription() shouldBe "OK"
       val responseBadRequest = Option(responses.get("400"))
@@ -143,7 +143,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
   }
 
   "Parse CSV into OpenAPI Specification content" in {
-    val csvFile = Source.fromResource("generateopenapispec/Parse-to-OAS-Content.csv")
+    val csvFile         = Source.fromResource("generateopenapispec/Parse-to-OAS-Content.csv")
     val expectedContent = Source.fromResource("generateopenapispec/Expected-Parse-to-OAS-Content.yaml").mkString
 
     val contents = GenerateOpenApi.fromCsvToOasContent(csvFile.bufferedReader())
@@ -156,7 +156,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
   }
 
   "Parse CSV with Path Parameters into OpenAPI Specification content" in {
-    val csvFile = Source.fromResource("generateopenapispec/Parse-CSV-into-OpenAPI-list.csv")
+    val csvFile         = Source.fromResource("generateopenapispec/Parse-CSV-into-OpenAPI-list.csv")
     val expectedContent = Source.fromResource("generateopenapispec/Expected-Parse-CSV-into-OpenAPI-list.yaml").mkString
 
     val contents = GenerateOpenApi.fromCsvToOasContent(csvFile.bufferedReader())
@@ -169,7 +169,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
   }
 
   "Parse CSV with Query Parameters into OpenAPI Specification with no Query Parameters" in {
-    val csvFile = Source.fromResource("generateopenapispec/Parse-CSV-with-queryParameters-into-OpenAPI.csv")
+    val csvFile         = Source.fromResource("generateopenapispec/Parse-CSV-with-queryParameters-into-OpenAPI.csv")
     val expectedContent = Source.fromResource("generateopenapispec/Expected-Parse-CSV-with-query-params-into-OpenAPI.yaml").mkString
 
     val contents = GenerateOpenApi.fromCsvToOasContent(csvFile.bufferedReader())

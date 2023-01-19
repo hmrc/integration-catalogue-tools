@@ -15,15 +15,16 @@
  */
 
 package uk.gov.hmrc.integrationcataloguetools
+
 object Main extends App {
 
-   val integrationCatalogueTools = new IntegrationCatalogueTools()
-  integrationCatalogueTools.runApplication( args.toList) match{
+  val integrationCatalogueTools = new IntegrationCatalogueTools()
+  integrationCatalogueTools.runApplication(args.toList) match {
     case Left(error) => {
       println(s"Error: $error")
       java.lang.System.exit(1)
     }
-    case Right(_) => ();
+    case Right(_)    => ();
   }
 
 }

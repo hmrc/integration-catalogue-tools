@@ -27,15 +27,17 @@ import scala.io.Source
 class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
 
   trait Setup {
-    val testResourcesPath = "src/test/resources"
-    val topLevelPath = "processyamlfilesspec"
-    val inputFolder = s"$topLevelPath/input"
+    val testResourcesPath    = "src/test/resources"
+    val topLevelPath         = "processyamlfilesspec"
+    val inputFolder          = s"$topLevelPath/input"
     val expectedOutputFolder = s"$topLevelPath/expected"
-    val outputFolder = s"$topLevelPath/output"
+    val outputFolder         = s"$topLevelPath/output"
 
     def checkFileContents(fileName: String) = {
-      val source = Source.fromFile(s"$testResourcesPath/$outputFolder/$fileName")
-      val output = try source.mkString finally source.close()
+      val source   = Source.fromFile(s"$testResourcesPath/$outputFolder/$fileName")
+      val output   =
+        try source.mkString
+        finally source.close()
       val expected = Source.fromResource(s"$expectedOutputFolder/$fileName").mkString
 
       output shouldBe expected
@@ -110,7 +112,7 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
 
   "insertXIntegrationCatalogue" should {
     "insert x-integration-catalogue section" in {
-      val input = List(
+      val input          = List(
         "openapi: 3.0.3",
         "info:",
         "  title: API#1758 Get Breathing Space",
@@ -135,7 +137,7 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
     }
 
     "insert x-integration-catalogue section when info is the last section" in {
-      val input = List(
+      val input          = List(
         "openapi: 3.0.3",
         "info:",
         "  title: API#1758 Get Breathing Space"
@@ -156,7 +158,7 @@ class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
     }
 
     "allow blank lines in the info section" in {
-      val input = List(
+      val input          = List(
         "openapi: 3.0.3",
         "info:",
         "  title: API#1758 Get Breathing Space\n",

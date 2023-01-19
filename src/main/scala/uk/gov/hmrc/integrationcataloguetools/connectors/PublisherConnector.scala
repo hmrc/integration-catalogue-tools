@@ -53,7 +53,7 @@ class PublisherConnector(url: String, client: CloseableHttpClient, platform: Pla
   }
 
   private def callEndpoint(put: HttpPut): Either[String, Response] = {
-    
+
     put.addHeader("Authorization", authorizationKey)
     put.addHeader("x-platform-type", platform.value)
 

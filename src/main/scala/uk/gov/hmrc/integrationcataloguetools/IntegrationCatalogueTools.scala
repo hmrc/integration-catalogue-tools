@@ -43,7 +43,7 @@ class IntegrationCatalogueTools {
   }
 
   def printVersion(): Unit = {
-    //val title = getClass.getPackage.getImplementationTitle
+    // val title = getClass.getPackage.getImplementationTitle
     val version = getClass.getPackage.getImplementationVersion
 
     println(s"integration-catalogue-tools version '$version'")
@@ -53,13 +53,13 @@ class IntegrationCatalogueTools {
     val client = HttpClients.createDefault()
     try {
       args match {
-        case Nil | "--help" :: Nil | "-h" :: Nil =>
+        case Nil | "--help" :: Nil | "-h" :: Nil                            =>
           printUsage()
           Right(())
-        case "--version" :: Nil | "-v" :: Nil =>
+        case "--version" :: Nil | "-v" :: Nil                               =>
           printVersion()
           Right(())
-        case "--csvToOas" :: inputCsvFile :: outputPath :: Nil =>
+        case "--csvToOas" :: inputCsvFile :: outputPath :: Nil              =>
           println(s"Exporting CSV to OAS Files:\nInput file: $inputCsvFile\noutput path: $outputPath")
           val rowsProcessed = ProcessCsvFile.processApiCsv(inputCsvFile, outputPath)
           println(s"Exported $rowsProcessed OAS files to:\n$outputPath")
@@ -76,7 +76,7 @@ class IntegrationCatalogueTools {
             case Right(apisToUnpublish) =>
               println(s"APIs to unpublish: \n ${apisToUnpublish.mkString(" \n")}")
               Right(())
-            case Left(errorMessage) => Left(errorMessage)
+            case Left(errorMessage)     => Left(errorMessage)
           }
 
         case "--yamlAddMetadata" :: inputPath :: platform :: reviewedDate :: outputPath :: Nil =>

@@ -51,7 +51,7 @@ object CompareYamlFiles {
 
   private def validateInputs(beforePath: String, afterPath: String): Option[String] = {
     val beforeDirectory = new File(beforePath)
-    val afterDirectory = new File(afterPath)
+    val afterDirectory  = new File(afterPath)
     if (!beforeDirectory.exists || !beforeDirectory.isDirectory) {
       Some(s"Path is not a directory: $beforePath")
     } else if (!afterDirectory.exists || !afterDirectory.exists) {

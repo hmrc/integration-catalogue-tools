@@ -21,7 +21,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
 
 class ExtractPublisherReferenceSpec extends AnyWordSpec with Matchers {
-  
+
   "extractPublisherReference" should {
 
     "find the number with just the number in the text" in {

@@ -31,11 +31,10 @@ import uk.gov.hmrc.integrationcataloguetools.models.Platform
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
 
-
 class PublisherConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar with BeforeAndAfterEach {
 
   val mockCloseableHttpClient = mock[CloseableHttpClient]
-  val url = ""
+  val url                     = ""
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -44,18 +43,18 @@ class PublisherConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar
 
   trait Setup {
 
-    val encodedAuthHeader = "dGhpc2lzYXNzZWN1cmVhc2l0Z2V0cw=="
-    val platform = Platform("CORE_IF")
-    val connector = new PublisherConnector(url, mockCloseableHttpClient, platform, encodedAuthHeader)
-    val fileTransferJsonContent = "File Transfer Json content"
-    val entity: StringEntity = new StringEntity(fileTransferJsonContent, ContentType.create("application/json", "UTF-8"));
+    val encodedAuthHeader         = "dGhpc2lzYXNzZWN1cmVhc2l0Z2V0cw=="
+    val platform                  = Platform("CORE_IF")
+    val connector                 = new PublisherConnector(url, mockCloseableHttpClient, platform, encodedAuthHeader)
+    val fileTransferJsonContent   = "File Transfer Json content"
+    val entity: StringEntity      = new StringEntity(fileTransferJsonContent, ContentType.create("application/json", "UTF-8"));
     val mockCloseableHttpResponse = mock[CloseableHttpResponse]
-    val mockHttpEntity = mock[HttpEntity]
-    val responseContent = "Happy path response"
-    val dummyInputStreamFT = new ByteArrayInputStream(responseContent.getBytes(StandardCharsets.UTF_8));
+    val mockHttpEntity            = mock[HttpEntity]
+    val responseContent           = "Happy path response"
+    val dummyInputStreamFT        = new ByteArrayInputStream(responseContent.getBytes(StandardCharsets.UTF_8));
 
     val headers = Map(
-      "x-specification-type" -> "OAS_V3",
+      "x-specification-type"  -> "OAS_V3",
       "x-publisher-reference" -> "1234"
     )
 

@@ -19,22 +19,22 @@ package uk.gov.hmrc.integrationcataloguetools.service
 import uk.gov.hmrc.integrationcataloguetools.connectors.Response
 
 trait PublishHelper {
-  val OK = 200
+  val OK      = 200
   val CREATED = 201
 
   def getApiPublishPhrase(statusCode: Int): String = statusCode match {
-    case OK => "Updated"
+    case OK      => "Updated"
     case CREATED => "Created"
-    case _   => "???"
+    case _       => "???"
   }
 
-  def handlePublishResponse(responseEither: Either[String, Response], filename: String ): Either[String, Unit] = {
+  def handlePublishResponse(responseEither: Either[String, Response], filename: String): Either[String, Unit] = {
     responseEither.flatMap(response => {
       response.statusCode match {
-        case OK | CREATED  =>
+        case OK | CREATED =>
           println(s"Published. ${getApiPublishPhrase(response.statusCode)} API. Response(${response.statusCode}): ${response.content}")
           Right(())
-        case _ =>
+        case _            =>
           val errorMessage = s"Failed to publish '$filename'. Response(${response.statusCode}): ${response.content}"
           Left(errorMessage)
       }

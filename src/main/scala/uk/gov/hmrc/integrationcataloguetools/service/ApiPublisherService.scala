@@ -23,8 +23,6 @@ import java.nio.file.{Files, Paths}
 
 class ApiPublisherService(publisherConnector: PublisherConnector) extends PublishHelper {
 
-
-
   def publishDirectory(directoryPath: String, useFilenameAsPublisherReference: Boolean): Either[String, Unit] = {
 
     def isOasFile(file: File): Boolean = {
@@ -64,7 +62,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) extends Publis
 
     println(s"Publishing ${pathname}")
 
-    val file = new File(pathname)
+    val file     = new File(pathname)
     val filename = file.getName
 
     val oasContentBytes = Files.readAllBytes(Paths.get(pathname))
@@ -73,7 +71,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) extends Publis
 
   private def publish(useFilenameAsPublisherReference: Boolean, filename: String, oasContent: Array[Byte]): Either[String, Unit] = {
 
-    def getOptionalHeaders() : Map[String, String] = {
+    def getOptionalHeaders(): Map[String, String] = {
       if (useFilenameAsPublisherReference) Map("x-publisher-reference" -> filenameWithoutExtension(filename))
       else Map.empty
     }
@@ -84,9 +82,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) extends Publis
     handlePublishResponse(responseEither, filename)
   }
 
-
-
-  private def filenameWithoutExtension(filename: String) : String = {
+  private def filenameWithoutExtension(filename: String): String = {
     filename.replaceFirst("[.][^.]+$", "");
   }
 }

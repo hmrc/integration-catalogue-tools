@@ -28,7 +28,7 @@ object ProcessCsvFile {
     import java.io.{BufferedWriter, File, FileWriter}
 
     val file = new File(filename)
-    val bw = new BufferedWriter(new FileWriter(file))
+    val bw   = new BufferedWriter(new FileWriter(file))
     bw.write(content)
     bw.close()
   }
@@ -54,7 +54,7 @@ object ProcessCsvFile {
     implicit val formats: Formats = DefaultFormats
 
     try {
-      
+
       GenerateFileTransferJson
         .fromCsvToFileTransferRequest(in)
         .map {

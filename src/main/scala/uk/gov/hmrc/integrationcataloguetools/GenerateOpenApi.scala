@@ -53,7 +53,6 @@ object GenerateOpenApi {
         Option(s).getOrElse("LIVE").trim()
       }
 
-
       def truncateAfter(x: String, p: String) = {
         val s = parseString(x)
         if (s.indexOf(p) > 0) s.substring(0, s.indexOf(p)) else s
@@ -175,7 +174,7 @@ object GenerateOpenApi {
       paramObj.setName(param)
       paramObj.setIn("path")
       paramObj.setRequired(true)
-      val schema = new Schema()
+      val schema   = new Schema()
       schema.setType("string")
       paramObj.setSchema(schema)
       paramObj

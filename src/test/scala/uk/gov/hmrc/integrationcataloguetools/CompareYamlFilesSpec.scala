@@ -23,9 +23,9 @@ class CompareYamlFilesSpec extends AnyWordSpec with Matchers {
 
   trait Setup {
     val testResourcesPath = "src/test/resources"
-    val topLevelPath = s"$testResourcesPath/compareyamlfilesspec"
-    val previousPath = s"$topLevelPath/previous"
-    val updatedPath = s"$topLevelPath/updated"
+    val topLevelPath      = s"$testResourcesPath/compareyamlfilesspec"
+    val previousPath      = s"$topLevelPath/previous"
+    val updatedPath       = s"$topLevelPath/updated"
 
     val previousFiles: Map[String, String] = Map(
       "1003" -> "API#1003_api-name-1.2.0.yaml",

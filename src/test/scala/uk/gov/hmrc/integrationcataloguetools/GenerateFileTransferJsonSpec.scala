@@ -27,8 +27,8 @@ import scala.io.Source
 class GenerateFileTransferJsonSpec extends AnyWordSpec with Matchers {
   "Parse CSV into File Transfer Json list" in {
     val csvFile = Source.fromResource("generatefiletransferjsonspec/FileTransferDataCsv.csv")
-    
-    val fileTransfers : Seq[(_, FileTransferPublishRequest)] = GenerateFileTransferJson.fromCsvToFileTransferRequest(csvFile.bufferedReader())
+
+    val fileTransfers: Seq[(_, FileTransferPublishRequest)] = GenerateFileTransferJson.fromCsvToFileTransferRequest(csvFile.bufferedReader())
 
     fileTransfers should have length 1
 
@@ -45,11 +45,10 @@ class GenerateFileTransferJsonSpec extends AnyWordSpec with Matchers {
     fileTransfer.targetSystem.head shouldBe "ServiceNow"
 
   }
-implicit val formats = DefaultFormats
+  implicit val formats = DefaultFormats
 
-
-def runTest(csvName: String, expectedJsonFileName: String) ={
-      val csvFile = Source.fromResource(s"generatefiletransferjsonspec/$csvName")
+  def runTest(csvName: String, expectedJsonFileName: String) = {
+    val csvFile         = Source.fromResource(s"generatefiletransferjsonspec/$csvName")
     val expectedContent = Source.fromResource(s"generatefiletransferjsonspec/$expectedJsonFileName").mkString
 
     val contents = GenerateFileTransferJson.fromCsvToFileTransferRequest(csvFile.bufferedReader())
@@ -59,13 +58,11 @@ def runTest(csvName: String, expectedJsonFileName: String) ={
     val content = write(contents.head._2)
 
     content shouldBe expectedContent
-}
-
+  }
 
   "Parse CSV into File Transfer Json content with multiple transports" in {
     runTest("FileTransferDataCsv.csv", "BMC-ServiceNow-NetworksDataDaily-notify.json")
   }
-
 
   "Parse CSV into File Transfer Json content with single transport" in {
     runTest("FileTransferDataCsv-1transport.csv", "BMC-ServiceNow-NetworksDataDaily-notify-1transport.json")

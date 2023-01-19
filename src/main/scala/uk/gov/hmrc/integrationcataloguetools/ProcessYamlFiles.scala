@@ -59,7 +59,7 @@ object ProcessYamlFiles {
       fileContents
     } else {
       val afterInfoSection = fileContents.dropWhile(!_.startsWith("info:")).drop(1).dropWhile(next => next.startsWith(" ") || next.isEmpty)
-      val upToInfoSection = fileContents.take(fileContents.size - afterInfoSection.size)
+      val upToInfoSection  = fileContents.take(fileContents.size - afterInfoSection.size)
 
       upToInfoSection ++ List(
         s"  $xIntegrationCatalogue",
