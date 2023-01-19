@@ -48,9 +48,9 @@ class ApiPublisherService(publisherConnector: PublisherConnector) extends Publis
 
       val rights = results.collect({ case Right(l) => l })
 
-      println(s"Successfully published ${rights.length} APIs")
+      println(s"Successfully published ${rights.length} APIs") // scalastyle:ignore regex
       if (lefts.nonEmpty) {
-        println(s"Failed to publish ${lefts.length} APIs")
+        println(s"Failed to publish ${lefts.length} APIs") // scalastyle:ignore regex
       }
 
       if (lefts.isEmpty) Right(())
@@ -60,7 +60,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) extends Publis
 
   def publishFile(pathname: String, useFilenameAsPublisherReference: Boolean): Either[String, Unit] = {
 
-    println(s"Publishing ${pathname}")
+    println(s"Publishing ${pathname}") // scalastyle:ignore regex
 
     val file     = new File(pathname)
     val filename = file.getName

@@ -47,9 +47,9 @@ class FileTransferPublisherService(publisherConnector: PublisherConnector) exten
 
       val rights = results.collect({ case Right(l) => l })
 
-      println(s"Successfully published ${rights.length} File Transfers")
+      println(s"Successfully published ${rights.length} File Transfers") // scalastyle:ignore regex
       if (lefts.nonEmpty) {
-        println(s"Failed to publish ${lefts.length} File Transfers")
+        println(s"Failed to publish ${lefts.length} File Transfers") // scalastyle:ignore regex
       }
 
       if (lefts.isEmpty) Right(())
@@ -59,7 +59,7 @@ class FileTransferPublisherService(publisherConnector: PublisherConnector) exten
 
   def publishFile(pathname: String): Either[String, Unit] = {
 
-    println(s"Publishing $pathname")
+    println(s"Publishing $pathname") // scalastyle:ignore regex
 
     val file     = new File(pathname)
     val filename = file.getName

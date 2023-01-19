@@ -21,7 +21,7 @@ object Main extends App {
   val integrationCatalogueTools = new IntegrationCatalogueTools()
   integrationCatalogueTools.runApplication(args.toList) match {
     case Left(error) => {
-      println(s"Error: $error")
+      println(s"Error: $error") // scalastyle:ignore regex
       java.lang.System.exit(1)
     }
     case Right(_)    => ();

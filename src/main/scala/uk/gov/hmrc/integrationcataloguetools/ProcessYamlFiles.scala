@@ -92,7 +92,7 @@ object ProcessYamlFiles {
 
   private def writeOutputFile(outputFile: File, contents: List[String]): Unit = {
     new PrintWriter(outputFile) {
-      contents.foreach(println)
+      contents.foreach(println) // scalastyle:ignore regex
       close()
     }
   }

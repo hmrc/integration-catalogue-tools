@@ -22,25 +22,26 @@ import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
 import uk.gov.hmrc.integrationcataloguetools.service.{ApiPublisherService, FileTransferPublisherService}
 
+// scalastyle:off cyclomatic.complexity regex line.size.limit method.length
 class IntegrationCatalogueTools {
 
   def printUsage(): Unit = {
     println("""
-        Usage:
-            integration-catalogue-tools --version | -v
-            integration-catalogue-tools --help | -h
-            integration-catalogue-tools --csvToOas <inputCsv> <output directory>
-            integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-            integration-catalogue-tools --yamlFindApisToUnpublish <previous directory> <updated directory>
-            integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
-            integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
-            integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
-            integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
-            
-            Arguments:
-                - directory : All files with .yaml or .json extension will be processed
-                - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OpenAPI Specification file
-        """)
+              |Usage:
+              |    integration-catalogue-tools --version | -v
+              |    integration-catalogue-tools --help | -h
+              |    integration-catalogue-tools --csvToOas <inputCsv> <output directory>
+              |    integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
+              |    integration-catalogue-tools --yamlFindApisToUnpublish <previous directory> <updated directory>
+              |    integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
+              |    integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
+              |    integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
+              |    integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
+              |
+              |    Arguments:
+              |        - directory : All files with .yaml or .json extension will be processed
+              |        - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OpenAPI Specification file
+              |""".stripMargin)
   }
 
   def printVersion(): Unit = {
@@ -119,3 +120,4 @@ class IntegrationCatalogueTools {
   private def substringAfterLastSlash(s: String) = s.reverse.takeWhile(_ != '/').reverse.toUpperCase
 
 }
+// scalastyle:on cyclomatic.complexity regex line.size.limit method.length

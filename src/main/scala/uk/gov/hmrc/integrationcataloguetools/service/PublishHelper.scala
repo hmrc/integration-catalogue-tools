@@ -32,7 +32,9 @@ trait PublishHelper {
     responseEither.flatMap(response => {
       response.statusCode match {
         case OK | CREATED =>
+          // scalastyle:off regex
           println(s"Published. ${getApiPublishPhrase(response.statusCode)} API. Response(${response.statusCode}): ${response.content}")
+          // scalastyle:on regex
           Right(())
         case _            =>
           val errorMessage = s"Failed to publish '$filename'. Response(${response.statusCode}): ${response.content}"

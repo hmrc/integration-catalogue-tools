@@ -65,7 +65,7 @@ class PublisherConnector(url: String, client: CloseableHttpClient, platform: Pla
       }) match {
       case Success(response)  => Right(response)
       case Failure(exception) =>
-        println("Error calling publish service:")
+        println("Error calling publish service:") // scalastyle:ignore regex
         exception.printStackTrace()
         Left(exception.getMessage)
     }

@@ -39,6 +39,7 @@ object GenerateOpenApi {
     }
   }
 
+  // scalastyle:off method.length
   def fromCsvToOpenAPI(reader: Reader): Seq[(PublisherReference, OpenAPI)] = {
 
     def createBasicApi(record: CSVRecord): BasicApi = {
@@ -91,6 +92,7 @@ object GenerateOpenApi {
       .map(createBasicApi)
       .map(basicApi => (basicApi.publisherReference, createOpenApi(basicApi)))
   }
+  // scalastyle:on method.length
 
   def generateOasContent(basicApi: BasicApi): String = {
     val openApi: OpenAPI = createOpenApi(basicApi)
@@ -137,7 +139,7 @@ object GenerateOpenApi {
       basicApi.endpoint
     } else {
       val error = s"Invalid path '${basicApi.endpoint}' for publisherReference '${basicApi.publisherReference}'"
-      println(error)
+      println(error) // scalastyle:ignore regex
       "/unknown"
     }
   }
@@ -156,7 +158,7 @@ object GenerateOpenApi {
       case "HEAD"    => pathItem.setHead(createOperation())
       case unknown   => // TODO Handle / filter these?
         val error = s"Unsupported method: '$unknown' for publisherReference '${basicApi.publisherReference}'"
-        println(error)
+        println(error) // scalastyle:ignore regex
         pathItem.setGet(createOperation())
     }
     if (parameters.nonEmpty) pathItem.setParameters(parameters.asJava)
