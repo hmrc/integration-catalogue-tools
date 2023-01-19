@@ -4,11 +4,25 @@ import uk.gov.hmrc.SbtArtifactory
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 import uk.gov.hmrc.versioning.SbtGitVersioning
 
-lazy val root = (project in file("."))
+lazy val appName = "integration-catalogue-tools"
+
+lazy val scala_212 = "2.12.12"
+
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.6.0"
+
+inThisBuild(
+  List(
+    scalaVersion := scala_212,
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision
+  )
+)
+
+lazy val root = Project(appName, file("."))
   .enablePlugins(SbtGitVersioning, SbtArtifactory)
   .settings(
-    scalaVersion := "2.12.12",
-    name := "integration-catalogue-tools",
+    scalaVersion := scala_212,
+    name := appName,
     majorVersion := 1
   )
   .settings(scoverageSettings)
