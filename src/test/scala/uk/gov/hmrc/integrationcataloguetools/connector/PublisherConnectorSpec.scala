@@ -16,20 +16,21 @@
 
 package uk.gov.hmrc.integrationcataloguetools.connector
 
-import org.apache.http.{HttpEntity, ProtocolVersion}
+import java.io.ByteArrayInputStream
+import java.nio.charset.StandardCharsets
+
 import org.apache.http.client.methods.{CloseableHttpResponse, HttpPut}
 import org.apache.http.entity.{ContentType, StringEntity}
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.message.BasicStatusLine
+import org.apache.http.{HttpEntity, ProtocolVersion}
 import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+
 import uk.gov.hmrc.integrationcataloguetools.connectors.{PublisherConnector, Response}
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
-
-import java.io.ByteArrayInputStream
-import java.nio.charset.StandardCharsets
 
 class PublisherConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar with BeforeAndAfterEach {
 

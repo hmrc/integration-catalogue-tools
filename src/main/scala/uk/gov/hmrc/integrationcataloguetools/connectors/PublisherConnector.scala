@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.integrationcataloguetools.connectors
 
+import scala.util.{Failure, Success, Try}
+
 import org.apache.http.client.methods.{CloseableHttpResponse, HttpPut}
 import org.apache.http.entity.{ContentType, StringEntity}
 import org.apache.http.impl.client.CloseableHttpClient
-import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
-import scala.util.{Failure, Success, Try}
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
 case class Response(statusCode: Int, content: String)
 

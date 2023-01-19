@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.integrationcataloguetools.service
 
-import uk.gov.hmrc.integrationcataloguetools.connectors.{PublisherConnector, Response}
-import uk.gov.hmrc.integrationcataloguetools.models._
-
 import java.io.File
 import java.nio.file.{Files, Paths}
 import scala.collection.JavaConverters._
+
+import uk.gov.hmrc.integrationcataloguetools.connectors.{PublisherConnector, Response}
+import uk.gov.hmrc.integrationcataloguetools.models._
 
 class FileTransferPublisherService(publisherConnector: PublisherConnector) extends PublishHelper {
 

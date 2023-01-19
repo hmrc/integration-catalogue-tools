@@ -16,14 +16,11 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import uk.gov.hmrc.integrationcataloguetools.connectors._
-
-import org.mockito.MockitoSugar
-import org.mockito.ArgumentMatchersSugar
-
 import uk.gov.hmrc.integrationcataloguetools.service.FileTransferPublisherService
 
 class FileTransferPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar {

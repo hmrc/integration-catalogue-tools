@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
-
 import java.io.File
 import java.nio.file.Files
 import scala.collection.JavaConverters._
+
+import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
 
 object CompareYamlFiles {
 

@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
+import scala.io.Source
+
 import net.liftweb.json.DefaultFormats
 import net.liftweb.json.Serialization.write
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import uk.gov.hmrc.integrationcataloguetools.models.FileTransferPublishRequest
 
-import scala.io.Source
+import uk.gov.hmrc.integrationcataloguetools.models.FileTransferPublishRequest
 
 class GenerateFileTransferJsonSpec extends AnyWordSpec with Matchers {
   "Parse CSV into File Transfer Json list" in {

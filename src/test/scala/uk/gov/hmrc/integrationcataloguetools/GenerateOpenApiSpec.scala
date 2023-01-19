@@ -16,16 +16,15 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
+import scala.collection.JavaConverters._
+import scala.io.Source
+
+import io.swagger.v3.oas.models.responses.ApiResponses
+import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import scala.io.Source
-import io.swagger.v3.oas.models.OpenAPI
 
-import scala.collection.JavaConverters._
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
-import io.swagger.v3.oas.models.PathItem
-import io.swagger.v3.oas.models.Operation
-import io.swagger.v3.oas.models.responses.ApiResponses
 
 class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
 

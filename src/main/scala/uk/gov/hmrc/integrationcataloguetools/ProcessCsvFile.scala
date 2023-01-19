@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import net.liftweb.json.DefaultFormats
-import net.liftweb.json.Serialization.writePretty
-
 import java.io.FileReader
-import net.liftweb.json.Formats
+
+import net.liftweb.json.Serialization.writePretty
+import net.liftweb.json.{DefaultFormats, Formats}
 
 object ProcessCsvFile {
 

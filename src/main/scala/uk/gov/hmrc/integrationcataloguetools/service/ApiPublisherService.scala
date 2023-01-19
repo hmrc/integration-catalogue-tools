@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.integrationcataloguetools.service
 
-import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
-
 import java.io.File
 import java.nio.file.{Files, Paths}
+
+import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
 
 class ApiPublisherService(publisherConnector: PublisherConnector) extends PublishHelper {
 

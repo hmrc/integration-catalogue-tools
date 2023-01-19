@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import org.apache.commons.csv.CSVRecord
-import uk.gov.hmrc.integrationcataloguetools.models._
-
 import java.io.Reader
 import scala.collection.JavaConverters._
+
+import org.apache.commons.csv.CSVRecord
+
+import uk.gov.hmrc.integrationcataloguetools.models._
 
 object GenerateFileTransferJson {
 

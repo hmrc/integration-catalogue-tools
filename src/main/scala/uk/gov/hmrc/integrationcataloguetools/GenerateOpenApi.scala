@@ -16,6 +16,10 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
+import java.io.Reader
+import java.util
+import scala.collection.JavaConverters._
+
 import io.swagger.v3.core.util.Yaml
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.media.Schema
@@ -23,11 +27,8 @@ import io.swagger.v3.oas.models.parameters.Parameter
 import io.swagger.v3.oas.models.responses.{ApiResponse, ApiResponses}
 import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
 import org.apache.commons.csv.CSVRecord
-import uk.gov.hmrc.integrationcataloguetools.models._
 
-import java.io.Reader
-import java.util
-import scala.collection.JavaConverters._
+import uk.gov.hmrc.integrationcataloguetools.models._
 
 object GenerateOpenApi {
 

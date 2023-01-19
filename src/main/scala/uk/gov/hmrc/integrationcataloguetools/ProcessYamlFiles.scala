@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
-
 import java.io.{File, PrintWriter}
 import java.time.Instant
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
+
+import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
 
 object ProcessYamlFiles {
 

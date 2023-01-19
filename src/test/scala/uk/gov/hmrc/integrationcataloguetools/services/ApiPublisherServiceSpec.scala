@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
+import java.nio.charset.StandardCharsets
+
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import uk.gov.hmrc.integrationcataloguetools.connectors._
-
-import org.mockito.MockitoSugar
-import org.mockito.ArgumentMatchersSugar
-import java.nio.charset.StandardCharsets
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
 import uk.gov.hmrc.integrationcataloguetools.service.ApiPublisherService
 

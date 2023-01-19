@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-
 import java.io.File
 import java.nio.file.{Files, Path}
 import java.util.Comparator
 import scala.io.Source
+
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class ProcessYamlFilesSpec extends AnyWordSpec with Matchers {
 
