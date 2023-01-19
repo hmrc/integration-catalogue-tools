@@ -6,7 +6,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning
 
 lazy val appName = "integration-catalogue-tools"
 
-lazy val scala_212 = "2.12.12"
+lazy val scala_212 = "2.12.15"
 
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.6.0"
 
@@ -19,17 +19,15 @@ inThisBuild(
 )
 
 lazy val root = Project(appName, file("."))
-  .enablePlugins(SbtGitVersioning, SbtArtifactory)
+  .enablePlugins(SbtGitVersioning, SbtArtifactory, PackPlugin)
   .settings(
     scalaVersion := scala_212,
     name := appName,
     majorVersion := 1
   )
   .settings(scoverageSettings)
-libraryDependencies ++= LibDependencies.compile ++ LibDependencies.test
-
-enablePlugins(PackPlugin)
-packMain := Map("integration-catalogue-tools" -> "uk.gov.hmrc.integrationcataloguetools.Main")
+  .settings(libraryDependencies ++= LibDependencies.compile ++ LibDependencies.test)
+  .settings(packMain := Map("integration-catalogue-tools" -> "uk.gov.hmrc.integrationcataloguetools.Main"))
 
 lazy val scoverageSettings = {
     import scoverage.ScoverageKeys
@@ -39,6 +37,6 @@ lazy val scoverageSettings = {
       ScoverageKeys.coverageMinimumStmtTotal := 75,
       ScoverageKeys.coverageFailOnMinimum := true,
       ScoverageKeys.coverageHighlighting := true,
-      parallelExecution in Test := false
+      Test / parallelExecution := false
   )
 }
