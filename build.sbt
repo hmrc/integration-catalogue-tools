@@ -1,8 +1,6 @@
 import sbt._
 import sbt.Keys._
-import uk.gov.hmrc.SbtArtifactory
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
-import uk.gov.hmrc.versioning.SbtGitVersioning
 
 lazy val appName = "integration-catalogue-tools"
 
@@ -19,7 +17,7 @@ inThisBuild(
 )
 
 lazy val root = Project(appName, file("."))
-  .enablePlugins(SbtGitVersioning, SbtArtifactory, PackPlugin)
+  .enablePlugins(PackPlugin)
   .settings(
     scalaVersion := scala_212,
     name := appName,
