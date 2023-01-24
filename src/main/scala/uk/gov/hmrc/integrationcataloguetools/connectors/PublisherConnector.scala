@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.integrationcataloguetools.connectors
 
+import scala.util.{Failure, Success, Try}
+
 import org.apache.http.client.methods.{CloseableHttpResponse, HttpPut}
 import org.apache.http.entity.{ContentType, StringEntity}
 import org.apache.http.impl.client.CloseableHttpClient
-import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
-import scala.util.{Failure, Success, Try}
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
 
 case class Response(statusCode: Int, content: String)
 
@@ -53,7 +54,7 @@ class PublisherConnector(url: String, client: CloseableHttpClient, platform: Pla
   }
 
   private def callEndpoint(put: HttpPut): Either[String, Response] = {
-    
+
     put.addHeader("Authorization", authorizationKey)
     put.addHeader("x-platform-type", platform.value)
 
@@ -64,7 +65,7 @@ class PublisherConnector(url: String, client: CloseableHttpClient, platform: Pla
       }) match {
       case Success(response)  => Right(response)
       case Failure(exception) =>
-        println("Error calling publish service:")
+        println("Error calling publish service:") // scalastyle:ignore regex
         exception.printStackTrace()
         Left(exception.getMessage)
     }

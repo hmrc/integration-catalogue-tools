@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,33 +17,35 @@
 package uk.gov.hmrc.integrationcataloguetools
 
 import org.apache.http.impl.client.HttpClients
-import uk.gov.hmrc.integrationcataloguetools.models.Platform
+
 import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
+import uk.gov.hmrc.integrationcataloguetools.models.Platform
 import uk.gov.hmrc.integrationcataloguetools.service.{ApiPublisherService, FileTransferPublisherService}
 
+// scalastyle:off cyclomatic.complexity regex line.size.limit method.length
 class IntegrationCatalogueTools {
 
   def printUsage(): Unit = {
     println("""
-        Usage:
-            integration-catalogue-tools --version | -v
-            integration-catalogue-tools --help | -h
-            integration-catalogue-tools --csvToOas <inputCsv> <output directory>
-            integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
-            integration-catalogue-tools --yamlFindApisToUnpublish <previous directory> <updated directory>
-            integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
-            integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
-            integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
-            integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
-            
-            Arguments:
-                - directory : All files with .yaml or .json extension will be processed
-                - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OpenAPI Specification file
-        """)
+              |Usage:
+              |    integration-catalogue-tools --version | -v
+              |    integration-catalogue-tools --help | -h
+              |    integration-catalogue-tools --csvToOas <inputCsv> <output directory>
+              |    integration-catalogue-tools --csvToFileTransferJson <inputCsv> <output directory>
+              |    integration-catalogue-tools --yamlFindApisToUnpublish <previous directory> <updated directory>
+              |    integration-catalogue-tools --yamlAddMetadata <input directory> <platform> <reviewed date> <output directory>
+              |    integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --filename <oasFile> --url <publish url> --authorizationKey <key>
+              |    integration-catalogue-tools --publish [--useFilenameAsPublisherReference] --platform <platform> --directory <directory> --url <publish url> --authorizationKey <key>
+              |    integration-catalogue-tools --publishFileTransfers --platform <platform> --directory  <directory> --url <publish url> --authorizationKey <key>
+              |
+              |    Arguments:
+              |        - directory : All files with .yaml or .json extension will be processed
+              |        - useFilenameAsPublisherReference : Uses the filename as the optional publisherReference header. If not included the publisherReference must be present in the OpenAPI Specification file
+              |""".stripMargin)
   }
 
   def printVersion(): Unit = {
-    //val title = getClass.getPackage.getImplementationTitle
+    // val title = getClass.getPackage.getImplementationTitle
     val version = getClass.getPackage.getImplementationVersion
 
     println(s"integration-catalogue-tools version '$version'")
@@ -53,13 +55,13 @@ class IntegrationCatalogueTools {
     val client = HttpClients.createDefault()
     try {
       args match {
-        case Nil | "--help" :: Nil | "-h" :: Nil =>
+        case Nil | "--help" :: Nil | "-h" :: Nil                            =>
           printUsage()
           Right(())
-        case "--version" :: Nil | "-v" :: Nil =>
+        case "--version" :: Nil | "-v" :: Nil                               =>
           printVersion()
           Right(())
-        case "--csvToOas" :: inputCsvFile :: outputPath :: Nil =>
+        case "--csvToOas" :: inputCsvFile :: outputPath :: Nil              =>
           println(s"Exporting CSV to OAS Files:\nInput file: $inputCsvFile\noutput path: $outputPath")
           val rowsProcessed = ProcessCsvFile.processApiCsv(inputCsvFile, outputPath)
           println(s"Exported $rowsProcessed OAS files to:\n$outputPath")
@@ -76,7 +78,7 @@ class IntegrationCatalogueTools {
             case Right(apisToUnpublish) =>
               println(s"APIs to unpublish: \n ${apisToUnpublish.mkString(" \n")}")
               Right(())
-            case Left(errorMessage) => Left(errorMessage)
+            case Left(errorMessage)     => Left(errorMessage)
           }
 
         case "--yamlAddMetadata" :: inputPath :: platform :: reviewedDate :: outputPath :: Nil =>
@@ -118,3 +120,4 @@ class IntegrationCatalogueTools {
   private def substringAfterLastSlash(s: String) = s.reverse.takeWhile(_ != '/').reverse.toUpperCase
 
 }
+// scalastyle:on cyclomatic.complexity regex line.size.limit method.length

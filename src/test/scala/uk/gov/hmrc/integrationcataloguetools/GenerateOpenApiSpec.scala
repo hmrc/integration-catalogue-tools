@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,15 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
+import scala.collection.JavaConverters._
+import scala.io.Source
+
+import io.swagger.v3.oas.models.responses.ApiResponses
+import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import scala.io.Source
-import io.swagger.v3.oas.models.OpenAPI
 
-import scala.collection.JavaConverters._
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
-import io.swagger.v3.oas.models.PathItem
-import io.swagger.v3.oas.models.Operation
-import io.swagger.v3.oas.models.responses.ApiResponses
 
 class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
 
@@ -56,7 +55,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
     }
 
     def validateResponses(responses: ApiResponses) = {
-      val responseOK = Option(responses.get("200"))
+      val responseOK         = Option(responses.get("200"))
       responseOK.isDefined shouldBe true
       responseOK.get.getDescription() shouldBe "OK"
       val responseBadRequest = Option(responses.get("400"))
@@ -143,7 +142,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
   }
 
   "Parse CSV into OpenAPI Specification content" in {
-    val csvFile = Source.fromResource("generateopenapispec/Parse-to-OAS-Content.csv")
+    val csvFile         = Source.fromResource("generateopenapispec/Parse-to-OAS-Content.csv")
     val expectedContent = Source.fromResource("generateopenapispec/Expected-Parse-to-OAS-Content.yaml").mkString
 
     val contents = GenerateOpenApi.fromCsvToOasContent(csvFile.bufferedReader())
@@ -156,7 +155,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
   }
 
   "Parse CSV with Path Parameters into OpenAPI Specification content" in {
-    val csvFile = Source.fromResource("generateopenapispec/Parse-CSV-into-OpenAPI-list.csv")
+    val csvFile         = Source.fromResource("generateopenapispec/Parse-CSV-into-OpenAPI-list.csv")
     val expectedContent = Source.fromResource("generateopenapispec/Expected-Parse-CSV-into-OpenAPI-list.yaml").mkString
 
     val contents = GenerateOpenApi.fromCsvToOasContent(csvFile.bufferedReader())
@@ -169,7 +168,7 @@ class GenerateOpenApiSpec extends AnyWordSpec with Matchers {
   }
 
   "Parse CSV with Query Parameters into OpenAPI Specification with no Query Parameters" in {
-    val csvFile = Source.fromResource("generateopenapispec/Parse-CSV-with-queryParameters-into-OpenAPI.csv")
+    val csvFile         = Source.fromResource("generateopenapispec/Parse-CSV-with-queryParameters-into-OpenAPI.csv")
     val expectedContent = Source.fromResource("generateopenapispec/Expected-Parse-CSV-with-query-params-into-OpenAPI.yaml").mkString
 
     val contents = GenerateOpenApi.fromCsvToOasContent(csvFile.bufferedReader())

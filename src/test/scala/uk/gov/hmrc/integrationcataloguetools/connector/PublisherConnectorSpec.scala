@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,26 @@
 
 package uk.gov.hmrc.integrationcataloguetools.connector
 
-import org.apache.http.{HttpEntity, ProtocolVersion}
+import java.io.ByteArrayInputStream
+import java.nio.charset.StandardCharsets
+
 import org.apache.http.client.methods.{CloseableHttpResponse, HttpPut}
 import org.apache.http.entity.{ContentType, StringEntity}
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.message.BasicStatusLine
+import org.apache.http.{HttpEntity, ProtocolVersion}
 import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+
 import uk.gov.hmrc.integrationcataloguetools.connectors.{PublisherConnector, Response}
 import uk.gov.hmrc.integrationcataloguetools.models.Platform
-
-import java.io.ByteArrayInputStream
-import java.nio.charset.StandardCharsets
-
 
 class PublisherConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar with BeforeAndAfterEach {
 
   val mockCloseableHttpClient = mock[CloseableHttpClient]
-  val url = ""
+  val url                     = ""
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -44,18 +44,18 @@ class PublisherConnectorSpec extends AnyWordSpec with Matchers with MockitoSugar
 
   trait Setup {
 
-    val encodedAuthHeader = "dGhpc2lzYXNzZWN1cmVhc2l0Z2V0cw=="
-    val platform = Platform("CORE_IF")
-    val connector = new PublisherConnector(url, mockCloseableHttpClient, platform, encodedAuthHeader)
-    val fileTransferJsonContent = "File Transfer Json content"
-    val entity: StringEntity = new StringEntity(fileTransferJsonContent, ContentType.create("application/json", "UTF-8"));
+    val encodedAuthHeader         = "dGhpc2lzYXNzZWN1cmVhc2l0Z2V0cw=="
+    val platform                  = Platform("CORE_IF")
+    val connector                 = new PublisherConnector(url, mockCloseableHttpClient, platform, encodedAuthHeader)
+    val fileTransferJsonContent   = "File Transfer Json content"
+    val entity: StringEntity      = new StringEntity(fileTransferJsonContent, ContentType.create("application/json", "UTF-8"));
     val mockCloseableHttpResponse = mock[CloseableHttpResponse]
-    val mockHttpEntity = mock[HttpEntity]
-    val responseContent = "Happy path response"
-    val dummyInputStreamFT = new ByteArrayInputStream(responseContent.getBytes(StandardCharsets.UTF_8));
+    val mockHttpEntity            = mock[HttpEntity]
+    val responseContent           = "Happy path response"
+    val dummyInputStreamFT        = new ByteArrayInputStream(responseContent.getBytes(StandardCharsets.UTF_8));
 
     val headers = Map(
-      "x-specification-type" -> "OAS_V3",
+      "x-specification-type"  -> "OAS_V3",
       "x-publisher-reference" -> "1234"
     )
 

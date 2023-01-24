@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
+import java.io.Reader
+import java.util
+import scala.collection.JavaConverters._
+
 import io.swagger.v3.core.util.Yaml
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.media.Schema
@@ -23,11 +27,8 @@ import io.swagger.v3.oas.models.parameters.Parameter
 import io.swagger.v3.oas.models.responses.{ApiResponse, ApiResponses}
 import io.swagger.v3.oas.models.{OpenAPI, Operation, PathItem, Paths}
 import org.apache.commons.csv.CSVRecord
-import uk.gov.hmrc.integrationcataloguetools.models._
 
-import java.io.Reader
-import java.util
-import scala.collection.JavaConverters._
+import uk.gov.hmrc.integrationcataloguetools.models._
 
 object GenerateOpenApi {
 
@@ -38,6 +39,7 @@ object GenerateOpenApi {
     }
   }
 
+  // scalastyle:off method.length
   def fromCsvToOpenAPI(reader: Reader): Seq[(PublisherReference, OpenAPI)] = {
 
     def createBasicApi(record: CSVRecord): BasicApi = {
@@ -52,7 +54,6 @@ object GenerateOpenApi {
       def parseStatus(s: String): String = {
         Option(s).getOrElse("LIVE").trim()
       }
-
 
       def truncateAfter(x: String, p: String) = {
         val s = parseString(x)
@@ -91,6 +92,7 @@ object GenerateOpenApi {
       .map(createBasicApi)
       .map(basicApi => (basicApi.publisherReference, createOpenApi(basicApi)))
   }
+  // scalastyle:on method.length
 
   def generateOasContent(basicApi: BasicApi): String = {
     val openApi: OpenAPI = createOpenApi(basicApi)
@@ -137,7 +139,7 @@ object GenerateOpenApi {
       basicApi.endpoint
     } else {
       val error = s"Invalid path '${basicApi.endpoint}' for publisherReference '${basicApi.publisherReference}'"
-      println(error)
+      println(error) // scalastyle:ignore regex
       "/unknown"
     }
   }
@@ -156,7 +158,7 @@ object GenerateOpenApi {
       case "HEAD"    => pathItem.setHead(createOperation())
       case unknown   => // TODO Handle / filter these?
         val error = s"Unsupported method: '$unknown' for publisherReference '${basicApi.publisherReference}'"
-        println(error)
+        println(error) // scalastyle:ignore regex
         pathItem.setGet(createOperation())
     }
     if (parameters.nonEmpty) pathItem.setParameters(parameters.asJava)
@@ -175,7 +177,7 @@ object GenerateOpenApi {
       paramObj.setName(param)
       paramObj.setIn("path")
       paramObj.setRequired(true)
-      val schema = new Schema()
+      val schema   = new Schema()
       schema.setType("string")
       paramObj.setSchema(schema)
       paramObj

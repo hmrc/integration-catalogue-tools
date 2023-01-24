@@ -1,40 +1,40 @@
 import sbt._
 import sbt.Keys._
-import uk.gov.hmrc.SbtArtifactory
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
-import uk.gov.hmrc.versioning.SbtGitVersioning
 
-lazy val root = (project in file("."))
-  .enablePlugins(SbtGitVersioning, SbtArtifactory)
+lazy val appName = "integration-catalogue-tools"
+
+lazy val scala_212 = "2.12.15"
+
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.6.0"
+
+inThisBuild(
+  List(
+    scalaVersion := scala_212,
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision
+  )
+)
+
+lazy val root = Project(appName, file("."))
+  .enablePlugins(PackPlugin)
   .settings(
-    scalaVersion := "2.12.12",
-    name := "integration-catalogue-tools",
+    scalaVersion := scala_212,
+    name := appName,
     majorVersion := 1
   )
   .settings(scoverageSettings)
-
-libraryDependencies += "io.swagger.parser.v3" % "swagger-parser-v3" % "2.0.23"
-libraryDependencies += "org.apache.commons" % "commons-csv" % "1.8"
-libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.3.1"
-libraryDependencies += "org.apache.httpcomponents" % "httpmime" % "4.3.1"
-libraryDependencies += "net.liftweb" %% "lift-json" % "3.4.3"
-
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.2" % Test
-libraryDependencies += "org.mockito" %% "mockito-scala-scalatest" % "1.16.29" % Test
-libraryDependencies += "com.vladsch.flexmark" %  "flexmark-all" % "0.36.8" % Test
-
-enablePlugins(PackPlugin, SbtAutoBuildPlugin)
-packMain := Map("integration-catalogue-tools" -> "uk.gov.hmrc.integrationcataloguetools.Main")
-
+  .settings(libraryDependencies ++= LibDependencies.compile ++ LibDependencies.test)
+  .settings(packMain := Map("integration-catalogue-tools" -> "uk.gov.hmrc.integrationcataloguetools.Main"))
 
 lazy val scoverageSettings = {
     import scoverage.ScoverageKeys
     Seq(
       // Semicolon-separated list of regexs matching classes to exclude
       ScoverageKeys.coverageExcludedPackages := ";.*\\.domain\\.models\\..*;uk\\.gov\\.hmrc\\.BuildInfo;.*\\.Routes;.*\\.RoutesPrefix;;Module;GraphiteStartUp;.*\\.Reverse[^.]*",
-      ScoverageKeys.coverageMinimum := 75,
+      ScoverageKeys.coverageMinimumStmtTotal := 75,
       ScoverageKeys.coverageFailOnMinimum := true,
       ScoverageKeys.coverageHighlighting := true,
-      parallelExecution in Test := false
+      Test / parallelExecution := false
   )
 }

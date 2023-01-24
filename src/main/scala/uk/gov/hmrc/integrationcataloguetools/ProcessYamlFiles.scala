@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
-
 import java.io.{File, PrintWriter}
 import java.time.Instant
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
+
+import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
 
 object ProcessYamlFiles {
 
@@ -59,7 +59,7 @@ object ProcessYamlFiles {
       fileContents
     } else {
       val afterInfoSection = fileContents.dropWhile(!_.startsWith("info:")).drop(1).dropWhile(next => next.startsWith(" ") || next.isEmpty)
-      val upToInfoSection = fileContents.take(fileContents.size - afterInfoSection.size)
+      val upToInfoSection  = fileContents.take(fileContents.size - afterInfoSection.size)
 
       upToInfoSection ++ List(
         s"  $xIntegrationCatalogue",
@@ -92,7 +92,7 @@ object ProcessYamlFiles {
 
   private def writeOutputFile(outputFile: File, contents: List[String]): Unit = {
     new PrintWriter(outputFile) {
-      contents.foreach(println)
+      contents.foreach(println) // scalastyle:ignore regex
       close()
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
-
 import java.io.File
 import java.nio.file.Files
 import scala.collection.JavaConverters._
+
+import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
 
 object CompareYamlFiles {
 
@@ -51,7 +51,7 @@ object CompareYamlFiles {
 
   private def validateInputs(beforePath: String, afterPath: String): Option[String] = {
     val beforeDirectory = new File(beforePath)
-    val afterDirectory = new File(afterPath)
+    val afterDirectory  = new File(afterPath)
     if (!beforeDirectory.exists || !beforeDirectory.isDirectory) {
       Some(s"Path is not a directory: $beforePath")
     } else if (!afterDirectory.exists || !afterDirectory.exists) {

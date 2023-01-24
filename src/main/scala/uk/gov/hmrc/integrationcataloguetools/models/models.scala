@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,20 @@ package uk.gov.hmrc.integrationcataloguetools.models
 case class PublisherReference(value: String) extends AnyVal
 
 case class Platform(value: String) extends AnyVal
-case class Status(value: String) extends AnyVal
-
+case class Status(value: String)   extends AnyVal
 
 case class BasicApi(
-  publisherReference: PublisherReference,
-  platform: Platform,
-  title: String,
-  description: String,
-  version: String,
-  method: String,
-  endpoint: String,
-  parameters: List[String],
-  status: Status,
-  reviewedDate: String)
+    publisherReference: PublisherReference,
+    platform: Platform,
+    title: String,
+    description: String,
+    version: String,
+    method: String,
+    endpoint: String,
+    parameters: List[String],
+    status: Status,
+    reviewedDate: String
+  )
 
 case class ContactInformation(name: String, emailAddress: String)
 
@@ -48,4 +48,5 @@ case class FileTransferPublishRequest(
     sourceSystem: List[String], // One or many
     targetSystem: List[String],
     transports: List[String],
-    fileTransferPattern: String)
+    fileTransferPattern: String
+  )

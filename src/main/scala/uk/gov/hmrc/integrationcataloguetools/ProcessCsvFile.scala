@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
-import net.liftweb.json.DefaultFormats
-import net.liftweb.json.Serialization.writePretty
-
 import java.io.FileReader
-import net.liftweb.json.Formats
+
+import net.liftweb.json.Serialization.writePretty
+import net.liftweb.json.{DefaultFormats, Formats}
 
 object ProcessCsvFile {
 
@@ -28,7 +27,7 @@ object ProcessCsvFile {
     import java.io.{BufferedWriter, File, FileWriter}
 
     val file = new File(filename)
-    val bw = new BufferedWriter(new FileWriter(file))
+    val bw   = new BufferedWriter(new FileWriter(file))
     bw.write(content)
     bw.close()
   }
@@ -54,7 +53,7 @@ object ProcessCsvFile {
     implicit val formats: Formats = DefaultFormats
 
     try {
-      
+
       GenerateFileTransferJson
         .fromCsvToFileTransferRequest(in)
         .map {

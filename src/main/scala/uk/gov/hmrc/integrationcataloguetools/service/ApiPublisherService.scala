@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
 
 package uk.gov.hmrc.integrationcataloguetools.service
 
-import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
-
 import java.io.File
 import java.nio.file.{Files, Paths}
 
+import uk.gov.hmrc.integrationcataloguetools.connectors.PublisherConnector
+
 class ApiPublisherService(publisherConnector: PublisherConnector) extends PublishHelper {
-
-
 
   def publishDirectory(directoryPath: String, useFilenameAsPublisherReference: Boolean): Either[String, Unit] = {
 
@@ -50,9 +48,9 @@ class ApiPublisherService(publisherConnector: PublisherConnector) extends Publis
 
       val rights = results.collect({ case Right(l) => l })
 
-      println(s"Successfully published ${rights.length} APIs")
+      println(s"Successfully published ${rights.length} APIs") // scalastyle:ignore regex
       if (lefts.nonEmpty) {
-        println(s"Failed to publish ${lefts.length} APIs")
+        println(s"Failed to publish ${lefts.length} APIs") // scalastyle:ignore regex
       }
 
       if (lefts.isEmpty) Right(())
@@ -62,9 +60,9 @@ class ApiPublisherService(publisherConnector: PublisherConnector) extends Publis
 
   def publishFile(pathname: String, useFilenameAsPublisherReference: Boolean): Either[String, Unit] = {
 
-    println(s"Publishing ${pathname}")
+    println(s"Publishing ${pathname}") // scalastyle:ignore regex
 
-    val file = new File(pathname)
+    val file     = new File(pathname)
     val filename = file.getName
 
     val oasContentBytes = Files.readAllBytes(Paths.get(pathname))
@@ -73,7 +71,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) extends Publis
 
   private def publish(useFilenameAsPublisherReference: Boolean, filename: String, oasContent: Array[Byte]): Either[String, Unit] = {
 
-    def getOptionalHeaders() : Map[String, String] = {
+    def getOptionalHeaders(): Map[String, String] = {
       if (useFilenameAsPublisherReference) Map("x-publisher-reference" -> filenameWithoutExtension(filename))
       else Map.empty
     }
@@ -84,9 +82,7 @@ class ApiPublisherService(publisherConnector: PublisherConnector) extends Publis
     handlePublishResponse(responseEither, filename)
   }
 
-
-
-  private def filenameWithoutExtension(filename: String) : String = {
+  private def filenameWithoutExtension(filename: String): String = {
     filename.replaceFirst("[.][^.]+$", "");
   }
 }

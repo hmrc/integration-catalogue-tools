@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ package uk.gov.hmrc.integrationcataloguetools.utils
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+
 import uk.gov.hmrc.integrationcataloguetools.utils.ExtractPublisherReference.Implicits
 
 class ExtractPublisherReferenceSpec extends AnyWordSpec with Matchers {
-  
+
   "extractPublisherReference" should {
 
     "find the number with just the number in the text" in {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,20 @@
 
 package uk.gov.hmrc.integrationcataloguetools
 
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import uk.gov.hmrc.integrationcataloguetools.connectors._
-
-import org.mockito.MockitoSugar
-import org.mockito.ArgumentMatchersSugar
-
 import uk.gov.hmrc.integrationcataloguetools.service.FileTransferPublisherService
 
 class FileTransferPublisherServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with ArgumentMatchersSugar {
 
   val testResourcesPath = "src/test/resources/publishservicespec/"
-  
+
   trait Setup {
     val mockPublisherConnector = mock[PublisherConnector]
-    val service = new FileTransferPublisherService(mockPublisherConnector)
+    val service                = new FileTransferPublisherService(mockPublisherConnector)
   }
 
   "Publish directory of files" should {
@@ -41,15 +38,17 @@ class FileTransferPublisherServiceSpec extends AnyWordSpec with Matchers with Mo
     val directoryPath = testResourcesPath + "directory-of-ft-json-files"
 
     "be sucessfull if publish returns a 2xx" in new Setup {
-      when(mockPublisherConnector.publishFileTransfer( (*)))
+      when(mockPublisherConnector.publishFileTransfer((*)))
         .thenReturn(Right(Response(200, "")))
 
       val result = service.publishDirectory(directoryPath)
 
       result shouldBe Right(())
 
-      val expectedFtJsonContent1 = """{"publisherReference":"BMC-ServiceNow-NetworksDataDaily-notify","fileTransferSpecificationVersion":"0.1","title":"BMC-ServiceNow-NetworksDataDaily-notify","description":"A file transfer from BMC to Service Now","platformType":"CORE_IF_FILE_TRANSFER_FLOW","lastUpdated":"2020-11-04T20:27:05.000Z","contact":{"name":"EIS Front Door","emailAddress":"services.enterpriseintegration@hmrc.gov.uk"},"sourceSystem":["BMC"],"targetSystem":["ServiceNow"],"fileTransferPattern":"Corporate to corporate"}"""
-      val expectedFtJsonContent2 = """{"publisherReference":"BVD-DPS-PCPMonthly-pull","fileTransferSpecificationVersion":"0.1","title":"BVD-DPS-PCPMonthly-pull","description":"A file transfer from Birth Verification Data (BVD) to Data Provisioning Systems (DPS)","platformType":"CORE_IF_FILE_TRANSFER_FLOW","lastUpdated":"2020-11-04T20:27:05.000Z","contact":{"name":"EIS Front Door","emailAddress":"services.enterpriseintegration@hmrc.gov.uk"},"sourceSystem":["BVD"],"targetSystem":["DPS"],"fileTransferPattern":"Corporate to corporate"}"""
+      val expectedFtJsonContent1 =
+        """{"publisherReference":"BMC-ServiceNow-NetworksDataDaily-notify","fileTransferSpecificationVersion":"0.1","title":"BMC-ServiceNow-NetworksDataDaily-notify","description":"A file transfer from BMC to Service Now","platformType":"CORE_IF_FILE_TRANSFER_FLOW","lastUpdated":"2020-11-04T20:27:05.000Z","contact":{"name":"EIS Front Door","emailAddress":"services.enterpriseintegration@hmrc.gov.uk"},"sourceSystem":["BMC"],"targetSystem":["ServiceNow"],"fileTransferPattern":"Corporate to corporate"}"""
+      val expectedFtJsonContent2 =
+        """{"publisherReference":"BVD-DPS-PCPMonthly-pull","fileTransferSpecificationVersion":"0.1","title":"BVD-DPS-PCPMonthly-pull","description":"A file transfer from Birth Verification Data (BVD) to Data Provisioning Systems (DPS)","platformType":"CORE_IF_FILE_TRANSFER_FLOW","lastUpdated":"2020-11-04T20:27:05.000Z","contact":{"name":"EIS Front Door","emailAddress":"services.enterpriseintegration@hmrc.gov.uk"},"sourceSystem":["BVD"],"targetSystem":["DPS"],"fileTransferPattern":"Corporate to corporate"}"""
 
       verify(mockPublisherConnector).publishFileTransfer(expectedFtJsonContent1)
       verify(mockPublisherConnector).publishFileTransfer(expectedFtJsonContent2)
@@ -66,11 +65,11 @@ class FileTransferPublisherServiceSpec extends AnyWordSpec with Matchers with Mo
     }
 
     "be unsucessfull if passed a file instead of a directory" in new Setup {
-      
+
       val invalidDirectoryPath = directoryPath + filename2
-      val result = service.publishDirectory(invalidDirectoryPath)
+      val result               = service.publishDirectory(invalidDirectoryPath)
 
       result shouldBe Left(s"`$invalidDirectoryPath` is not a directory")
     }
-}
+  }
 }

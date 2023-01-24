@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package uk.gov.hmrc.integrationcataloguetools.utils
 import java.util.regex.Pattern
 
 object ExtractPublisherReference {
+
   implicit class Implicits(fileName: String) {
     // This regex finds the first 4-digit number. Note that (?<!...) is a negative lookbehind and (?!...) is a negative lookahead.
     private val publisherReferenceRegex = Pattern.compile("(?<!\\d)(\\d{4})(?!\\d)", Pattern.CASE_INSENSITIVE)
